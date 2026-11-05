@@ -1,0 +1,742 @@
+.users-page {
+  padding-bottom: 28px;
+}
+
+.users-header {
+  padding-inline: 22px;
+}
+
+.users-alert-error {
+  margin: 0 22px 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--rojo-100);
+  color: var(--rojo-600);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.users-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(210px, 1fr));
+  gap: 14px;
+  padding-inline: 22px;
+}
+
+.users-card {
+  margin-inline: 22px;
+}
+
+.users-toolbar {
+  min-height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gris-200);
+  background: white;
+}
+
+.users-toolbar h3 {
+  margin: 0;
+  color: var(--gris-950);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.users-toolbar p {
+  margin: 4px 0 0;
+  color: var(--gris-500);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.users-filters {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.users-select {
+  min-height: 38px;
+  min-width: 150px;
+  padding: 8px 34px 8px 12px;
+  border: 1.5px solid var(--gris-300);
+  border-radius: 10px;
+  background: var(--gris-100);
+  color: var(--gris-700);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.users-search {
+  min-width: 240px;
+}
+
+.users-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.users-table th {
+  white-space: nowrap;
+}
+
+.users-id {
+  color: var(--gris-400);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.users-person {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 220px;
+}
+
+.users-avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--verde-500), var(--verde-700));
+  color: white;
+  font-size: 13px;
+  font-weight: 900;
+  overflow: hidden;
+}
+
+.users-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.users-person-info {
+  min-width: 0;
+}
+
+.users-person-info strong {
+  display: block;
+  color: var(--gris-950);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.users-person-info small {
+  display: block;
+  margin-top: 2px;
+  color: var(--gris-500);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.users-email {
+  color: var(--gris-600);
+  font-size: 12.5px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.users-center {
+  text-align: center;
+}
+
+.users-face {
+  color: var(--gris-300);
+  font-size: 20px;
+}
+
+.users-face.active {
+  color: var(--verde-600);
+}
+
+.users-date {
+  color: var(--gris-500);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.users-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.users-action {
+  width: 31px;
+  height: 31px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--gris-200);
+  border-radius: 9px;
+  background: white;
+  color: var(--gris-600);
+  transition: var(--transition);
+}
+
+.users-action:hover {
+  transform: translateY(-1px);
+}
+
+.users-action.edit:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.users-action.delete:hover {
+  border-color: #fecaca;
+  background: var(--rojo-100);
+  color: var(--rojo-600);
+}
+
+.users-action.activate:hover {
+  border-color: var(--verde-200);
+  background: var(--verde-100);
+  color: var(--verde-700);
+}
+
+.users-empty {
+  min-height: 190px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  color: var(--gris-400);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.users-empty i {
+  font-size: 34px;
+}
+
+/* ==============================
+   MODAL USUARIO
+============================== */
+
+.user-modal-overlay {
+  z-index: 400;
+}
+
+.user-form-modal {
+  width: min(100%, 880px);
+}
+
+.user-modal-header {
+  align-items: flex-start;
+}
+
+.user-modal-subtitle {
+  margin: 4px 0 0;
+  color: var(--gris-500);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.user-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.form-group {
+  min-width: 0;
+}
+
+.form-group.span-2 {
+  grid-column: span 2;
+}
+
+.form-group small {
+  color: var(--gris-400);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.user-form-error {
+  margin-top: 15px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: var(--rojo-100);
+  color: var(--rojo-600);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+/* ==============================
+   MODAL DESACTIVAR
+============================== */
+
+.user-delete-modal {
+  width: min(100%, 430px);
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.user-delete-icon {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--rojo-100);
+  color: var(--rojo-600);
+  font-size: 30px;
+}
+
+.user-delete-modal h3 {
+  margin: 0;
+  color: var(--gris-950);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.user-delete-modal p {
+  margin: 12px 0 0;
+  color: var(--gris-700);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.user-delete-help {
+  display: block;
+  margin-top: 8px;
+  color: var(--gris-500);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.user-delete-actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width: 1100px) {
+  .users-stats {
+    grid-template-columns: repeat(2, minmax(210px, 1fr));
+  }
+
+  .users-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 760px) {
+  .users-stats {
+    grid-template-columns: 1fr;
+    padding-inline: 14px;
+  }
+
+  .users-header {
+    padding-inline: 14px;
+  }
+
+  .users-card {
+    margin-inline: 14px;
+  }
+
+  .users-toolbar {
+    padding: 14px;
+  }
+
+  .users-filters {
+    width: 100%;
+  }
+
+  .users-select,
+  .users-search {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .user-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.span-2 {
+    grid-column: span 1;
+  }
+
+  .user-delete-actions {
+    flex-direction: column;
+  }
+}
+/* ==============================
+   ACCIONES CON ICONOS
+============================== */
+
+.users-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.users-action {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--gris-200);
+  border-radius: 10px;
+  background: white;
+  color: var(--gris-500);
+  transition: var(--transition);
+}
+
+.users-action i {
+  display: block;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.users-action:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.users-action.view {
+  color: var(--verde-700);
+}
+
+.users-action.view:hover {
+  border-color: var(--verde-300);
+  background: var(--verde-100);
+  color: var(--verde-800);
+}
+
+.users-action.edit {
+  color: #1d4ed8;
+}
+
+.users-action.edit:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.users-action.delete {
+  color: var(--rojo-600);
+}
+
+.users-action.delete:hover {
+  border-color: #fecaca;
+  background: var(--rojo-100);
+  color: var(--rojo-600);
+}
+
+.users-action.activate {
+  color: var(--verde-700);
+}
+
+.users-action.activate:hover {
+  border-color: var(--verde-200);
+  background: var(--verde-100);
+  color: var(--verde-700);
+}
+
+/* ==============================
+   MODAL VER USUARIO
+============================== */
+
+.user-view-modal {
+  width: min(100%, 760px);
+  overflow: hidden;
+}
+
+.user-view-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(13, 61, 43, 0.96), rgba(46, 125, 90, 0.92)),
+    var(--verde-900);
+  color: white;
+}
+
+.user-view-header .modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
+
+.user-view-header .modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.user-view-avatar {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: white;
+  font-size: 28px;
+  font-weight: 900;
+  overflow: hidden;
+}
+
+.user-view-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-view-main h3 {
+  margin: 0 0 8px;
+  color: white;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.user-view-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 22px;
+  background: #f8fafc;
+}
+
+.user-detail-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid var(--gris-200);
+  border-radius: 14px;
+  background: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.user-detail-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--verde-100);
+  color: var(--verde-700);
+  font-size: 20px;
+}
+
+.user-detail-card label {
+  margin: 0 0 4px;
+  color: var(--gris-500);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.user-detail-card p {
+  margin: 0;
+  color: var(--gris-950);
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+/* ==============================
+   MEJORA MODAL FORMULARIO
+============================== */
+
+.user-form-modal {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.user-modal-header {
+  background:
+    linear-gradient(135deg, rgba(237, 250, 244, 0.95), rgba(255, 255, 255, 1));
+}
+
+.user-form-grid input,
+.user-form-grid select {
+  min-height: 46px;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.user-form-grid input:focus,
+.user-form-grid select:focus {
+  background: white;
+}
+
+/* ==============================
+   MEJORA MODAL DESACTIVAR
+============================== */
+
+.user-delete-modal {
+  border-radius: 22px;
+  animation: slideUp 0.24s ease both;
+}
+
+.user-delete-icon {
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.16);
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .user-view-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .user-view-body {
+    grid-template-columns: 1fr;
+  }
+}
+.field-help {
+  display: block;
+  margin-top: 5px;
+  color: var(--gris-400);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ==============================
+   NUEVOS CAMPOS USUARIOS
+============================== */
+
+.users-ci {
+  color: var(--gris-700);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.users-job {
+  min-width: 170px;
+}
+
+.users-job strong {
+  display: block;
+  color: var(--gris-950);
+  font-size: 12.5px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.users-job small {
+  display: block;
+  margin-top: 2px;
+  color: var(--gris-500);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+/* ==============================
+   SECCIONES DEL FORMULARIO
+============================== */
+
+.user-form-section {
+  padding: 16px;
+  border: 1px solid var(--gris-200);
+  border-radius: 16px;
+  background: #f8fafc;
+  margin-bottom: 16px;
+}
+
+.user-form-section:last-child {
+  margin-bottom: 0;
+}
+
+.user-form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: var(--verde-700);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.user-form-section-title i {
+  font-size: 18px;
+}
+
+.user-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.form-group.span-2 {
+  grid-column: span 2;
+}
+
+.field-help {
+  display: block;
+  margin-top: 5px;
+  color: var(--gris-400);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ==============================
+   MODAL VER USUARIO MEJORADO
+============================== */
+
+.user-view-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.user-view-section-title {
+  grid-column: 1 / -1;
+  margin: 4px 0 -2px;
+  color: var(--verde-700);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .user-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-group.span-2 {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 620px) {
+  .user-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.span-2 {
+    grid-column: span 1;
+  }
+}

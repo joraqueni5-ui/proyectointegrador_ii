@@ -1,0 +1,22 @@
+{
+  "healthy": {
+    "code": "CNN-SANA",
+    "label": "Sana (Sin enfermedad)"
+  },
+  "early_blight": {
+    "code": "CNN-TTP",
+    "label": "Tizón Temprano"
+  },
+  "late_blight": {
+    "code": "CNN-TT",
+    "label": "Tizón Tardío"
+  },
+  "bacterial_wilt": {
+    "code": "CNN-MB",
+    "label": "Marchitez Bacteriana"
+  },
+  "rhizoctonia": {
+    "code": "CNN-RZ",
+    "label": "Rizoctoniasis"
+  }
+}

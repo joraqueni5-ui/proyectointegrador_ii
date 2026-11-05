@@ -1,0 +1,554 @@
+.prioridad-inteligente {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #dbe5df;
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff 0%,
+      #f6fbf8 100%
+    );
+}
+
+.prioridad-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.prioridad-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #16804d;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.prioridad-head h4 {
+  margin: 7px 0 0;
+  color: #17202a;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.prioridad-score {
+  min-width: 82px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.prioridad-score strong {
+  font-size: 25px;
+  font-weight: 950;
+}
+
+.prioridad-score span {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.prioridad-score.critico {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.prioridad-score.alto {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.prioridad-score.medio {
+  background: #fef3c7;
+  color: #a16207;
+}
+
+.prioridad-score.bajo {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.prioridad-barra {
+  height: 10px;
+  margin-top: 17px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e9eef0;
+}
+
+.prioridad-barra-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width .4s ease;
+}
+
+.prioridad-barra-fill.critico {
+  background: #dc2626;
+}
+
+.prioridad-barra-fill.alto {
+  background: #f97316;
+}
+
+.prioridad-barra-fill.medio {
+  background: #eab308;
+}
+
+.prioridad-barra-fill.bajo {
+  background: #16a34a;
+}
+
+.prioridad-nivel-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.prioridad-text-critico {
+  color: #b91c1c;
+}
+
+.prioridad-text-alto {
+  color: #c2410c;
+}
+
+.prioridad-text-medio {
+  color: #a16207;
+}
+
+.prioridad-text-bajo {
+  color: #166534;
+}
+
+.prioridad-factores {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.prioridad-factor {
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  gap: 9px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+}
+
+.prioridad-factor.regla {
+  border-color: #fecaca;
+  background: #fff7f7;
+}
+
+.factor-icon {
+  display: grid;
+  place-items: center;
+  color: #16804d;
+  font-size: 18px;
+}
+
+.prioridad-factor.regla .factor-icon {
+  color: #dc2626;
+}
+
+.factor-info {
+  min-width: 0;
+}
+
+.factor-info strong {
+  display: block;
+  color: #1f2937;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.factor-info span {
+  display: block;
+  margin-top: 2px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.factor-puntos {
+  min-width: 36px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.factor-puntos.activo {
+  color: #16804d;
+}
+
+.prioridad-regla-aviso {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.prioridad-regla-aviso > i {
+  margin-top: 2px;
+  font-size: 20px;
+}
+
+.prioridad-regla-aviso strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.prioridad-regla-aviso p {
+  margin: 4px 0 0;
+  color: #7f1d1d;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.prioridad-nota {
+  display: flex;
+  gap: 8px;
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px dashed #d1d5db;
+  color: #64748b;
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+/* ============================================================
+   SEGUIMIENTO FITOSANITARIO COMPACTO
+============================================================ */
+
+.seguimiento-mini-card {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid #d7e7df;
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff 0%,
+      #f5fbf7 100%
+    );
+}
+
+.seguimiento-mini-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.seguimiento-mini-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.seguimiento-mini-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+
+  border-radius: 11px;
+
+  background: #e8f7ee;
+  color: #177245;
+
+  font-size: 19px;
+}
+
+.seguimiento-mini-title span {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.seguimiento-mini-title strong {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #16231c;
+
+  font-size: 14px;
+}
+
+.seguimiento-mini-badge {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 24px;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  background: #eef2f7;
+  color: #475569;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.seguimiento-mini-badge.revision,
+.seguimiento-mini-badge.planificada {
+  background: #fff4dc;
+  color: #a95d00;
+}
+
+.seguimiento-mini-badge.tratamiento {
+  background: #f1eaff;
+  color: #6d28d9;
+}
+
+.seguimiento-mini-badge.seguimiento {
+  background: #e7f9fc;
+  color: #0e7490;
+}
+
+.seguimiento-mini-badge.resuelta {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.seguimiento-mini-badge.escalada,
+.seguimiento-mini-badge.reincidente {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.seguimiento-mini-badge.descartada {
+  background: #eef0f3;
+  color: #6b7280;
+}
+
+
+/* PROGRESO */
+
+.seguimiento-mini-progreso {
+  margin-top: 15px;
+}
+
+.seguimiento-mini-progreso-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 6px;
+
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+.seguimiento-mini-progreso-head strong {
+  color: #177245;
+
+  font-size: 12px;
+}
+
+.seguimiento-mini-bar {
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e3ebe6;
+}
+
+.seguimiento-mini-bar-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #26955c,
+      #38b76f
+    );
+
+  transition: width 0.3s ease;
+}
+
+
+/* DATOS */
+
+.seguimiento-mini-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 9px;
+
+  margin-top: 14px;
+}
+
+.seguimiento-mini-grid > div {
+  padding: 10px 11px;
+
+  border: 1px solid #e2e8e4;
+  border-radius: 10px;
+
+  background: rgba(
+    255,
+    255,
+    255,
+    0.75
+  );
+}
+
+.seguimiento-mini-grid span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #718096;
+
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.seguimiento-mini-grid span i {
+  color: #22844f;
+
+  font-size: 12px;
+}
+
+.seguimiento-mini-grid strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #26352d;
+
+  font-size: 11px;
+
+  line-height: 1.3;
+}
+
+.seguimiento-mini-grid strong.danger {
+  color: #dc2626;
+}
+
+
+/* PLAN */
+
+.seguimiento-mini-plan {
+  margin-top: 12px;
+
+  padding: 11px 12px;
+
+  border-radius: 10px;
+
+  background: #eef9f2;
+}
+
+.seguimiento-mini-plan > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #157243;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.seguimiento-mini-plan p {
+  margin: 6px 0 0;
+
+  color: #315443;
+
+  font-size: 10px;
+
+  line-height: 1.5;
+}
+
+
+/* SEGUIMIENTO VENCIDO */
+
+.seguimiento-mini-vencido {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 11px;
+
+  padding: 9px 10px;
+
+  border: 1px solid #fed7aa;
+  border-radius: 9px;
+
+  background: #fff7ed;
+
+  color: #c2410c;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* FINALIZADO */
+
+.seguimiento-finalizado {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  padding: 10px 14px;
+
+  border-radius: 10px;
+
+  background: #dcfce7;
+
+  color: #15803d;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+
+  .seguimiento-mini-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .seguimiento-mini-grid {
+    grid-template-columns: 1fr;
+  }
+}

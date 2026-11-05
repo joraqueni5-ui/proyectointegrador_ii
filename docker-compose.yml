@@ -1,0 +1,96 @@
+services:
+  database:
+    image: postgres:16
+    container_name: proyecto_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-backend_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-proinpa_local_change_me}
+    volumes:
+      - proyecto_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-backend_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - proyecto_network
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: proyecto_mailpit
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_WEB_PORT:-8025}:8025"
+    networks:
+      - proyecto_network
+
+  cnn:
+    build:
+      context: ./cnn_service
+    container_name: proyecto_cnn
+    restart: unless-stopped
+    ports:
+      - "${CNN_PORT:-8001}:8001"
+    volumes:
+      - ./cnn_service/model:/app/model
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - proyecto_network
+
+  backend:
+    build:
+      context: ./backend
+    container_name: proyecto_backend
+    restart: unless-stopped
+    environment:
+      APP_URL: http://localhost:${BACKEND_PORT:-8000}
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-backend_db}
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-proinpa_local_change_me}
+      FRONTEND_URL: http://localhost:${FRONTEND_PORT:-8080}
+      CNN_SERVICE_URL: http://cnn:8001
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_FROM_ADDRESS: noreply@proinpa.local
+      MAIL_FROM_NAME: PROINPA
+      OTP_DEBUG: "false"
+    ports:
+      - "${BACKEND_PORT:-8000}:80"
+    depends_on:
+      database:
+        condition: service_healthy
+      cnn:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    networks:
+      - proyecto_network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: proyecto_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      - backend
+    networks:
+      - proyecto_network
+
+volumes:
+  proyecto_postgres_data:
+
+networks:
+  proyecto_network:
+    driver: bridge

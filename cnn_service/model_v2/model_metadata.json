@@ -1,0 +1,70 @@
+{
+  "model_version": "PROINPA-ResNet50-v2.0-prototipo",
+  "architecture": "ResNet50",
+  "strategy": "Transfer Learning + fine-tuning (conv5)",
+  "image_size": [
+    224,
+    224
+  ],
+  "class_names": [
+    "early_blight",
+    "healthy",
+    "late_blight",
+    "other"
+  ],
+  "class_mapping": {
+    "early_blight": {
+      "code": "CNN-TTP",
+      "label": "Tizón Temprano"
+    },
+    "healthy": {
+      "code": "CNN-SANA",
+      "label": "Sana (Sin enfermedad)"
+    },
+    "late_blight": {
+      "code": "CNN-TT",
+      "label": "Tizón Tardío"
+    },
+    "other": {
+      "code": null,
+      "label": "No es una hoja de papa"
+    }
+  },
+  "preprocessing": "tensorflow.keras.applications.resnet50.preprocess_input (incluido en el modelo)",
+  "calibration": {
+    "temperatura": 0.4846,
+    "nll_antes": 0.0758,
+    "nll_despues": 0.0339,
+    "ece_antes": 0.0479,
+    "ece_despues": 0.0025,
+    "muestras_validacion": 935
+  },
+  "class_counts_train": {
+    "early_blight": 937,
+    "healthy": 1390,
+    "late_blight": 1180,
+    "other": 817
+  },
+  "class_weights": {
+    "early_blight": 1.1537,
+    "healthy": 0.7777,
+    "late_blight": 0.9161,
+    "other": 1.3231
+  },
+  "datasets": {
+    "train_val_test": "Irish Potato Imagery Dataset, Tanzania (Zenodo 8286529, CC BY 4.0), muestra por bloques",
+    "other": "PlantDoc (CC BY 4.0), hojas de otros cultivos",
+    "external_test": "Cajamarca-Perú (Mendeley kh8xjh2zyh) y PlantDoc papa"
+  },
+  "training": {
+    "epochs_head": 5,
+    "epochs_finetune": 3,
+    "seconds_total": 6349,
+    "seconds_stage1": 1522,
+    "lr_head": 0.001,
+    "lr_finetune": 2e-05,
+    "label_smoothing": 0.05,
+    "seed": 42
+  },
+  "nota": "Prototipo entrenado sin fotos de Bolivia. Validar con fotos reales antes de uso productivo."
+}

@@ -1,0 +1,1889 @@
+/* ==============================
+   VENTAS COMERCIALES
+   VentasView + componentes
+============================== */
+
+.ventas-page {
+  padding-bottom: 28px;
+}
+
+.ventas-header {
+  padding-inline: 22px;
+}
+
+.ventas-error,
+.ventas-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 22px 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.ventas-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  animation: ventaShake .25s ease;
+}
+
+.ventas-success {
+  border: 1px solid #bbf7d0;
+  background: #ecfdf5;
+  color: #166534;
+  animation: ventaSuccessIn .35s ease both;
+}
+
+.ventas-success i {
+  font-size: 18px;
+}
+
+@keyframes ventaShake {
+  0%, 100% { transform: translateX(0); }
+  35% { transform: translateX(-3px); }
+  70% { transform: translateX(3px); }
+}
+
+@keyframes ventaSuccessIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==============================
+   KPIS
+============================== */
+
+.ventas-kpis {
+  display: grid;
+  grid-template-columns: 1.2fr repeat(4, minmax(170px, 1fr));
+  gap: 14px;
+  padding-inline: 22px;
+  margin-bottom: 20px;
+}
+
+.venta-kpi-main,
+.venta-kpi-card {
+  min-height: 112px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm, 0 8px 18px rgba(15, 23, 42, .06));
+  animation: ventaSlideUp .45s ease both;
+}
+
+@keyframes ventaSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.venta-kpi-main {
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, .2), transparent 34%),
+    linear-gradient(135deg, #064e3b, #16a34a);
+  color: white;
+}
+
+.venta-kpi-main::after {
+  content: '';
+  position: absolute;
+  right: -42px;
+  bottom: -56px;
+  width: 155px;
+  height: 155px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+}
+
+.venta-kpi-label {
+  color: rgba(255, 255, 255, .72);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.venta-kpi-value {
+  margin-top: 10px;
+  color: white;
+  font-size: 32px;
+  font-weight: 950;
+  line-height: 1.1;
+}
+
+.venta-kpi-help {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, .72);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.venta-kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 17px;
+  border: 1px solid var(--gris-200, #e5e7eb);
+  background: white;
+  transition: .22s ease;
+}
+
+.venta-kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md, 0 16px 32px rgba(15, 23, 42, .12));
+}
+
+.venta-kpi-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 15px;
+  font-size: 23px;
+}
+
+.venta-kpi-card.green .venta-kpi-icon {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.venta-kpi-card.amber .venta-kpi-icon {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.venta-kpi-card.red .venta-kpi-icon {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.venta-kpi-card.blue .venta-kpi-icon {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.venta-kpi-card span {
+  display: block;
+  color: var(--gris-500, #64748b);
+  font-size: 11.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.venta-kpi-card strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--gris-950, #0f172a);
+  font-size: 24px;
+  font-weight: 950;
+  line-height: 1.1;
+}
+
+.venta-kpi-card small {
+  display: block;
+  margin-top: 6px;
+  color: var(--gris-400, #94a3b8);
+  font-size: 11.5px;
+  font-weight: 750;
+}
+
+/* ==============================
+   PANEL PRINCIPAL
+============================== */
+
+.ventas-card {
+  overflow: hidden;
+  margin-inline: 22px;
+  border: 1px solid var(--gris-200, #e5e7eb);
+  border-radius: 22px;
+  background: white;
+  box-shadow: var(--shadow-sm, 0 8px 18px rgba(15, 23, 42, .06));
+  animation: ventaSlideUp .45s ease both;
+}
+
+.ventas-loading {
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  color: var(--gris-500, #64748b);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* ==============================
+   FILTROS
+============================== */
+
+.ventas-filtros-card {
+  border-bottom: 1px solid var(--gris-200, #e5e7eb);
+  background: white;
+}
+
+.ventas-filtros-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+}
+
+.ventas-filtros-head h2 {
+  margin: 0;
+  color: var(--gris-950, #0f172a);
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.ventas-filtros-head p {
+  margin: 4px 0 0;
+  color: var(--gris-500, #64748b);
+  font-size: 12.5px;
+  font-weight: 650;
+}
+
+.ventas-filtros-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0 20px 16px;
+}
+
+.ventas-search {
+  min-width: 310px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1.5px solid var(--gris-300, #d1d5db);
+  border-radius: 12px;
+  background: var(--gris-100, #f3f4f6);
+}
+
+.ventas-search i {
+  color: var(--gris-500, #64748b);
+  font-size: 18px;
+}
+
+.ventas-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--gris-900, #111827);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ventas-filtros-body select {
+  min-height: 40px;
+  min-width: 170px;
+  padding: 8px 34px 8px 12px;
+  border: 1.5px solid var(--gris-300, #d1d5db);
+  border-radius: 12px;
+  background: var(--gris-100, #f3f4f6);
+  color: var(--gris-700, #334155);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* ==============================
+   TABLA
+============================== */
+
+.ventas-table-wrap {
+  overflow-x: auto;
+  background: #f8fafc;
+}
+
+.ventas-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ventas-table th {
+  padding: 13px 14px;
+  background: #f1f5f9;
+  color: var(--gris-500, #64748b);
+  font-size: 11px;
+  font-weight: 950;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  white-space: nowrap;
+}
+
+.ventas-table td {
+  padding: 13px 14px;
+  border-top: 1px solid var(--gris-200, #e5e7eb);
+  background: white;
+  color: var(--gris-700, #334155);
+  font-size: 12.5px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.ventas-table tbody tr {
+  transition: .18s ease;
+}
+
+.ventas-table tbody tr:hover td {
+  background: #f0fdf4;
+}
+
+.venta-code-cell strong,
+.venta-productor-cell strong,
+.venta-date-cell strong,
+.venta-total-cell strong {
+  display: block;
+  color: var(--gris-950, #0f172a);
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.venta-code-cell small,
+.venta-productor-cell small,
+.venta-date-cell small,
+.venta-total-cell small {
+  display: block;
+  margin-top: 3px;
+  color: var(--gris-500, #64748b);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.venta-code-cell strong {
+  color: var(--verde-700, #166534);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.venta-metodo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--gris-700, #334155);
+  font-size: 12.5px;
+  font-weight: 850;
+}
+
+.venta-metodo i {
+  color: var(--verde-700, #166534);
+  font-size: 17px;
+}
+
+.ventas-right {
+  text-align: right !important;
+}
+
+.ventas-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.venta-action {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--gris-200, #e5e7eb);
+  border-radius: 11px;
+  background: white;
+  color: var(--gris-500, #64748b);
+  transition: .2s ease;
+}
+
+.venta-action:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm, 0 8px 18px rgba(15, 23, 42, .06));
+}
+
+.venta-action:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+.venta-action.view {
+  color: var(--verde-700, #166534);
+}
+
+.venta-action.view:hover {
+  border-color: #bbf7d0;
+  background: #ecfdf5;
+}
+
+.venta-action.print {
+  color: #1d4ed8;
+}
+
+.venta-action.print:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.venta-action.cancel {
+  color: #b91c1c;
+}
+
+.venta-action.cancel:hover {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.ventas-empty {
+  min-height: 190px;
+  text-align: center;
+  color: var(--gris-400, #94a3b8);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.ventas-empty i {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 34px;
+}
+
+.ventas-empty.small {
+  min-height: 100px;
+}
+
+/* ==============================
+   MODALES BASE
+============================== */
+
+/* Corrección definitiva: modales de ventas por encima del sidebar */
+.venta-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 999999 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 24px !important;
+  background: rgba(15, 23, 42, 0.64) !important;
+  backdrop-filter: blur(7px) !important;
+  overflow: auto !important;
+}
+
+.venta-form-modal,
+.venta-detalle-modal {
+  width: min(1320px, calc(100vw - 48px)) !important;
+  max-height: calc(100vh - 48px) !important;
+  margin: 0 auto !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.venta-anular-modal {
+  width: min(640px, calc(100vw - 48px)) !important;
+  max-height: calc(100vh - 48px) !important;
+  margin: 0 auto !important;
+  position: relative !important;
+}
+
+.venta-comprobante-modal {
+  width: min(980px, calc(100vw - 48px)) !important;
+  max-height: calc(100vh - 48px) !important;
+  margin: 0 auto !important;
+  position: relative !important;
+}
+
+@keyframes ventaModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==============================
+   FORMULARIO NUEVA VENTA
+============================== */
+
+.venta-form-header,
+.venta-detalle-header,
+.venta-anular-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  color: white;
+}
+
+.venta-form-header {
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, .16), transparent 34%),
+    linear-gradient(135deg, #064e3b, #16a34a);
+}
+
+.venta-form-header-icon,
+.venta-detalle-icon,
+.venta-anular-icon {
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .16);
+  border: 1px solid rgba(255, 255, 255, .22);
+  font-size: 34px;
+}
+
+.venta-form-header span,
+.venta-detalle-header span,
+.venta-anular-header span {
+  color: rgba(255, 255, 255, .72);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.venta-form-header h3,
+.venta-detalle-header h3,
+.venta-anular-header h3 {
+  margin: 5px 0 5px;
+  color: white;
+  font-size: 23px;
+  font-weight: 950;
+}
+
+.venta-form-header p,
+.venta-detalle-header p,
+.venta-anular-header p {
+  max-width: 780px;
+  margin: 0;
+  color: rgba(255, 255, 255, .76);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.venta-form-header .modal-close,
+.venta-detalle-header .modal-close,
+.venta-anular-header .modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, .12);
+  color: white;
+}
+
+.venta-form-body {
+  max-height: calc(92vh - 170px);
+  overflow-y: auto;
+  padding: 20px;
+  background: #f8fafc;
+}
+
+.venta-form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 16px;
+}
+
+.venta-form-main {
+  display: grid;
+  gap: 16px;
+}
+
+.venta-form-section {
+  padding: 16px;
+  border: 1px solid var(--gris-200, #e5e7eb);
+  border-radius: 18px;
+  background: white;
+  box-shadow: var(--shadow-sm, 0 8px 18px rgba(15, 23, 42, .06));
+  animation: ventaSlideUp .4s ease both;
+}
+
+.venta-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.venta-section-title div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--gris-950, #0f172a);
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.venta-section-title i {
+  color: var(--verde-700, #166534);
+  font-size: 20px;
+}
+
+.venta-section-title span {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #166534;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.venta-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.venta-form-grid .span-2 {
+  grid-column: span 2;
+}
+
+.venta-help {
+  display: block;
+  margin-top: 5px;
+  color: var(--gris-500, #64748b);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.venta-help.danger {
+  color: #b91c1c;
+  font-weight: 900;
+}
+
+.venta-readonly {
+  background: #f1f5f9 !important;
+  cursor: not-allowed;
+}
+
+.venta-productos-empty {
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1.5px dashed var(--gris-300, #cbd5e1);
+  border-radius: 16px;
+  background: #f8fafc;
+  color: var(--gris-400, #94a3b8);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.venta-productos-empty i {
+  font-size: 30px;
+}
+
+.venta-productos-builder {
+  display: grid;
+  gap: 12px;
+}
+
+.venta-producto-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px 1fr 36px;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--gris-200, #e5e7eb);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 197, 94, .06), transparent 30%),
+    #ffffff;
+  transition: .22s ease;
+  animation: ventaItemIn .32s ease both;
+}
+
+@keyframes ventaItemIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.venta-producto-row:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm, 0 8px 18px rgba(15, 23, 42, .06));
+}
+
+.venta-producto-index {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #ecfdf5;
+  color: #166534;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.venta-producto-fields {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr .7fr .7fr .8fr;
+  gap: 10px;
+}
+
+.venta-line-total {
+  min-height: 64px;
+  display: grid;
+  align-content: center;
+  padding: 10px 12px;
+  border-radius: 13px;
+  background: #ecfdf5;
+  color: #166534;
+}
+
+.venta-line-total span {
+  font-size: 10.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.venta-line-total strong {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.venta-remove-line {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  align-self: start;
+  border: 1.5px solid #fecaca;
+  border-radius: 12px;
+  background: #fef2f2;
+  color: #b91c1c;
+  transition: .2s ease;
+}
+
+.venta-remove-line:hover {
+  transform: rotate(-6deg) scale(1.05);
+  background: #fee2e2;
+}
+
+.venta-form-summary {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  display: grid;
+  gap: 13px;
+}
+
+.venta-summary-card {
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, .17), transparent 34%),
+    linear-gradient(135deg, #064e3b, #16a34a);
+  color: white;
+  box-shadow: 0 14px 28px rgba(22, 163, 74, .22);
+}
+
+.venta-summary-card::after {
+  content: '';
+  position: absolute;
+  right: -45px;
+  bottom: -60px;
+  width: 155px;
+  height: 155px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+}
+
+.venta-summary-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 17px;
+  background: rgba(255, 255, 255, .16);
+  font-size: 26px;
+}
+
+.venta-summary-card h4 {
+  margin: 14px 0 4px;
+  color: white;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.venta-summary-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, .72);
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.venta-summary-lines {
+  display: grid;
+  gap: 9px;
+  margin-top: 16px;
+}
+
+.venta-summary-lines div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(255, 255, 255, .15);
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.venta-summary-total {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .16);
+}
+
+.venta-summary-total span {
+  display: block;
+  color: rgba(255, 255, 255, .72);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.venta-summary-total strong {
+  display: block;
+  margin-top: 5px;
+  color: white;
+  font-size: 26px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.venta-summary-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .14);
+  color: rgba(255, 255, 255, .88);
+  font-size: 11.5px;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.venta-summary-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid #bfdbfe;
+  border-radius: 16px;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.venta-summary-status div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.venta-summary-status strong {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #bfdbfe;
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.venta-form-error {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 850;
+  animation: ventaShake .25s ease;
+}
+
+.venta-form-footer {
+  border-top: 1px solid var(--gris-200, #e5e7eb);
+}
+
+/* ==============================
+   DETALLE DE VENTA
+============================== */
+
+.venta-detalle-header.pagada {
+  background: linear-gradient(135deg, #14532d, #22c55e);
+}
+
+.venta-detalle-header.pendiente {
+  background: linear-gradient(135deg, #92400e, #f59e0b);
+}
+
+.venta-detalle-header.parcial {
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+}
+
+.venta-detalle-header.anulada {
+  background: linear-gradient(135deg, #7f1d1d, #dc2626);
+}
+
+.venta-detalle-body {
+  max-height: calc(92vh - 170px);
+  overflow-y: auto;
+  padding: 20px;
+  background: #f8fafc;
+}
+
+.venta-detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.venta-info-card {
+  padding: 14px;
+  border: 1px solid var(--gris-200, #e5e7eb);
+  border-radius: 15px;
+  background: white;
+}
+
+.venta-info-card.total {
+  border-color: #bbf7d0;
+  background: #ecfdf5;
+}
+
+.venta-info-card label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--gris-500, #64748b);
+  font-size: 10.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.venta-info-card p {
+  margin: 0;
+  color: var(--gris-950, #0f172a);
+  font-size: 13.5px;
+  font-weight: 950;
+}
+
+.venta-info-card.total p {
+  color: #166534;
+}
+
+.venta-info-card small {
+  display: block;
+  margin-top: 4px;
+  color: var(--gris-500, #64748b);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.venta-detail-section {
+  margin-top: 14px;
+  padding: 15px;
+  border: 1px solid var(--gris-200, #e5e7eb);
+  border-radius: 16px;
+  background: white;
+}
+
+.venta-detail-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 9px;
+  color: var(--gris-950, #0f172a);
+  font-size: 13.5px;
+  font-weight: 950;
+}
+
+.venta-detail-section h4 i {
+  color: #166534;
+  font-size: 18px;
+}
+
+.venta-detail-section p {
+  margin: 0;
+  color: var(--gris-700, #334155);
+  font-size: 12.8px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.venta-productos-table-wrap {
+  overflow-x: auto;
+}
+
+.venta-productos-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.venta-productos-table th {
+  padding: 11px 12px;
+  background: #f1f5f9;
+  color: var(--gris-500, #64748b);
+  font-size: 10.5px;
+  font-weight: 950;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.venta-productos-table td {
+  padding: 12px;
+  border-top: 1px solid var(--gris-200, #e5e7eb);
+  color: var(--gris-700, #334155);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.venta-productos-table td strong {
+  display: block;
+  color: var(--gris-950, #0f172a);
+  font-weight: 950;
+}
+
+.venta-productos-table td small {
+  display: block;
+  margin-top: 3px;
+  color: var(--gris-500, #64748b);
+  font-size: 11px;
+}
+
+.venta-movimientos-list {
+  display: grid;
+  gap: 9px;
+}
+
+.venta-movimiento-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid var(--gris-200, #e5e7eb);
+  border-radius: 13px;
+  background: #f8fafc;
+}
+
+.venta-movimiento-item strong {
+  color: var(--gris-950, #0f172a);
+  font-size: 12.5px;
+  font-weight: 950;
+}
+
+.venta-movimiento-item small {
+  display: block;
+  margin-top: 3px;
+  color: var(--gris-500, #64748b);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.venta-movimiento-item span {
+  color: #166534;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.venta-detail-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+/* ==============================
+   MODAL ANULAR
+============================== */
+
+.venta-anular-header {
+  background: linear-gradient(135deg, #7f1d1d, #dc2626);
+}
+
+.venta-anular-body {
+  padding: 22px;
+  background: #f8fafc;
+}
+
+.venta-anular-summary {
+  margin-bottom: 14px;
+  padding: 16px;
+  border: 1.5px solid #fecaca;
+  border-radius: 16px;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.venta-anular-summary span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 10.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.venta-anular-summary strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.venta-anular-summary p {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.venta-anular-total {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 13px;
+  background: white;
+  color: #b91c1c;
+}
+
+.venta-anular-total small {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.venta-anular-total b {
+  display: block;
+  margin-top: 4px;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.venta-anular-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 13px;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.venta-anular-warning i {
+  margin-top: 1px;
+  font-size: 18px;
+}
+
+/* ==============================
+   DARK MODE
+============================== */
+
+.dark .venta-kpi-card,
+.dark .ventas-card,
+.dark .ventas-filtros-card,
+.dark .ventas-filtros-head,
+.dark .ventas-table td,
+.dark .venta-form-section,
+.dark .venta-producto-row,
+.dark .venta-info-card,
+.dark .venta-detail-section,
+.dark .venta-movimiento-item {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+.dark .ventas-table-wrap,
+.dark .venta-form-body,
+.dark .venta-detalle-body,
+.dark .venta-anular-body {
+  background: #0f172a;
+}
+
+.dark .ventas-table th,
+.dark .venta-productos-table th {
+  background: #1f2937;
+}
+
+.dark .venta-kpi-card strong,
+.dark .ventas-filtros-head h2,
+.dark .venta-code-cell strong,
+.dark .venta-productor-cell strong,
+.dark .venta-date-cell strong,
+.dark .venta-total-cell strong,
+.dark .venta-section-title div,
+.dark .venta-info-card p,
+.dark .venta-detail-section h4,
+.dark .venta-productos-table td strong,
+.dark .venta-movimiento-item strong {
+  color: #f9fafb;
+}
+
+.dark .venta-kpi-card span,
+.dark .venta-kpi-card small,
+.dark .ventas-filtros-head p,
+.dark .venta-code-cell small,
+.dark .venta-productor-cell small,
+.dark .venta-date-cell small,
+.dark .venta-total-cell small,
+.dark .venta-help,
+.dark .venta-info-card label,
+.dark .venta-info-card small,
+.dark .venta-detail-section p,
+.dark .venta-productos-table td,
+.dark .venta-productos-table td small,
+.dark .venta-movimiento-item small {
+  color: #9ca3af;
+}
+
+.dark .ventas-search,
+.dark .ventas-filtros-body select {
+  background: #111827;
+  border-color: #374151;
+}
+
+.dark .ventas-search input,
+.dark .ventas-filtros-body select {
+  color: #f9fafb;
+}
+
+.dark .ventas-table tbody tr:hover td {
+  background: rgba(22, 163, 74, .12);
+}
+
+.dark .ventas-success {
+  background: rgba(22, 163, 74, .13);
+  border-color: rgba(34, 197, 94, .25);
+  color: #86efac;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width: 1280px) {
+  .ventas-kpis {
+    grid-template-columns: repeat(2, minmax(190px, 1fr));
+  }
+
+  .venta-form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .venta-form-summary {
+    position: static;
+  }
+
+  .venta-producto-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .venta-detalle-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .ventas-header,
+  .ventas-kpis {
+    padding-inline: 14px;
+  }
+
+  .ventas-card {
+    margin-inline: 14px;
+  }
+
+  .ventas-filtros-head,
+  .ventas-filtros-body {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ventas-search,
+  .ventas-filtros-body select,
+  .ventas-filtros-body .btn {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .venta-form-grid,
+  .venta-producto-fields,
+  .venta-detalle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .venta-form-grid .span-2 {
+    grid-column: span 1;
+  }
+
+  .venta-producto-row {
+    grid-template-columns: 1fr;
+  }
+
+  .venta-remove-line {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .ventas-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .venta-form-header,
+  .venta-detalle-header,
+  .venta-anular-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 58px;
+  }
+
+  .ventas-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .venta-summary-total strong {
+    font-size: 22px;
+  }
+}
+/* ==============================
+   COMPROBANTE IMPRIMIBLE - VENTA
+============================== */
+
+.venta-comprobante-modal {
+  width: min(100%, 980px);
+  max-height: 92vh;
+  overflow: hidden;
+  border-radius: 22px;
+  animation: ventaModalIn .25s ease both;
+}
+
+.venta-comprobante-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--gris-200, #e5e7eb);
+  background: white;
+}
+
+.venta-comprobante-toolbar h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.venta-comprobante-toolbar p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.venta-comprobante-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.venta-comprobante-print-area {
+  max-height: calc(92vh - 78px);
+  overflow-y: auto;
+  padding: 22px;
+  background:
+    radial-gradient(circle at top left, rgba(22, 163, 74, .10), transparent 28%),
+    #e5e7eb;
+}
+
+/* HOJA */
+.venta-comprobante {
+  position: relative;
+  width: 100%;
+  max-width: 790px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  background: white;
+  color: #111827;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, .16);
+  overflow: hidden;
+}
+
+.venta-comprobante::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 8px;
+  background: linear-gradient(90deg, #064e3b, #16a34a, #86efac);
+}
+
+.venta-comprobante::after {
+  content: 'COMPROBANTE';
+  position: absolute;
+  right: -20px;
+  top: 210px;
+  transform: rotate(-90deg);
+  color: rgba(22, 163, 74, .07);
+  font-size: 44px;
+  font-weight: 950;
+  letter-spacing: .12em;
+}
+
+/* CABECERA */
+.venta-comprobante-head {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 210px;
+  gap: 20px;
+  align-items: start;
+  padding: 18px 0 18px;
+  border-bottom: 2px solid #14532d;
+}
+
+.venta-comprobante-head h1 {
+  margin: 0;
+  color: #064e3b;
+  font-size: 25px;
+  font-weight: 950;
+  line-height: 1.1;
+}
+
+.venta-comprobante-head p {
+  margin: 6px 0 3px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.venta-comprobante-head small {
+  display: inline-flex;
+  margin-top: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 9.5px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.venta-comprobante-numero {
+  padding: 14px 16px;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+  color: #166534;
+  text-align: right;
+}
+
+.venta-comprobante-numero span {
+  display: block;
+  color: #15803d;
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.venta-comprobante-numero strong {
+  display: block;
+  margin-top: 5px;
+  color: #064e3b;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+/* INFO */
+.venta-comprobante-info {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.venta-comprobante-info div {
+  padding: 11px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.venta-comprobante-info label {
+  display: block;
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.venta-comprobante-info p {
+  margin: 5px 0 0;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+/* PRODUCTOS */
+.venta-comprobante-section {
+  position: relative;
+  z-index: 1;
+  margin-top: 20px;
+}
+
+.venta-comprobante-section h2,
+.venta-comprobante-observaciones h2 {
+  margin: 0 0 10px;
+  color: #064e3b;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.venta-comprobante-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.venta-comprobante-table th {
+  padding: 10px 11px;
+  background: #064e3b;
+  color: white;
+  font-size: 10px;
+  font-weight: 950;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.venta-comprobante-table td {
+  padding: 10px 11px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 750;
+  vertical-align: top;
+}
+
+.venta-comprobante-table tbody tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+.venta-comprobante-table td strong {
+  display: block;
+  color: #111827;
+  font-weight: 950;
+}
+
+.venta-comprobante-table td small {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.venta-comprobante-empty {
+  text-align: center;
+  color: #94a3b8 !important;
+  font-weight: 850 !important;
+}
+
+/* TOTALES */
+.venta-comprobante-totales {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 310px);
+  margin: 18px 0 0 auto;
+  display: grid;
+  gap: 7px;
+}
+
+.venta-comprobante-totales div {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.venta-comprobante-totales .total {
+  padding: 12px;
+  background: linear-gradient(135deg, #064e3b, #16a34a);
+  color: white;
+  font-size: 15px;
+}
+
+.venta-comprobante-totales .total strong {
+  font-size: 17px;
+}
+
+/* OBSERVACIONES */
+.venta-comprobante-observaciones {
+  position: relative;
+  z-index: 1;
+  margin-top: 18px;
+  padding: 13px;
+  border-left: 4px solid #16a34a;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.venta-comprobante-observaciones p {
+  margin: 0;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+/* FIRMAS */
+.venta-comprobante-firmas {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 70px;
+  margin-top: 48px;
+}
+
+.venta-comprobante-firmas span {
+  display: block;
+  border-top: 1.5px solid #111827;
+}
+
+.venta-comprobante-firmas p {
+  margin: 8px 0 0;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 850;
+  text-align: center;
+}
+
+/* PIE */
+.venta-comprobante-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px dashed #cbd5e1;
+  color: #64748b;
+  text-align: center;
+}
+
+.venta-comprobante-footer p {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.venta-comprobante-footer small {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+}
+
+/* IMPRESIÓN */
+@media print {
+  html,
+  body {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .venta-comprobante-modal,
+  .venta-comprobante-modal *,
+  .venta-comprobante-print-area,
+  .venta-comprobante-print-area *,
+  .venta-comprobante,
+  .venta-comprobante * {
+    visibility: visible !important;
+  }
+
+  .venta-modal-overlay,
+  .modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    overflow: visible !important;
+  }
+
+  .venta-comprobante-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 210mm !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: white !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .venta-comprobante-toolbar,
+  .no-print {
+    display: none !important;
+  }
+
+  .venta-comprobante-print-area {
+    position: fixed !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    overflow: visible !important;
+  }
+
+  .venta-comprobante {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 14mm 13mm !important;
+    border-radius: 0 !important;
+    background: white !important;
+    color: #111827 !important;
+    box-shadow: none !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .venta-comprobante::after {
+    display: none !important;
+  }
+
+  .venta-comprobante-head {
+    padding-top: 0 !important;
+  }
+
+  .venta-comprobante-info {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  .venta-comprobante-table th {
+    background: #064e3b !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .venta-comprobante-totales .total,
+  .venta-comprobante-head small,
+  .venta-comprobante-numero {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
+
+/* DARK SOLO EN PANTALLA */
+.dark .venta-comprobante-toolbar {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+.dark .venta-comprobante-toolbar h3 {
+  color: #f9fafb;
+}
+
+.dark .venta-comprobante-toolbar p {
+  color: #9ca3af;
+}

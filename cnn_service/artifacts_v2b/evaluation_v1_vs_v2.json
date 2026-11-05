@@ -1,0 +1,393 @@
+{
+  "v1": {
+    "tanzania_test": {
+      "n": 623,
+      "accuracy": 0.5811,
+      "f1_macro": 0.5829,
+      "por_clase": {
+        "early_blight": {
+          "n": 145,
+          "precision": 0.3719,
+          "recall": 0.931,
+          "f1": 0.5315
+        },
+        "healthy": {
+          "n": 273,
+          "precision": 0.9856,
+          "recall": 0.5018,
+          "f1": 0.665
+        },
+        "late_blight": {
+          "n": 205,
+          "precision": 0.7438,
+          "recall": 0.439,
+          "f1": 0.5521
+        }
+      },
+      "pred_como_no_papa": null,
+      "confianza_media_si_acierta": 0.8979,
+      "confianza_media_si_falla": 0.7772,
+      "ece": 0.2663,
+      "servicio": {
+        "cobertura": 0.9358,
+        "accuracy_si_se_entrega": 0.6003,
+        "diagnosticos_erroneos_entregados": 233
+      },
+      "matriz": {
+        "filas_reales": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "valores": [
+          [
+            135,
+            0,
+            10
+          ],
+          [
+            115,
+            137,
+            21
+          ],
+          [
+            113,
+            2,
+            90
+          ]
+        ]
+      }
+    },
+    "peru_cajamarca": {
+      "n": 160,
+      "accuracy": 0.475,
+      "f1_macro": 0.4216,
+      "por_clase": {
+        "healthy": {
+          "n": 72,
+          "precision": 0.75,
+          "recall": 0.0833,
+          "f1": 0.15
+        },
+        "late_blight": {
+          "n": 88,
+          "precision": 0.614,
+          "recall": 0.7955,
+          "f1": 0.6931
+        }
+      },
+      "pred_como_no_papa": null,
+      "confianza_media_si_acierta": 0.9007,
+      "confianza_media_si_falla": 0.7596,
+      "ece": 0.3516,
+      "servicio": {
+        "cobertura": 0.875,
+        "accuracy_si_se_entrega": 0.5214,
+        "diagnosticos_erroneos_entregados": 67
+      },
+      "matriz": {
+        "filas_reales": [
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "valores": [
+          [
+            22,
+            6,
+            44
+          ],
+          [
+            16,
+            2,
+            70
+          ]
+        ]
+      }
+    },
+    "plantdoc_papa": {
+      "n": 75,
+      "accuracy": 0.56,
+      "f1_macro": 0.5521,
+      "por_clase": {
+        "early_blight": {
+          "n": 40,
+          "precision": 0.64,
+          "recall": 0.4,
+          "f1": 0.4923
+        },
+        "late_blight": {
+          "n": 35,
+          "precision": 0.52,
+          "recall": 0.7429,
+          "f1": 0.6118
+        }
+      },
+      "pred_como_no_papa": null,
+      "confianza_media_si_acierta": 0.9002,
+      "confianza_media_si_falla": 0.894,
+      "ece": 0.3542,
+      "servicio": {
+        "cobertura": 0.9733,
+        "accuracy_si_se_entrega": 0.5616,
+        "diagnosticos_erroneos_entregados": 32
+      },
+      "matriz": {
+        "filas_reales": [
+          "early_blight",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "valores": [
+          [
+            16,
+            0,
+            24
+          ],
+          [
+            9,
+            0,
+            26
+          ]
+        ]
+      }
+    },
+    "otros_cultivos": {
+      "n": 213,
+      "clasificadas_como_no_papa": 0.0,
+      "falso_diagnostico_entregado": 0.9155,
+      "confianza_media": 0.8583
+    }
+  },
+  "v2": {
+    "tanzania_test": {
+      "n": 623,
+      "accuracy": 0.9759,
+      "f1_macro": 0.9737,
+      "por_clase": {
+        "early_blight": {
+          "n": 145,
+          "precision": 0.9786,
+          "recall": 0.9448,
+          "f1": 0.9614
+        },
+        "healthy": {
+          "n": 273,
+          "precision": 0.9963,
+          "recall": 0.9853,
+          "f1": 0.9908
+        },
+        "late_blight": {
+          "n": 205,
+          "precision": 0.9528,
+          "recall": 0.9854,
+          "f1": 0.9688
+        }
+      },
+      "pred_como_no_papa": 0.0016,
+      "confianza_media_si_acierta": 0.9868,
+      "confianza_media_si_falla": 0.8101,
+      "ece": 0.0119,
+      "servicio": {
+        "cobertura": 0.9968,
+        "accuracy_si_se_entrega": 0.9775,
+        "diagnosticos_erroneos_entregados": 14
+      },
+      "matriz": {
+        "filas_reales": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            137,
+            1,
+            7,
+            0
+          ],
+          [
+            1,
+            269,
+            3,
+            0
+          ],
+          [
+            2,
+            0,
+            202,
+            1
+          ]
+        ]
+      }
+    },
+    "peru_cajamarca": {
+      "n": 160,
+      "accuracy": 0.9812,
+      "f1_macro": 0.9839,
+      "por_clase": {
+        "healthy": {
+          "n": 72,
+          "precision": 0.9726,
+          "recall": 0.9861,
+          "f1": 0.9793
+        },
+        "late_blight": {
+          "n": 88,
+          "precision": 1.0,
+          "recall": 0.9773,
+          "f1": 0.9885
+        }
+      },
+      "pred_como_no_papa": 0.0063,
+      "confianza_media_si_acierta": 0.9755,
+      "confianza_media_si_falla": 0.5664,
+      "ece": 0.0218,
+      "servicio": {
+        "cobertura": 0.9812,
+        "accuracy_si_se_entrega": 0.9873,
+        "diagnosticos_erroneos_entregados": 2
+      },
+      "matriz": {
+        "filas_reales": [
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            0,
+            71,
+            0,
+            1
+          ],
+          [
+            0,
+            2,
+            86,
+            0
+          ]
+        ]
+      }
+    },
+    "plantdoc_papa": {
+      "n": 75,
+      "accuracy": 0.4533,
+      "f1_macro": 0.5249,
+      "por_clase": {
+        "early_blight": {
+          "n": 40,
+          "precision": 0.7059,
+          "recall": 0.3,
+          "f1": 0.4211
+        },
+        "late_blight": {
+          "n": 35,
+          "precision": 0.6286,
+          "recall": 0.6286,
+          "f1": 0.6286
+        }
+      },
+      "pred_como_no_papa": 0.3067,
+      "confianza_media_si_acierta": 0.7474,
+      "confianza_media_si_falla": 0.7337,
+      "ece": 0.3372,
+      "servicio": {
+        "cobertura": 0.7733,
+        "accuracy_si_se_entrega": 0.4828,
+        "diagnosticos_erroneos_entregados": 30
+      },
+      "matriz": {
+        "filas_reales": [
+          "early_blight",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            12,
+            0,
+            13,
+            15
+          ],
+          [
+            5,
+            0,
+            22,
+            8
+          ]
+        ]
+      }
+    },
+    "otros_cultivos": {
+      "n": 213,
+      "clasificadas_como_no_papa": 0.9155,
+      "falso_diagnostico_entregado": 0.0469,
+      "confianza_media": 0.9298
+    }
+  },
+  "filtros_servicio": {
+    "tanzania_test": {
+      "n": 623,
+      "rechazadas": 0.9406099518459069,
+      "motivos": {
+        "La fotografía está demasiado borrosa o desenf": 586
+      }
+    },
+    "peru_cajamarca": {
+      "n": 160,
+      "rechazadas": 0.13125,
+      "motivos": {
+        "La imagen tiene una resolución demasiado baja": 2,
+        "La fotografía está demasiado borrosa o desenf": 19
+      }
+    },
+    "plantdoc_papa": {
+      "n": 75,
+      "rechazadas": 0.44,
+      "motivos": {
+        "La fotografía está demasiado borrosa o desenf": 32,
+        "La imagen tiene una resolución demasiado baja": 1
+      }
+    },
+    "otros_cultivos": {
+      "n": 213,
+      "rechazadas": 0.6338028169014085,
+      "motivos": {
+        "La fotografía está demasiado borrosa o desenf": 102,
+        "La imagen tiene una resolución demasiado baja": 13,
+        "La fotografía no parece corresponder a una ho": 2,
+        "La fotografía está demasiado clara o sobreexp": 18
+      }
+    }
+  }
+}
