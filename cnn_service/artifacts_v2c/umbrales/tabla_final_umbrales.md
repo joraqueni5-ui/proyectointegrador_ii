@@ -42,3 +42,36 @@ Acierto del sistema = papa: entregada y con la clase correcta · otro cultivo: r
 | plantdoc_papa | 0 | 13 | 0.000244 | sí |
 | otros_cultivos | 19 | 13 | 0.376759 | no |
 | todos_los_conjuntos | 61 | 103 | 0.001367 | sí |
+
+## Decisión
+
+**Se mantiene v2b (modelo activo) con confianza mínima 55 % y margen mínimo 8.** No se cambia el modelo, la ruta por defecto ni la versión de `/health`.
+
+Tabla final (prueba, una sola evaluación; las cifras y el McNemar son los de las secciones anteriores):
+
+| Conjunto | v2c-ResNet50 (80 % / 0) | v2b activo (55 % / 8) | v2c-EfficientNetB0 (55 % / 8) |
+|---|---|---|---|
+| Tanzania | 96,8 % | 98,4 % | 98,5 % |
+| Etiopía | 76,0 % | 81,3 % | 78,5 % |
+| Perú | 96,2 % | 96,9 % | 97,5 % |
+| PlantDoc | 25,3 % | 37,3 % | 42,7 % |
+| Otros cultivos rechazados | 95,8 % | 95,8 % | 94,5 % |
+
+McNemar (v2c con umbrales nuevos contra v2b): total p = 3·10⁻⁶, con 38 casos a favor de v2c y 92 a favor de v2b; Tanzania p = 0,0002, Etiopía p = 0,004 y PlantDoc p = 0,022, todos a favor de v2b; Perú y otros cultivos sin diferencia significativa.
+
+### Conclusiones
+
+1. **La ventaja de v2c en Etiopía dependía de no rechazar.** Sin umbrales, v2c acierta el 95,8 % en Etiopía, pero rechaza solo el 85,8 % de otros cultivos. Al exigir un rechazo equivalente al de v2b (≥ 93 %), su cobertura en Etiopía baja a 76 % y la ventaja desaparece.
+2. **Con rechazo equivalente, v2b es mejor en el total.** La diferencia es significativa a favor de v2b (p = 3·10⁻⁶).
+3. **Se conserva v2b** porque ya cumple el criterio de rechazo con umbrales moderados, sin perder cobertura.
+
+### Limitaciones
+
+- El criterio "F1 macro sobre las fotos entregadas" mejora cuando se entrega menos, y empuja la elección al borde de la grilla (confianza 80 %, el máximo probado; margen 0).
+- El conjunto de validación se usó también para calibrar la temperatura del modelo, por lo que no es totalmente independiente.
+- Los conjuntos externos son pequeños (PlantDoc, 75 fotos; Perú, 160), y las diferencias allí son poco precisas.
+
+### Trabajo futuro
+
+- Reentrenar v2c con más ejemplos de "otros cultivos", para conservar su generalización en Etiopía y rechazar bien.
+- Evaluar EfficientNetB0 para uso en celular (5,3 veces más liviano y ~17 % más rápido en CPU).
