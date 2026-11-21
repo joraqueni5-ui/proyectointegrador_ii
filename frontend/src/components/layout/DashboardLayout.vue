@@ -28,6 +28,7 @@ import TopBar from './TopBar.vue';
 import ToastHost from '@/components/ui/ToastHost.vue';
 import alertaService from '@/services/modules/alertaService';
 import authService from '@/services/modules/authService';
+import { cargarConfigAgricola } from '@/utils/campana';
 import usuarioService from '@/services/modules/usuarioService';
 import { obtenerPermisos, tienePermiso } from '@/utils/permisos';
 
@@ -59,6 +60,8 @@ async function cargarDatosLayout() {
 
     userData.value = normalizarUsuario(profileRes.data);
     localStorage.setItem('user_data', JSON.stringify(userData.value));
+
+    cargarConfigAgricola(); // mes de inicio de la campaña (config del backend); no bloquea la carga
 
     if (tienePermiso(userData.value, 'ver_alertas')) {
       const res = await alertaService.noLeidas();

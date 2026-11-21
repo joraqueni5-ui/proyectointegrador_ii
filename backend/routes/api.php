@@ -60,6 +60,14 @@ Route::middleware(['auth:sanctum', 'usuario.activo'])->group(function () {
     Route::get('/profile', [UserController::class, 'profile']);
     Route::get('/buscar', BuscarController::class)->middleware('throttle:buscar');
 
+    // Configuración agrícola de solo lectura (campaña) para que el frontend use la misma regla.
+    Route::get('/configuracion/agricola', function () {
+        return response()->json([
+            'mes_inicio_campana' => \App\Support\Campana::mesInicio(),
+            'campana_actual' => \App\Support\Campana::resumenDe(),
+        ]);
+    });
+
     Route::get('/version', function () {
         return response()->json([
             'data' => [

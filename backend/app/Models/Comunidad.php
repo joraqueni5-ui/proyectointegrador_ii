@@ -19,7 +19,12 @@ class Comunidad extends Model
         'activo',
     ];
 
-    protected $casts = ['activo' => 'boolean'];
+    protected $casts = [
+        'activo' => 'boolean',
+        'superficie_total_ha' => 'float',
+        'parcelas_count' => 'integer',
+        'parcelas_con_alerta' => 'integer',
+    ];
 
     public function productores()
     {

@@ -292,17 +292,11 @@ import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import alertaService from '@/services/modules/alertaService';
 import dashboardService from '@/services/modules/dashboardService';
-import L from 'leaflet';
+import L from '@/utils/leafletIconos';
 import 'leaflet/dist/leaflet.css';
 import Chart from 'chart.js/auto';
 import DashboardComercial from '@/components/dashboard/DashboardComercial.vue';
 
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-});
 
 const router = useRouter();
 

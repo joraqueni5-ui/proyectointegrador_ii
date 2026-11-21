@@ -28,3 +28,41 @@
   color: var(--texto-secundario);
   font-size: 13px;
 }
+
+/* ---- Páginas de módulo (patrón de listado) ---- */
+.pagina {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  padding: 24px 28px 40px;
+}
+
+.pagina-acciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.rejilla-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+}
+
+.aviso-error {
+  margin: 0;
+  padding: 12px 16px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .pagina {
+    padding: 16px 16px 32px;
+    gap: 16px;
+  }
+}

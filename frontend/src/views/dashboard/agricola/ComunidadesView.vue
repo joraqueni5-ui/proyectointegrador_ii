@@ -1,714 +1,391 @@
 <template>
-  <div class="comunidades-page fade-in">
-    <!-- Contextbar -->
-    <div class="cbar">
-      <div class="bread">
-        <i class="ti ti-home" style="font-size:14px"></i>
-        <span>›</span>
-        <span>Módulo Agrícola</span>
-        <span>›</span>
-        <span class="cur">Comunidades</span>
+  <div class="pagina">
+    <PageHeader
+      titulo="Comunidades"
+      :resumen="resumen"
+      :migas="[{ texto: 'Inicio', to: '/dashboard' }, { texto: 'Campo' }, { texto: 'Comunidades' }]"
+    >
+      <div class="pagina-acciones">
+        <BaseButton variante="secundario" icono="ti-file-spreadsheet" :disabled="!filtradas.length" @click="exportar('excel')">Excel</BaseButton>
+        <BaseButton variante="secundario" icono="ti-file-type-pdf" :disabled="!filtradas.length" @click="exportar('pdf')">PDF</BaseButton>
+        <BaseButton icono="ti-plus" @click="abrirCrear">Nueva comunidad</BaseButton>
       </div>
+    </PageHeader>
 
-      <div class="cbar-right">
-        <button class="btn btn-s" type="button" @click="exportComunidadesExcel">
-          <i class="ti ti-file-spreadsheet"></i>
-          Excel
-        </button>
+    <p v-if="errorPagina" class="aviso-error" role="alert">{{ errorPagina }}</p>
 
-        <button class="btn btn-s" type="button" @click="exportComunidadesPdf">
-          <i class="ti ti-file-type-pdf"></i>
-          PDF
-        </button>
-        <button class="btn btn-p" type="button" @click="openCreate">
-          <i class="ti ti-plus"></i>
-          Nueva comunidad
-        </button>
-      </div>
+    <div class="rejilla-kpi">
+      <KpiCard etiqueta="Comunidades activas" :valor="numero(activas, { decimales: 0 })" :contexto="`de ${comunidades.length} registradas`" icono="ti-building-community" />
+      <KpiCard etiqueta="Productores" :valor="numero(totalProductores, { decimales: 0 })" contexto="en comunidades activas" icono="ti-users" />
+      <KpiCard
+        etiqueta="Parcelas"
+        :valor="numero(totalParcelas, { decimales: 0 })"
+        :contexto="totalConAlerta > 0 ? `${totalConAlerta} con alerta activa` : 'ninguna con alerta activa'"
+        :alerta="totalConAlerta > 0"
+        icono="ti-map-2"
+      />
+      <KpiCard etiqueta="Superficie total" :valor="hectareas(totalSuperficie)" contexto="de parcelas no inactivas" icono="ti-ruler-2" />
     </div>
 
-    <!-- Header -->
-    <div class="pg-header comunidades-header">
-      <div>
-        <div class="pg-title">Comunidades</div>
-        <div class="pg-sub">
-          Administra comunidades agrícolas, ubicación territorial y productores asociados.
-        </div>
-      </div>
+    <FilterBar
+      v-model:busqueda="busqueda"
+      v-model:activo="filtro"
+      placeholder="Comunidad, municipio, provincia o departamento"
+      :filtros="pildoras"
+      :filtros-extra="departamento ? 1 : 0"
+    >
+      <template #mas>
+        <BaseSelect v-model="departamento" etiqueta="Departamento" limpiable :opciones="opcionesDepartamento" placeholder="Todos los departamentos" />
+      </template>
+    </FilterBar>
 
-      <button class="btn btn-s" type="button" :disabled="loading" @click="fetchComunidades">
-        <i class="ti ti-refresh"></i>
-        {{ loading ? 'Actualizando...' : 'Actualizar' }}
-      </button>
-    </div>
+    <DataTable
+      :columnas="columnas"
+      :filas="filtradas"
+      :total="comunidades.length"
+      :por-pagina="1000"
+      :cargando="cargando"
+      :acciones="acciones"
+      :resaltar-id="resaltado"
+      vacio-icono="ti-building-community"
+      :vacio-titulo="comunidades.length ? 'Ninguna comunidad coincide con la búsqueda' : 'Todavía no hay comunidades'"
+      :vacio-texto="comunidades.length ? 'Prueba con otro nombre o quita los filtros.' : 'Registra la primera comunidad para poder asociar productores y parcelas.'"
+      @ver="abrirDetalle"
+      @accion="alAccion"
+    >
+      <template #celda-nombre_comunidad="{ fila }">
+        <strong class="vc-nombre">{{ fila.nombre_comunidad }}</strong>
+        <span class="vc-secundario">{{ [fila.municipio, fila.provincia].filter(Boolean).join(' · ') || '—' }}</span>
+        <button v-if="!tieneUbicacion(fila)" type="button" class="vc-sin-ubicacion" @click="abrirEditar(fila)">Sin ubicación · completar</button>
+      </template>
+      <template #celda-productores_count="{ fila }">{{ numero(fila.productores_count ?? 0, { decimales: 0 }) }}</template>
+      <template #celda-parcelas_count="{ fila }">{{ numero(fila.parcelas_count ?? 0, { decimales: 0 }) }}</template>
+      <template #celda-superficie_total_ha="{ fila }">{{ hectareas(fila.superficie_total_ha ?? 0) }}</template>
+      <template #celda-altitud_msnm="{ fila }">{{ fila.altitud_msnm ? altitud(fila.altitud_msnm) : '—' }}</template>
+      <template #celda-parcelas_con_alerta="{ fila }">
+        <span :class="['vc-alerta', { 'hay-alerta': fila.parcelas_con_alerta > 0 }]">{{ numero(fila.parcelas_con_alerta ?? 0, { decimales: 0 }) }}</span>
+      </template>
+      <template #celda-activo="{ fila }"><StatusBadge :estado="fila.activo ? 'Activa' : 'Inactiva'" /></template>
+    </DataTable>
 
-    <!-- Error general -->
-    <div v-if="pageError" class="comunidades-error">
-      {{ pageError }}
-    </div>
-
-    <!-- Stats -->
-    <div v-if="!loading" class="comunidades-stats mb20">
-      <div class="sc">
-        <div class="slabel">Total comunidades</div>
-        <div class="sval">{{ comunidades.length }}</div>
-        <div class="ssub">
-          <i class="ti ti-building-community up"></i>
-          registradas
-        </div>
-      </div>
-
-      <div class="sc blue">
-        <div class="slabel">Activas</div>
-        <div class="sval">{{ comunidadesActivas }}</div>
-        <div class="ssub">
-          <i class="ti ti-check up"></i>
-          en operación
-        </div>
-      </div>
-
-      <div class="sc amber">
-        <div class="slabel">Total productores</div>
-        <div class="sval">{{ totalProductores }}</div>
-        <div class="ssub">
-          <i class="ti ti-users"></i>
-          vinculados
-        </div>
-      </div>
-
-      <div class="sc purple">
-        <div class="slabel">Con GPS</div>
-        <div class="sval">{{ comunidadesConGps }}</div>
-        <div class="ssub">
-          <i class="ti ti-map-pin"></i>
-          georreferenciadas
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabla -->
-    <div class="card comunidades-card">
-      <div class="comunidades-toolbar">
-        <div>
-          <h3>Listado de comunidades</h3>
-          <p>Filtra comunidades por estado, departamento, GPS o búsqueda general.</p>
-        </div>
-
-        <div class="comunidades-filters">
-          <select v-model="filtroEstado" class="comunidades-select">
-            <option value="">Todas</option>
-            <option value="true">Activas</option>
-            <option value="false">Inactivas</option>
-          </select>
-
-          <select v-model="filtroDepartamento" class="comunidades-select">
-            <option value="">Todos los departamentos</option>
-            <option value="La Paz">La Paz</option>
-            <option value="Cochabamba">Cochabamba</option>
-            <option value="Potosí">Potosí</option>
-            <option value="Oruro">Oruro</option>
-            <option value="Santa Cruz">Santa Cruz</option>
-            <option value="Tarija">Tarija</option>
-            <option value="Beni">Beni</option>
-            <option value="Pando">Pando</option>
-            <option value="Chuquisaca">Chuquisaca</option>
-          </select>
-
-          <select v-model="filtroGps" class="comunidades-select">
-            <option value="">GPS: todos</option>
-            <option value="true">Con GPS</option>
-            <option value="false">Sin GPS</option>
-          </select>
-
-          <div class="search-box comunidades-search">
-            <i class="ti ti-search"></i>
-            <input v-model="search" placeholder="Buscar comunidad..." />
-          </div>
-        </div>
-      </div>
-
-      <div v-if="loading" class="loading-state">
-        <div class="spinner"></div>
-        <span>Cargando comunidades...</span>
-      </div>
-
-      <div v-else class="comunidades-table-wrap">
-        <table class="tbl comunidades-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Comunidad</th>
-              <th>Municipio</th>
-              <th>Provincia</th>
-              <th>Departamento</th>
-              <th>Altitud</th>
-              <th>Productores</th>
-              <th>GPS</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr v-for="c in filteredComunidades" :key="c.id">
-              <td class="comunidad-id">
-                {{ c.id }}
-              </td>
-
-              <td>
-                <div class="comunidad-name-cell">
-                  <div class="comunidad-avatar">
-                    {{ c.nombre_comunidad?.charAt(0)?.toUpperCase() || 'C' }}
-                  </div>
-
-                  <div>
-                    <strong>{{ c.nombre_comunidad }}</strong>
-                    <small>{{ c.activo ? 'Comunidad activa' : 'Comunidad inactiva' }}</small>
-                  </div>
-                </div>
-              </td>
-
-              <td>{{ c.municipio || '—' }}</td>
-              <td>{{ c.provincia || '—' }}</td>
-              <td>{{ c.departamento || '—' }}</td>
-
-              <td>
-                <span v-if="c.altitud_msnm" class="b bb">
-                  {{ Number(c.altitud_msnm).toLocaleString('es-BO') }} m
-                </span>
-                <span v-else class="muted">—</span>
-              </td>
-
-              <td>
-                <span class="b bg">
-                  {{ c.productores_count ?? 0 }} productores
-                </span>
-              </td>
-
-              <td>
-                <span class="b" :class="tieneGps(c) ? 'bg' : 'badge-gray'">
-                  <i :class="tieneGps(c) ? 'ti ti-map-pin' : 'ti ti-map-off'"></i>
-                  {{ tieneGps(c) ? 'Sí' : 'No' }}
-                </span>
-              </td>
-
-              <td>
-                <span class="b" :class="c.activo ? 'bg' : 'bgr'">
-                  <i :class="c.activo ? 'ti ti-check' : 'ti ti-x'"></i>
-                  {{ c.activo ? 'Activa' : 'Inactiva' }}
-                </span>
-              </td>
-
-              <td>
-                <div class="comunidades-actions">
-                  <button
-                    class="comunidad-action view"
-                    type="button"
-                    title="Ver detalle"
-                    :disabled="saving"
-                    @click="openView(c)"
-                  >
-                    <i class="ti ti-eye"></i>
-                  </button>
-
-                  <button
-                    class="comunidad-action edit"
-                    type="button"
-                    title="Editar"
-                    :disabled="saving"
-                    @click="openEdit(c)"
-                  >
-                    <i class="ti ti-pencil"></i>
-                  </button>
-
-                  <button
-                    v-if="c.activo"
-                    class="comunidad-action delete"
-                    type="button"
-                    title="Desactivar"
-                    :disabled="saving"
-                    @click="openDelete(c)"
-                  >
-                    <i class="ti ti-building-community"></i>
-                  </button>
-
-                  <button
-                    v-else
-                    class="comunidad-action activate"
-                    type="button"
-                    title="Activar"
-                    :disabled="saving"
-                    @click="handleActivate(c)"
-                  >
-                    <i class="ti ti-circle-check"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-
-            <tr v-if="filteredComunidades.length === 0">
-              <td colspan="10">
-                <div class="comunidades-empty">
-                  <i class="ti ti-building-community"></i>
-                  <span>No se encontraron comunidades</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <ComunidadFormModal
-      v-if="showFormModal"
-      :mode="modalMode"
-      :comunidad="selectedComunidad"
-      :saving="saving"
-      :error="formError"
-      @close="closeFormModal"
-      @save="handleSave"
+    <ComunidadFormDrawer
+      v-model="formAbierto"
+      :comunidad="comunidadEditar"
+      :guardando="guardando"
+      :errores-servidor="erroresServidor"
+      :error-general="errorGeneral"
+      @guardar="guardar"
     />
 
-    <ComunidadViewModal
-      v-if="showViewModal"
-      :comunidad="selectedComunidad"
-      @close="closeViewModal"
-    />
+    <ComunidadDetailDrawer v-model="detalleAbierto" :comunidad="comunidadDetalle" @editar="editarDesdeDetalle" @cambiar-estado="pedirCambioEstado" />
 
-    <ComunidadDeleteModal
-      v-if="showDeleteModal"
-      :comunidad="selectedComunidad"
-      :saving="saving"
-      :error="deleteError"
-      @close="closeDeleteModal"
-      @confirm="handleDelete"
-    />
+    <ConfirmDialog
+      v-model="confirmarAbierto"
+      :titulo="`¿Desactivar la comunidad ${comunidadConfirmar?.nombre_comunidad || ''}?`"
+      texto-confirmar="Sí, desactivar"
+      texto-cargando="Desactivando…"
+      :cargando="cambiandoEstado"
+      @confirmar="desactivar"
+    >
+      Dejará de aparecer en los formularios nuevos. No se borra ningún dato y se puede volver a activar cuando quieras. Si todavía tiene
+      productores activos, el sistema no lo permitirá.
+    </ConfirmDialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import PageHeader from '@/components/ui/PageHeader.vue';
+import BaseButton from '@/components/ui/BaseButton.vue';
+import BaseSelect from '@/components/ui/BaseSelect.vue';
+import KpiCard from '@/components/ui/KpiCard.vue';
+import FilterBar from '@/components/ui/FilterBar.vue';
+import DataTable from '@/components/ui/DataTable.vue';
+import StatusBadge from '@/components/ui/StatusBadge.vue';
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue';
+import ComunidadFormDrawer from '@/components/comunidades/ComunidadFormDrawer.vue';
+import ComunidadDetailDrawer from '@/components/comunidades/ComunidadDetailDrawer.vue';
 import comunidadService from '@/services/modules/comunidadService';
 import { obtenerMensajeError } from '@/services/errorService';
-import ComunidadFormModal from '@/components/comunidades/ComunidadFormModal.vue';
-import ComunidadViewModal from '@/components/comunidades/ComunidadViewModal.vue';
-import ComunidadDeleteModal from '@/components/comunidades/ComunidadDeleteModal.vue';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import '@/styles/comunidades.css';
+import { useToast } from '@/composables/useToast';
 import { normalizeList } from '@/utils/datos';
+import { altitud, hectareas, numero } from '@/utils/formato';
+import { usuarioGuardado } from '@/utils/permisos';
+
+const route = useRoute();
+const toast = useToast();
 
 const comunidades = ref([]);
-const loading = ref(true);
-const saving = ref(false);
+const cargando = ref(true);
+const errorPagina = ref('');
+const busqueda = ref(String(route.query.buscar || ''));
+const filtro = ref('todas');
+const departamento = ref(null);
+const resaltado = ref(null);
 
-const search = ref('');
-const filtroEstado = ref('');
-const filtroDepartamento = ref('');
-const filtroGps = ref('');
-
-const pageError = ref('');
-const formError = ref('');
-const deleteError = ref('');
-
-const showFormModal = ref(false);
-const showViewModal = ref(false);
-const showDeleteModal = ref(false);
-
-const modalMode = ref('create');
-const selectedComunidad = ref(null);
-
-const comunidadesActivas = computed(() => {
-  return comunidades.value.filter((c) => Boolean(c.activo)).length;
-});
-
-const comunidadesConGps = computed(() => {
-  return comunidades.value.filter((c) => tieneGps(c)).length;
-});
-
-const totalProductores = computed(() => {
-  return comunidades.value.reduce((sum, c) => sum + (c.productores_count ?? 0), 0);
-});
-
-const filteredComunidades = computed(() => {
-  const q = search.value.trim().toLowerCase();
-
-  return comunidades.value.filter((c) => {
-    const texto = [
-      c.nombre_comunidad,
-      c.municipio,
-      c.provincia,
-      c.departamento,
-      c.altitud_msnm,
-      c.latitud,
-      c.longitud,
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase();
-
-    const matchSearch = !q || texto.includes(q);
-
-    const matchEstado =
-      filtroEstado.value === ''
-        ? true
-        : Boolean(c.activo) === (filtroEstado.value === 'true');
-
-    const matchDepartamento =
-      !filtroDepartamento.value || c.departamento === filtroDepartamento.value;
-
-    const matchGps =
-      filtroGps.value === ''
-        ? true
-        : tieneGps(c) === (filtroGps.value === 'true');
-
-    return matchSearch && matchEstado && matchDepartamento && matchGps;
-  });
-});
-
-const currentUser = computed(() => {
-  try {
-    return JSON.parse(localStorage.getItem('user_data') || '{}');
-  } catch {
-    return {};
-  }
-});
-
-onMounted(fetchComunidades);
-
-async function fetchComunidades() {
-  loading.value = true;
-  pageError.value = '';
+// ---------- datos
+async function cargar() {
+  cargando.value = true;
+  errorPagina.value = '';
 
   try {
     const { data } = await comunidadService.listar({ todos: 1 });
+
     comunidades.value = normalizeList(data);
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'No se pudieron cargar las comunidades.');
+  } catch (e) {
+    errorPagina.value = obtenerMensajeError(e, 'No se pudieron cargar las comunidades. Revisa tu conexión e intenta de nuevo.');
     comunidades.value = [];
   } finally {
-    loading.value = false;
+    cargando.value = false;
   }
 }
 
-function openCreate() {
-  selectedComunidad.value = null;
-  modalMode.value = 'create';
-  showFormModal.value = true;
+onMounted(cargar);
+watch(() => route.query.buscar, (q) => (busqueda.value = String(q || '')));
+
+const tieneUbicacion = (c) => c.latitud !== null && c.latitud !== undefined && c.latitud !== '' && c.longitud !== null && c.longitud !== undefined && c.longitud !== '';
+
+// ---------- indicadores
+const activasLista = computed(() => comunidades.value.filter((c) => c.activo));
+const activas = computed(() => activasLista.value.length);
+const suma = (lista, campo) => lista.reduce((s, c) => s + Number(c[campo] || 0), 0);
+const totalProductores = computed(() => suma(activasLista.value, 'productores_count'));
+const totalParcelas = computed(() => suma(activasLista.value, 'parcelas_count'));
+const totalConAlerta = computed(() => suma(activasLista.value, 'parcelas_con_alerta'));
+const totalSuperficie = computed(() => suma(activasLista.value, 'superficie_total_ha'));
+
+const resumen = computed(() =>
+  cargando.value
+    ? ''
+    : `${numero(comunidades.value.length, { decimales: 0 })} comunidades · ${numero(totalProductores.value, { decimales: 0 })} productores · ${numero(totalParcelas.value, { decimales: 0 })} parcelas en ${hectareas(totalSuperficie.value)}`
+);
+
+// ---------- filtros
+const pildoras = computed(() => [
+  { valor: 'todas', etiqueta: 'Todas', conteo: comunidades.value.length },
+  { valor: 'activas', etiqueta: 'Activas', conteo: activas.value },
+  { valor: 'inactivas', etiqueta: 'Inactivas', conteo: comunidades.value.length - activas.value },
+  { valor: 'sin_ubicacion', etiqueta: 'Sin ubicación', conteo: comunidades.value.filter((c) => !tieneUbicacion(c)).length },
+]);
+
+const opcionesDepartamento = computed(() =>
+  [...new Set(comunidades.value.map((c) => c.departamento).filter(Boolean))].sort().map((d) => ({ valor: d, etiqueta: d }))
+);
+
+const sinTildes = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+const filtradas = computed(() => {
+  const q = sinTildes(busqueda.value).trim();
+
+  return comunidades.value.filter((c) => {
+    const texto = sinTildes([c.nombre_comunidad, c.municipio, c.provincia, c.departamento].filter(Boolean).join(' '));
+
+    if (q && !texto.includes(q)) return false;
+    if (filtro.value === 'activas' && !c.activo) return false;
+    if (filtro.value === 'inactivas' && c.activo) return false;
+    if (filtro.value === 'sin_ubicacion' && tieneUbicacion(c)) return false;
+    if (departamento.value && c.departamento !== departamento.value) return false;
+
+    return true;
+  });
+});
+
+const descripcionFiltros = computed(() =>
+  [busqueda.value && `búsqueda «${busqueda.value}»`, filtro.value !== 'todas' && pildoras.value.find((p) => p.valor === filtro.value)?.etiqueta, departamento.value]
+    .filter(Boolean)
+    .join(' · ')
+);
+
+// ---------- tabla
+const columnas = [
+  { clave: 'nombre_comunidad', titulo: 'Comunidad' },
+  { clave: 'productores_count', titulo: 'Productores', align: 'der' },
+  { clave: 'parcelas_count', titulo: 'Parcelas', align: 'der' },
+  { clave: 'superficie_total_ha', titulo: 'Superficie', align: 'der' },
+  { clave: 'altitud_msnm', titulo: 'Altitud', align: 'der' },
+  { clave: 'parcelas_con_alerta', titulo: 'Con alerta', align: 'der' },
+  { clave: 'activo', titulo: 'Estado' },
+];
+
+const acciones = (c) => [
+  { id: 'editar', etiqueta: 'Editar', icono: 'ti-pencil' },
+  c.activo ? { id: 'desactivar', etiqueta: 'Desactivar', icono: 'ti-circle-off', peligro: true } : { id: 'activar', etiqueta: 'Activar', icono: 'ti-circle-check' },
+];
+
+function alAccion({ id, fila }) {
+  if (id === 'editar') abrirEditar(fila);
+  else if (id === 'desactivar') pedirCambioEstado(fila);
+  else if (id === 'activar') activar(fila);
 }
 
-function openEdit(comunidad) {
-  selectedComunidad.value = comunidad;
-  modalMode.value = 'edit';
-  showFormModal.value = true;
+// ---------- crear / editar
+const formAbierto = ref(false);
+const comunidadEditar = ref(null);
+const guardando = ref(false);
+const erroresServidor = ref({});
+const errorGeneral = ref('');
+
+function abrirCrear() {
+  comunidadEditar.value = null;
+  erroresServidor.value = {};
+  errorGeneral.value = '';
+  formAbierto.value = true;
 }
 
-async function openView(comunidad) {
-  pageError.value = '';
+function abrirEditar(c) {
+  comunidadEditar.value = c;
+  erroresServidor.value = {};
+  errorGeneral.value = '';
+  detalleAbierto.value = false;
+  formAbierto.value = true;
+}
+
+function resaltar(id) {
+  resaltado.value = id;
+  setTimeout(() => (resaltado.value = null), 2200);
+}
+
+async function guardar(payload) {
+  if (guardando.value) return;
+
+  guardando.value = true;
+  erroresServidor.value = {};
+  errorGeneral.value = '';
 
   try {
-    const { data } = await comunidadService.obtener(comunidad.id);
-    selectedComunidad.value = data;
-    showViewModal.value = true;
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'No se pudo cargar el detalle de la comunidad.');
-  }
-}
+    const editando = comunidadEditar.value;
+    const { data } = editando ? await comunidadService.actualizar(editando.id, payload) : await comunidadService.crear(payload);
 
-function closeViewModal() {
-  showViewModal.value = false;
-  selectedComunidad.value = null;
-}
+    await cargar();
+    formAbierto.value = false;
+    resaltar(data?.id ?? editando?.id);
+    toast.exito(`Comunidad «${payload.nombre_comunidad}» ${editando ? 'actualizada' : 'creada'}`);
+  } catch (e) {
+    const errores = e?.response?.data?.errors;
 
-function closeFormModal() {
-  formError.value = '';
-  showFormModal.value = false;
-  selectedComunidad.value = null;
-}
-
-function openDelete(comunidad) {
-  selectedComunidad.value = comunidad;
-  deleteError.value = '';
-  showDeleteModal.value = true;
-}
-
-function closeDeleteModal() {
-  showDeleteModal.value = false;
-  selectedComunidad.value = null;
-  deleteError.value = '';
-}
-
-async function handleSave(payload) {
-  saving.value = true;
-  formError.value = '';
-
-  try {
-    if (modalMode.value === 'create') {
-      await comunidadService.crear(payload);
+    if (errores) {
+      erroresServidor.value = Object.fromEntries(Object.entries(errores).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v]));
+      errorGeneral.value = 'Revisa los campos marcados en rojo.';
     } else {
-      await comunidadService.actualizar(selectedComunidad.value.id, payload);
+      errorGeneral.value = obtenerMensajeError(e, 'No se pudo guardar la comunidad. Intenta de nuevo.');
     }
-
-    await fetchComunidades();
-    closeFormModal();
-  } catch (err) {
-    console.error(err);
-    formError.value = obtenerMensajeError(err, 'Error al guardar comunidad.');
   } finally {
-    saving.value = false;
+    guardando.value = false;
   }
 }
 
-async function handleDelete() {
-  if (!selectedComunidad.value?.id) {
-    return;
-  }
+// ---------- detalle
+const detalleAbierto = ref(false);
+const comunidadDetalle = ref(null);
 
-  saving.value = true;
-  deleteError.value = '';
+async function abrirDetalle(c) {
+  comunidadDetalle.value = c;
+  detalleAbierto.value = true;
 
   try {
-    await comunidadService.eliminar(selectedComunidad.value.id);
-    await fetchComunidades();
-    closeDeleteModal();
-  } catch (err) {
-    console.error(err);
-    deleteError.value = obtenerMensajeError(err, 'Error al desactivar comunidad.');
-  } finally {
-    saving.value = false;
+    const { data } = await comunidadService.obtener(c.id);
+
+    comunidadDetalle.value = { ...c, ...data, productores: data.productores || [] };
+  } catch (e) {
+    toast.error(obtenerMensajeError(e, 'No se pudo cargar el detalle de la comunidad.'));
   }
 }
 
-async function handleActivate(comunidad) {
-  if (!comunidad?.id) {
-    return;
-  }
+function editarDesdeDetalle(c) {
+  abrirEditar(c);
+}
 
-  saving.value = true;
-  pageError.value = '';
+// ---------- activar / desactivar
+const confirmarAbierto = ref(false);
+const comunidadConfirmar = ref(null);
+const cambiandoEstado = ref(false);
+
+function pedirCambioEstado(c) {
+  if (!c.activo) return activar(c);
+
+  comunidadConfirmar.value = c;
+  confirmarAbierto.value = true;
+}
+
+async function desactivar() {
+  if (cambiandoEstado.value) return;
+
+  cambiandoEstado.value = true;
 
   try {
-    await comunidadService.activar(comunidad.id);
-    await fetchComunidades();
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'Error al activar comunidad.');
+    await comunidadService.eliminar(comunidadConfirmar.value.id);
+    await cargar();
+    resaltar(comunidadConfirmar.value.id);
+    toast.exito(`Comunidad «${comunidadConfirmar.value.nombre_comunidad}» desactivada`);
+    detalleAbierto.value = false;
+  } catch (e) {
+    toast.error(obtenerMensajeError(e, 'No se pudo desactivar la comunidad.'));
   } finally {
-    saving.value = false;
+    cambiandoEstado.value = false;
+    confirmarAbierto.value = false;
   }
 }
 
-function tieneGps(comunidad) {
-  return comunidad?.latitud !== null &&
-    comunidad?.latitud !== undefined &&
-    comunidad?.latitud !== '' &&
-    comunidad?.longitud !== null &&
-    comunidad?.longitud !== undefined &&
-    comunidad?.longitud !== '';
+async function activar(c) {
+  try {
+    await comunidadService.activar(c.id);
+    await cargar();
+    resaltar(c.id);
+    toast.exito(`Comunidad «${c.nombre_comunidad}» activada`);
+    detalleAbierto.value = false;
+  } catch (e) {
+    toast.error(obtenerMensajeError(e, 'No se pudo activar la comunidad.'));
+  }
 }
 
-function comunidadesForReport() {
-  return filteredComunidades.value.map((c) => ({
-    ID: c.id,
-    Comunidad: c.nombre_comunidad || '—',
-    Municipio: c.municipio || '—',
-    Provincia: c.provincia || '—',
-    Departamento: c.departamento || '—',
-    Altitud: c.altitud_msnm ? `${Number(c.altitud_msnm).toLocaleString('es-BO')} m` : '—',
-    Productores: c.productores_count ?? 0,
-    GPS: tieneGps(c) ? 'Sí' : 'No',
-    Estado: c.activo ? 'Activa' : 'Inactiva',
-  }));
-}
+// ---------- exportar
+async function exportar(tipo) {
+  try {
+    const modulo = await import('@/utils/exportarComunidades');
 
-function getComunidadesReportMetadata() {
-  const user = currentUser.value || {};
-  const nombre = [
-    user.name,
-    user.paterno,
-    user.materno,
-  ].filter(Boolean).join(' ') || 'Usuario no identificado';
-
-  return {
-    titulo: 'Reporte de Comunidades',
-    sistema: 'Sistema PROINPA - Gestión Agrícola Inteligente',
-    generadoPor: nombre,
-    correo: user.email || '—',
-    rol: user.rol?.nombre || '—',
-    fecha: new Date().toLocaleString('es-BO'),
-    total: filteredComunidades.value.length,
-    activas: filteredComunidades.value.filter((c) => Boolean(c.activo)).length,
-    inactivas: filteredComunidades.value.filter((c) => !Boolean(c.activo)).length,
-    conGps: filteredComunidades.value.filter((c) => tieneGps(c)).length,
-    totalProductores: filteredComunidades.value.reduce((sum, c) => sum + (c.productores_count ?? 0), 0),
-    filtroEstado: filtroEstado.value === ''
-      ? 'Todas'
-      : filtroEstado.value === 'true'
-        ? 'Activas'
-        : 'Inactivas',
-    filtroDepartamento: filtroDepartamento.value || 'Todos los departamentos',
-    filtroGps: filtroGps.value === ''
-      ? 'Todos'
-      : filtroGps.value === 'true'
-        ? 'Con GPS'
-        : 'Sin GPS',
-    busqueda: search.value || 'Sin búsqueda',
-  };
-}
-
-function exportComunidadesPdf() {
-  const doc = new jsPDF('landscape');
-  const meta = getComunidadesReportMetadata();
-
-  doc.setFillColor(22, 101, 52);
-  doc.rect(0, 0, 297, 28, 'F');
-
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.text(meta.sistema, 14, 10);
-
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.text(meta.titulo, 14, 19);
-
-  doc.setTextColor(15, 23, 42);
-  doc.setFontSize(10);
-
-  doc.text(`Generado por: ${meta.generadoPor}`, 14, 38);
-  doc.text(`Rol: ${meta.rol}`, 14, 44);
-  doc.text(`Correo: ${meta.correo}`, 14, 50);
-
-  doc.text(`Fecha y hora: ${meta.fecha}`, 160, 38);
-  doc.text(`Total comunidades: ${meta.total}`, 160, 44);
-  doc.text(`Productores vinculados: ${meta.totalProductores}`, 160, 50);
-
-  doc.text(`Estado: ${meta.filtroEstado}`, 14, 58);
-  doc.text(`Departamento: ${meta.filtroDepartamento}`, 90, 58);
-  doc.text(`GPS: ${meta.filtroGps}`, 190, 58);
-  doc.text(`Búsqueda: ${meta.busqueda}`, 14, 65);
-
-  autoTable(doc, {
-    startY: 72,
-    head: [[
-      'ID',
-      'Comunidad',
-      'Municipio',
-      'Provincia',
-      'Departamento',
-      'Altitud',
-      'Productores',
-      'GPS',
-      'Estado',
-    ]],
-    body: comunidadesForReport().map((c) => [
-      c.ID,
-      c.Comunidad,
-      c.Municipio,
-      c.Provincia,
-      c.Departamento,
-      c.Altitud,
-      c.Productores,
-      c.GPS,
-      c.Estado,
-    ]),
-    theme: 'grid',
-    styles: {
-      fontSize: 8,
-      cellPadding: 2.5,
-      textColor: [30, 41, 59],
-      lineColor: [203, 213, 225],
-      lineWidth: 0.2,
-    },
-    headStyles: {
-      fillColor: [22, 101, 52],
-      textColor: [255, 255, 255],
-      fontStyle: 'bold',
-    },
-    alternateRowStyles: {
-      fillColor: [248, 250, 252],
-    },
-    didDrawPage: function () {
-      const pageCount = doc.internal.getNumberOfPages();
-      const pageSize = doc.internal.pageSize;
-      const pageWidth = pageSize.width || pageSize.getWidth();
-      const pageHeight = pageSize.height || pageSize.getHeight();
-
-      doc.setFontSize(8);
-      doc.setTextColor(100, 116, 139);
-      doc.text(
-        'Documento generado automáticamente por el Sistema PROINPA',
-        14,
-        pageHeight - 10
-      );
-      doc.text(
-        `Página ${doc.internal.getCurrentPageInfo().pageNumber} de ${pageCount}`,
-        pageWidth - 40,
-        pageHeight - 10
-      );
-    },
-  });
-
-  doc.save(`reporte_comunidades_${new Date().toISOString().slice(0, 10)}.pdf`);
-}
-
-function exportComunidadesExcel() {
-  const rows = comunidadesForReport();
-  const meta = getComunidadesReportMetadata();
-
-  const metadataRows = [
-    ['Sistema', meta.sistema],
-    ['Reporte', meta.titulo],
-    ['Generado por', meta.generadoPor],
-    ['Rol', meta.rol],
-    ['Correo', meta.correo],
-    ['Fecha y hora', meta.fecha],
-    ['Total comunidades', meta.total],
-    ['Comunidades activas', meta.activas],
-    ['Comunidades inactivas', meta.inactivas],
-    ['Comunidades con GPS', meta.conGps],
-    ['Productores vinculados', meta.totalProductores],
-    ['Filtro estado', meta.filtroEstado],
-    ['Filtro departamento', meta.filtroDepartamento],
-    ['Filtro GPS', meta.filtroGps],
-    ['Búsqueda', meta.busqueda],
-    [],
-  ];
-
-  const worksheet = XLSX.utils.aoa_to_sheet(metadataRows);
-
-  XLSX.utils.sheet_add_json(worksheet, rows, {
-    origin: `A${metadataRows.length + 1}`,
-  });
-
-  worksheet['!cols'] = [
-    { wch: 8 },
-    { wch: 28 },
-    { wch: 22 },
-    { wch: 22 },
-    { wch: 18 },
-    { wch: 14 },
-    { wch: 14 },
-    { wch: 10 },
-    { wch: 12 },
-  ];
-
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Comunidades');
-
-  const buffer = XLSX.write(workbook, {
-    bookType: 'xlsx',
-    type: 'array',
-  });
-
-  const blob = new Blob([buffer], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  });
-
-  saveAs(blob, `reporte_comunidades_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    if (tipo === 'pdf') await modulo.exportarComunidadesPdf(filtradas.value, usuarioGuardado(), descripcionFiltros.value);
+    else await modulo.exportarComunidadesExcel(filtradas.value, usuarioGuardado(), descripcionFiltros.value);
+  } catch (e) {
+    toast.error('No se pudo generar el archivo. Intenta de nuevo.');
+  }
 }
 </script>
+
+<style scoped>
+.vc-nombre {
+  display: block;
+  font-weight: 700;
+}
+
+.vc-secundario {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #4a6070;
+}
+
+.vc-sin-ubicacion {
+  margin-top: 4px;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #fffbeb;
+  color: #92400e;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.vc-alerta {
+  font-weight: 700;
+}
+
+.vc-alerta.hay-alerta {
+  color: #9a3412;
+  background: #fff3e8;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+</style>
