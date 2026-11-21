@@ -87,6 +87,11 @@ class UserService
 
         $user->update($data);
 
+        // Si el usuario queda desactivado, se cierran todas sus sesiones.
+        if (array_key_exists('activo', $data) && $data['activo'] === false) {
+            $user->tokens()->delete();
+        }
+
         return $user->fresh()
             ->load('rol:id,nombre,permisos,activo');
     }
@@ -98,6 +103,9 @@ class UserService
         $user->update([
             'activo' => false,
         ]);
+
+        // Cierra todas las sesiones abiertas del usuario desactivado.
+        $user->tokens()->delete();
 
         return $user->fresh()
             ->load('rol:id,nombre,permisos,activo');

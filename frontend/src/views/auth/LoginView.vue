@@ -211,7 +211,7 @@
           </template>
         </form>
 
-        <!-- LOGIN FACIAL -->
+        <!-- LOGIN FACIAL: contraseña primero; el rostro reemplaza al código OTP -->
         <div v-else class="face-panel">
           <div class="field">
             <label class="field-label">Correo institucional</label>
@@ -221,8 +221,30 @@
                 type="email"
                 class="field-input"
                 placeholder="usuario@proinpa.org"
+                autocomplete="email"
               />
               <span class="field-ico">✉</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Contraseña</label>
+            <div class="field-wrap">
+              <input
+                v-model="form.password"
+                :type="showPassword ? 'text' : 'password'"
+                class="field-input"
+                placeholder="••••••••••"
+                autocomplete="current-password"
+                @keyup.enter="abrirLoginFacial"
+              />
+              <button
+                type="button"
+                class="field-ico field-button"
+                @click="showPassword = !showPassword"
+              >
+                {{ showPassword ? 'Ocultar' : 'Ver' }}
+              </button>
             </div>
           </div>
 
@@ -250,12 +272,16 @@
 
             <div class="face-status">
               <div class="status-ring"></div>
-              Verificación biométrica disponible
+              Tu contraseña se valida primero; el rostro reemplaza al código OTP
             </div>
           </div>
 
           <div v-if="error" class="auth-message error">
             {{ error }}
+          </div>
+
+          <div v-if="success" class="auth-message success">
+            {{ success }}
           </div>
 
           <button
@@ -264,7 +290,17 @@
             :disabled="loading"
             @click="abrirLoginFacial"
           >
-            {{ loading ? 'Verificando...' : 'Verificar identidad' }}
+            {{ loading ? 'Verificando...' : (loginToken ? 'Volver a escanear el rostro' : 'Verificar identidad') }}
+          </button>
+
+          <button
+            v-if="loginToken"
+            type="button"
+            class="btn-ghost"
+            :disabled="loading"
+            @click="usarOtpEnLugarDelRostro"
+          >
+            Usar código OTP en su lugar
           </button>
 
           <div class="divider">o</div>
@@ -346,6 +382,8 @@ const success = ref('');
 const showPassword = ref(false);
 const remember = ref(false);
 const showFaceModal = ref(false);
+// Ticket de un solo uso que entrega el servidor después de validar la contraseña.
+const loginToken = ref('');
 
 const appVersion = import.meta.env.VITE_APP_VERSION || '1.0.0'
 const appEnv = import.meta.env.VITE_APP_ENV || 'dev'
@@ -419,29 +457,7 @@ async function handleLogin() {
       password: form.password,
     });
 
-    if (data.skip_otp) {
-      guardarSesion(data);
-      router.push({ name: 'home' });
-      return;
-    }
-
-    const email = data.email || form.email;
-
-    localStorage.setItem('pending_email', email);
-    localStorage.setItem('pending_remember_device', remember.value ? '1' : '0');
-
-    if (data.debug_otp) {
-      localStorage.setItem('pending_debug_otp', String(data.debug_otp));
-    } else {
-      localStorage.removeItem('pending_debug_otp');
-    }
-
-    success.value = data.message || 'OTP enviado correctamente.';
-
-    router.push({
-      name: 'otp',
-      query: { email },
-    });
+    irAlSegundoFactor(data);
   } catch (err) {
     error.value = obtenerMensajeError(
       err,
@@ -452,27 +468,88 @@ async function handleLogin() {
   }
 }
 
-function abrirLoginFacial() {
-  error.value = '';
-
-  if (!form.email) {
-    error.value = 'Primero ingresa tu correo institucional.';
+// Decide qué sigue después de validar la contraseña: entrar directo (dispositivo de confianza),
+// pedir el rostro o pedir el código OTP.
+function irAlSegundoFactor(data) {
+  if (data.skip_otp) {
+    guardarSesion(data);
+    router.push({ name: 'home' });
     return;
   }
 
-  showFaceModal.value = true;
+  if (data.requiere_rostro && data.login_token) {
+    loginToken.value = data.login_token;
+    success.value = data.message || 'Contraseña correcta. Verifica tu identidad con el rostro.';
+    showFaceModal.value = true;
+    return;
+  }
+
+  const email = data.email || form.email;
+
+  localStorage.setItem('pending_email', email);
+  localStorage.setItem('pending_remember_device', remember.value ? '1' : '0');
+
+  if (data.debug_otp) {
+    localStorage.setItem('pending_debug_otp', String(data.debug_otp));
+  } else {
+    localStorage.removeItem('pending_debug_otp');
+  }
+
+  success.value = data.message || 'OTP enviado correctamente.';
+
+  router.push({
+    name: 'otp',
+    query: { email },
+  });
+}
+
+async function abrirLoginFacial() {
+  error.value = '';
+  success.value = '';
+
+  // Con un ticket vigente solo se vuelve a escanear el rostro (sin repetir la contraseña).
+  if (loginToken.value) {
+    showFaceModal.value = true;
+    return;
+  }
+
+  if (!form.email || !form.password) {
+    error.value = 'Ingresa tu correo y tu contraseña: el rostro se pide después de validarlos.';
+    return;
+  }
+
+  loading.value = true;
+  limpiarSesionAnterior();
+
+  try {
+    const { data } = await authService.login({
+      email: form.email,
+      password: form.password,
+      metodo: 'rostro',
+    });
+
+    irAlSegundoFactor(data);
+  } catch (err) {
+    error.value = obtenerMensajeError(
+      err,
+      'No se pudo iniciar sesión. Verifica tus credenciales.'
+    );
+  } finally {
+    loading.value = false;
+  }
 }
 
 async function onFaceLoginCaptured({ descriptor }) {
   showFaceModal.value = false;
   loading.value = true;
   error.value = '';
+  success.value = '';
 
   limpiarSesionAnterior();
 
   try {
     const { data } = await authService.verifyFace({
-      email: form.email,
+      login_token: loginToken.value,
       descriptor,
     });
 
@@ -481,12 +558,41 @@ async function onFaceLoginCaptured({ descriptor }) {
       return;
     }
 
+    loginToken.value = '';
     guardarSesion(data);
     router.push({ name: 'home' });
   } catch (err) {
+    const respuesta = err?.response;
+
+    // 429 (sin intentos) o 422 (ticket vencido): hay que empezar de nuevo o usar el OTP.
+    if (respuesta?.status === 429 || respuesta?.status === 422) {
+      loginToken.value = '';
+    }
+
     error.value = obtenerMensajeError(
       err,
-      'No se pudo verificar el rostro. Usa correo y contraseña.'
+      'No se pudo verificar el rostro. Usa el código OTP o ingresa con contraseña.'
+    );
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function usarOtpEnLugarDelRostro() {
+  loading.value = true;
+  error.value = '';
+  success.value = '';
+
+  try {
+    const { data } = await authService.usarOtpTrasRostro({ login_token: loginToken.value });
+
+    loginToken.value = '';
+    irAlSegundoFactor(data);
+  } catch (err) {
+    loginToken.value = '';
+    error.value = obtenerMensajeError(
+      err,
+      'No se pudo enviar el código OTP. Ingresa nuevamente tu correo y contraseña.'
     );
   } finally {
     loading.value = false;

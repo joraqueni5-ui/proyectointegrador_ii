@@ -65,6 +65,11 @@ class UserController extends Controller
 
         $nuevoRol = $request->input('id_rol');
 
+        // Nadie puede quitarse (ni cambiarse) su propio rol: así no se pierde el acceso de administración.
+        if ($request->user()->id === $usuarioObjetivo->id && $nuevoRol && (int) $nuevoRol !== (int) $usuarioObjetivo->id_rol) {
+            abort(403, 'No puedes cambiar tu propio rol. Pídeselo a otro administrador.');
+        }
+
         if ($nuevoRol && (int) $nuevoRol !== (int) $usuarioObjetivo->id_rol && $this->esUltimoAdministradorActivo($usuarioObjetivo)) {
             abort(403, "No se puede cambiar el rol del último usuario activo con rol {$usuarioObjetivo->rol->nombre}.");
         }

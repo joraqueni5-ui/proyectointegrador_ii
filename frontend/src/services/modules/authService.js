@@ -13,8 +13,14 @@ const authService = {
     return api.post('/resend-otp', data);
   },
 
+  // Rostro como segundo factor: recibe el ticket (login_token) que entrega /login tras validar la contraseña.
   verifyFace(data) {
     return api.post('/verify-face', data);
+  },
+
+  // Si el rostro falla, se pasa al código OTP sin escribir otra vez la contraseña.
+  usarOtpTrasRostro(data) {
+    return api.post('/verify-face/usar-otp', data);
   },
 
   logout() {

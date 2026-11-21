@@ -9,15 +9,15 @@ class UserDTO
         public readonly string $paterno,
         public readonly ?string $materno,
 
-        public readonly string $ci,
+        public readonly ?string $ci,
         public readonly ?string $ci_extension,
-        public readonly string $sexo,
+        public readonly ?string $sexo,
 
         public readonly string $email,
         public readonly ?string $celular,
 
-        public readonly string $cargo,
-        public readonly string $area,
+        public readonly ?string $cargo,
+        public readonly ?string $area,
         public readonly ?string $oficina_regional,
 
         public readonly int $id_rol,
@@ -34,15 +34,15 @@ class UserDTO
             paterno: $data['paterno'],
             materno: $data['materno'] ?? null,
 
-            ci: $data['ci'],
+            ci: $data['ci'] ?? null,
             ci_extension: $data['ci_extension'] ?? null,
-            sexo: $data['sexo'],
+            sexo: $data['sexo'] ?? null,
 
             email: $data['email'],
             celular: $data['celular'] ?? null,
 
-            cargo: $data['cargo'],
-            area: $data['area'],
+            cargo: $data['cargo'] ?? null,
+            area: $data['area'] ?? null,
             oficina_regional: $data['oficina_regional'] ?? null,
 
             id_rol: (int) $data['id_rol'],

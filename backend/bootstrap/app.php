@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
 
+        $middleware->alias([
+            'usuario.activo' => \App\Http\Middleware\UsuarioActivo::class,
+        ]);
+
         $middleware->encryptCookies(except: [
             'trusted_device_id',
         ]);

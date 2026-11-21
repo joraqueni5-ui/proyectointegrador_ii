@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\User;
 
+use App\Rules\ContrasenaSegura;
+use App\Rules\CorreoUnicoSinMayusculas;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -9,7 +11,12 @@ class UpdateUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->tieneAlgunoDeEstosPermisos(['gestionar_usuarios']);
+    }
+
+    protected function failedAuthorization(): void
+    {
+        abort(403, 'No tienes permiso para realizar esta acción.');
     }
 
     protected function prepareForValidation(): void
@@ -72,7 +79,8 @@ class UpdateUserRequest extends FormRequest
             ],
 
             'ci_extension' => [
-                'nullable',
+                'sometimes',
+                'required',
                 'in:LP,CB,SC,OR,PT,CH,TJ,BE,PD',
             ],
 
@@ -87,12 +95,13 @@ class UpdateUserRequest extends FormRequest
                 'required',
                 'email',
                 'max:120',
-                Rule::unique('users', 'email')->ignore($userId),
+                new CorreoUnicoSinMayusculas($userId ? (int) $userId : null),
             ],
 
             'celular' => [
-                'nullable',
-                'digits:8',
+                'sometimes',
+                'required',
+                'regex:/^[67]\d{7}$/',
             ],
 
             'cargo' => [
@@ -118,7 +127,7 @@ class UpdateUserRequest extends FormRequest
             'password' => [
                 'nullable',
                 'string',
-                'min:8',
+                new ContrasenaSegura,
             ],
 
             'id_rol' => [
@@ -165,6 +174,7 @@ class UpdateUserRequest extends FormRequest
             'ci.digits_between' => 'El carnet de identidad debe tener entre 5 y 10 dígitos.',
             'ci.unique' => 'Este carnet de identidad ya está registrado.',
 
+            'ci_extension.required' => 'Selecciona la extensión del carnet (por ejemplo LP).',
             'ci_extension.in' => 'La extensión del CI no es válida.',
 
             'sexo.required' => 'Debes seleccionar el sexo.',
@@ -174,7 +184,8 @@ class UpdateUserRequest extends FormRequest
             'email.email' => 'Ingresa un correo electrónico válido.',
             'email.unique' => 'Este correo electrónico ya está registrado.',
 
-            'celular.digits' => 'El celular debe tener exactamente 8 dígitos numéricos.',
+            'celular.required' => 'El celular es obligatorio.',
+            'celular.regex' => 'El celular debe tener 8 dígitos y empezar con 6 o 7 (por ejemplo 71234567).',
 
             'cargo.required' => 'El cargo es obligatorio.',
             'cargo.max' => 'El cargo no debe superar los 100 caracteres.',
@@ -184,7 +195,6 @@ class UpdateUserRequest extends FormRequest
 
             'oficina_regional.max' => 'La oficina regional no debe superar los 100 caracteres.',
 
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
 
             'id_rol.required' => 'Debes seleccionar un rol.',
             'id_rol.exists' => 'El rol seleccionado no existe.',

@@ -129,4 +129,10 @@ return [
 
     'face_threshold' => (float) env('FACE_THRESHOLD', 0.45),
 
+    // Verificación facial como segundo factor: intentos permitidos por verificación
+    // y minutos de vida del ticket que se entrega después de validar la contraseña.
+    'face_max_attempts' => (int) env('FACE_MAX_ATTEMPTS', 3),
+
+    'face_ticket_minutes' => (int) env('FACE_TICKET_MINUTES', 5),
+
 ];

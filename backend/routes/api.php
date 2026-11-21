@@ -35,10 +35,11 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
-Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->middleware('throttle:10,1');
-Route::post('/resend-otp', [AuthController::class, 'resendOtp'])->middleware('throttle:3,1');
-Route::post('/verify-face', [AuthController::class, 'verifyFace'])->middleware('throttle:10,1');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth-login');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->middleware('throttle:auth-otp');
+Route::post('/resend-otp', [AuthController::class, 'resendOtp'])->middleware('throttle:auth-reenvio');
+Route::post('/verify-face', [AuthController::class, 'verifyFace'])->middleware('throttle:auth-rostro');
+Route::post('/verify-face/usar-otp', [AuthController::class, 'usarOtpTrasRostro'])->middleware('throttle:auth-rostro-otp');
 
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +47,7 @@ Route::post('/verify-face', [AuthController::class, 'verifyFace'])->middleware('
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'usuario.activo'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
