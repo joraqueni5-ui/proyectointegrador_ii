@@ -1,458 +1,265 @@
 <template>
-  <aside
-    class="sidebar"
-    :class="{
-      'is-collapsed': collapsed,
-      'is-mobile-open': mobileOpen,
-    }"
-  >
-    <!-- Logo institucional -->
-    <div class="sb-logo-row">
-      <RouterLink
-        to="/dashboard"
-        class="sb-logo"
-        @click="handleNavClick"
+  <!-- Escritorio: menú compacto de 88 px -->
+  <aside v-if="!esMovil" class="menu" aria-label="Menú principal">
+    <RouterLink to="/dashboard" class="menu-logo" aria-label="Ir al inicio">
+      <img src="/logo-proinpa.png" alt="PROINPA" />
+    </RouterLink>
+
+    <nav class="menu-nav" @keydown.esc="cerrar">
+      <div
+        v-for="item in items"
+        :key="item.id"
+        class="menu-celda"
+        @mouseenter="item.hijos && abrirHover($event, item)"
+        @mouseleave="item.hijos && programarCierre()"
       >
-        <div class="sb-logo-box">
-          <img
-            src="/logo-proinpa.png"
-            alt="Logo PROINPA"
-          />
-        </div>
+        <RouterLink
+          v-if="!item.hijos"
+          :to="item.to"
+          class="menu-item"
+          :class="{ 'is-activo': activo(item) }"
+          :aria-current="activo(item) ? 'page' : undefined"
+        >
+          <i :class="['ti', item.icono]" aria-hidden="true"></i>
+          <span>{{ item.etiqueta }}</span>
+          <b v-if="item.contador && alertasCount > 0" class="menu-contador">{{ alertasCount > 99 ? '99+' : alertasCount }}</b>
+        </RouterLink>
 
-        <div class="sb-brand">
-          <div class="sb-brand-name">Sistema PROINPA</div>
-          <div class="sb-brand-sub">Gestión Agrícola IA</div>
-        </div>
-      </RouterLink>
-
-      <button
-        class="sb-collapse-btn"
-        type="button"
-        :title="collapsed ? 'Expandir menú' : 'Contraer menú'"
-        @click="$emit('toggle-collapse')"
-      >
-        <i :class="collapsed ? 'ti ti-layout-sidebar-right-expand' : 'ti ti-layout-sidebar-left-collapse'"></i>
-      </button>
-
-      <button
-        class="sb-mobile-close"
-        type="button"
-        title="Cerrar menú"
-        @click="$emit('close-mobile')"
-      >
-        <i class="ti ti-x"></i>
-      </button>
-    </div>
-
-    <!-- Usuario -->
-    <div class="sb-user">
-      <div class="sb-avatar">
-        <img v-if="usuario.face_photo" :src="usuario.face_photo" alt="foto" />
-        <span v-else>{{ inicialUsuario }}</span>
+        <button
+          v-else
+          type="button"
+          class="menu-item"
+          :class="{ 'is-activo': activo(item), 'is-abierto': abierto === item.id }"
+          :aria-expanded="abierto === item.id"
+          aria-haspopup="menu"
+          @click="alternar($event, item)"
+        >
+          <i :class="['ti', item.icono]" aria-hidden="true"></i>
+          <span>{{ item.etiqueta }}</span>
+        </button>
       </div>
-
-      <div class="sb-user-info">
-        <div class="sb-name">
-          {{ nombreCompleto }}
-        </div>
-        <div class="sb-role">
-          {{ rolNombre || 'Sin rol asignado' }}
-        </div>
-      </div>
-    </div>
-
-    <!-- Navegación -->
-    <nav class="sb-nav">
-      <!-- GENERAL -->
-      <div class="sb-sec">General</div>
-
-      <RouterLink
-        to="/dashboard"
-        class="sb-link"
-        data-title="Dashboard"
-        exact-active-class="active"
-        @click="handleNavClick"
-      >
-        <i class="ti ti-layout-dashboard"></i>
-        <span>Dashboard</span>
-      </RouterLink>
-
-      <!-- ADMINISTRACIÓN -->
-      <template v-if="puedeVerGrupo(['gestionar_usuarios', 'gestionar_roles'])">
-        <div class="sb-sec">Administración</div>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_usuarios')"
-          to="/dashboard/usuarios"
-          class="sb-link"
-          data-title="Usuarios"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-users"></i>
-          <span>Usuarios</span>
-        </RouterLink>
-      </template>
-
-      <!-- MÓDULO AGRÍCOLA -->
-      <template v-if="puedeVerGrupo(['gestionar_productores', 'gestionar_parcelas', 'registrar_cosechas'])">
-        <div class="sb-sec">Módulo Agrícola</div>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_productores')"
-          to="/dashboard/comunidades"
-          class="sb-link"
-          data-title="Comunidades"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-building-community"></i>
-          <span>Comunidades</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_productores')"
-          to="/dashboard/productores"
-          class="sb-link"
-          data-title="Productores"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-user-check"></i>
-          <span>Productores</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_parcelas')"
-          to="/dashboard/parcelas"
-          class="sb-link"
-          data-title="Parcelas"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-map-2"></i>
-          <span>Parcelas</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_parcelas')"
-          to="/dashboard/historial-fitosanitario"
-          class="sb-link"
-          data-title="Historial Fitosanitario"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-history"></i>
-          <span>Historial Fitosanitario</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_parcelas')"
-          to="/dashboard/cultivos"
-          class="sb-link"
-          data-title="Cultivos"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-seeding"></i>
-          <span>Cultivos</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('registrar_cosechas')"
-          to="/dashboard/cosechas"
-          class="sb-link"
-          data-title="Cosechas"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-plant-2"></i>
-          <span>Cosechas</span>
-        </RouterLink>
-      </template>
-
-      <!-- DIAGNÓSTICO IA -->
-      <template v-if="puedeVerGrupo(['ver_inspecciones', 'ver_diagnosticos', 'gestionar_enfermedades', 'ver_alertas', 'ver_reportes'])">
-        <div class="sb-sec">Diagnóstico</div>
-
-        <RouterLink
-          v-if="tienePermiso('ver_inspecciones')"
-          to="/dashboard/inspecciones"
-          class="sb-link"
-          data-title="Inspecciones"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-clipboard-check"></i>
-          <span>Inspecciones</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_enfermedades')"
-          to="/dashboard/enfermedades"
-          class="sb-link"
-          data-title="Enfermedades"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-virus-search"></i>
-          <span>Enfermedades</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('ver_diagnosticos')"
-          to="/dashboard/diagnosticos"
-          class="sb-link"
-          data-title="Diagnósticos CNN"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-microscope"></i>
-          <span>Diagnósticos</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso(['ver_reportes', 'ver_diagnosticos'])"
-          to="/dashboard/desempeno-modelo"
-          class="sb-link"
-          data-title="Desempeño del modelo"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-chart-dots-3"></i>
-          <span>Desempeño del modelo</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('ver_alertas')"
-          to="/dashboard/alertas"
-          class="sb-link"
-          data-title="Alertas"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-bell"></i>
-          <span>Alertas</span>
-
-          <span v-if="alertasCount > 0" class="sb-badge">
-            {{ alertasCount }}
-          </span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso(['ver_reportes', 'ver_diagnosticos', 'ver_inspecciones'])"
-          to="/dashboard/reportes-fitosanitarios"
-          class="sb-link"
-          data-title="Reportes Fitosanitarios"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-report-analytics"></i>
-          <span>Reportes Fitosanitarios</span>
-        </RouterLink>
-      </template>
-
-      <!-- COMERCIAL -->
-      <template
-        v-if="puedeVerGrupo([
-          'ver_inventario',
-          'gestionar_productos',
-          'gestionar_almacenes',
-          'gestionar_movimientos',
-          'ver_alertas_stock',
-          'gestionar_ventas',
-          'gestionar_cotizaciones',
-          'ver_reportes'
-        ])"
-      >
-        <div class="sb-sec">Comercial</div>
-
-        <RouterLink
-          v-if="tienePermiso('ver_inventario')"
-          to="/dashboard/inventario"
-          class="sb-link"
-          data-title="Inventario"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-package"></i>
-          <span>Inventario</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_productos')"
-          to="/dashboard/inventario/productos"
-          class="sb-link"
-          data-title="Productos"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-box"></i>
-          <span>Productos</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_almacenes')"
-          to="/dashboard/inventario/almacenes"
-          class="sb-link"
-          data-title="Almacenes"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-building-warehouse"></i>
-          <span>Almacenes</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_movimientos')"
-          to="/dashboard/inventario/movimientos"
-          class="sb-link"
-          data-title="Movimientos"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-arrows-exchange"></i>
-          <span>Movimientos</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('ver_alertas_stock')"
-          to="/dashboard/inventario/alertas-stock"
-          class="sb-link"
-          data-title="Alertas stock"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-alert-triangle"></i>
-          <span>Alertas stock</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_ventas')"
-          to="/dashboard/ventas"
-          class="sb-link"
-          data-title="Ventas"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-receipt"></i>
-          <span>Ventas</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('gestionar_cotizaciones')"
-          to="/dashboard/cotizaciones"
-          class="sb-link"
-          data-title="Cotizaciones"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-file-description"></i>
-          <span>Cotizaciones</span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="tienePermiso('ver_reportes')"
-          to="/dashboard/reportes"
-          class="sb-link"
-          data-title="Reportes"
-          active-class="active"
-          @click="handleNavClick"
-        >
-          <i class="ti ti-report-analytics"></i>
-          <span>Reportes</span>
-        </RouterLink>
-      </template>
-
-      <!-- CUENTA -->
-      <div class="sb-sec">Cuenta</div>
-
-      <RouterLink
-        to="/dashboard/perfil"
-        class="sb-link"
-        data-title="Mi Perfil"
-        active-class="active"
-        @click="handleNavClick"
-      >
-        <i class="ti ti-user-circle"></i>
-        <span>Mi Perfil</span>
-      </RouterLink>
     </nav>
 
-    <!-- Logout -->
-    <div class="sb-footer">
-      <button
-        class="sb-link logout"
-        type="button"
-        data-title="Cerrar sesión"
-        @click="handleLogout"
+    <RouterLink to="/dashboard/perfil" class="menu-avatar" :title="nombreCompleto" :aria-label="`Mi perfil: ${nombreCompleto}`">
+      <img v-if="usuario.face_photo" :src="usuario.face_photo" alt="" />
+      <span v-else>{{ iniciales }}</span>
+    </RouterLink>
+
+    <!-- Panel flotante de submódulos -->
+    <div
+      v-if="grupoAbierto"
+      class="menu-panel"
+      role="menu"
+      :style="{ top: `${panelTop}px` }"
+      @mouseenter="cancelarCierre"
+      @mouseleave="programarCierre"
+    >
+      <div class="menu-panel-titulo">{{ grupoAbierto.etiqueta }}</div>
+      <RouterLink
+        v-for="hijo in grupoAbierto.hijos"
+        :key="hijo.to"
+        :to="hijo.to"
+        class="menu-panel-link"
+        :class="{ 'is-activo': activoHijo(hijo) }"
+        role="menuitem"
+        @click="cerrar"
       >
-        <i class="ti ti-logout"></i>
-        <span>Cerrar sesión</span>
-      </button>
+        {{ hijo.etiqueta }}
+      </RouterLink>
     </div>
   </aside>
+
+  <!-- Celular: barra inferior -->
+  <template v-else>
+    <nav class="barra-inferior" aria-label="Menú principal">
+      <template v-for="item in itemsBarra" :key="item.id">
+        <RouterLink
+          v-if="!item.hijos"
+          :to="item.to"
+          class="barra-item"
+          :class="{ 'is-activo': activo(item) }"
+          @click="cerrar"
+        >
+          <i :class="['ti', item.icono]" aria-hidden="true"></i>
+          <span>{{ item.etiqueta }}</span>
+          <b v-if="item.contador && alertasCount > 0" class="menu-contador">{{ alertasCount > 99 ? '99+' : alertasCount }}</b>
+        </RouterLink>
+        <button
+          v-else
+          type="button"
+          class="barra-item"
+          :class="{ 'is-activo': activo(item) }"
+          :aria-expanded="abierto === item.id"
+          @click="abrirHoja(item.id)"
+        >
+          <i :class="['ti', item.icono]" aria-hidden="true"></i>
+          <span>{{ item.etiqueta }}</span>
+        </button>
+      </template>
+
+      <button
+        v-if="itemsMas.length"
+        type="button"
+        class="barra-item"
+        :class="{ 'is-activo': itemsMas.some(activo) }"
+        :aria-expanded="abierto === 'mas'"
+        @click="abrirHoja('mas')"
+      >
+        <i class="ti ti-dots" aria-hidden="true"></i>
+        <span>Más</span>
+      </button>
+    </nav>
+
+    <div v-if="abierto" class="hoja-fondo" @click="cerrar"></div>
+    <section v-if="abierto" class="hoja" role="dialog" aria-modal="true" :aria-label="hojaTitulo">
+      <header class="hoja-cabecera">
+        <strong>{{ hojaTitulo }}</strong>
+        <button type="button" class="hoja-cerrar" aria-label="Cerrar" @click="cerrar"><i class="ti ti-x"></i></button>
+      </header>
+
+      <div v-for="grupo in hojaGrupos" :key="grupo.id" class="hoja-grupo">
+        <div v-if="abierto === 'mas'" class="hoja-grupo-titulo">{{ grupo.etiqueta }}</div>
+        <RouterLink
+          v-for="hijo in grupo.hijos || [{ etiqueta: grupo.etiqueta, to: grupo.to, exacto: grupo.exacto }]"
+          :key="hijo.to"
+          :to="hijo.to"
+          class="hoja-link"
+          :class="{ 'is-activo': activoHijo(hijo) }"
+          @click="cerrar"
+        >
+          {{ hijo.etiqueta }}
+        </RouterLink>
+      </div>
+
+      <div v-if="abierto === 'mas'" class="hoja-grupo">
+        <div class="hoja-grupo-titulo">Cuenta</div>
+        <RouterLink to="/dashboard/perfil" class="hoja-link" @click="cerrar">Mi perfil</RouterLink>
+        <button type="button" class="hoja-link hoja-salir" @click="salir">Cerrar sesión</button>
+      </div>
+    </section>
+  </template>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { obtenerRolNombre, tienePermiso as usuarioTienePermiso } from '@/utils/permisos';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { menuVisible, rutaActiva } from '@/config/menu';
+import { tienePermiso } from '@/utils/permisos';
 import '@/styles/sidebar.css';
 
 const props = defineProps({
-  user: {
-    type: Object,
-    default: () => ({}),
-  },
-  alertasCount: {
-    type: Number,
-    default: 0,
-  },
-  collapsed: {
-    type: Boolean,
-    default: false,
-  },
-  mobileOpen: {
-    type: Boolean,
-    default: false,
-  },
+  user: { type: Object, default: () => ({}) },
+  alertasCount: { type: Number, default: 0 },
 });
 
-const emit = defineEmits(['logout', 'toggle-collapse', 'close-mobile']);
+const emit = defineEmits(['logout']);
 
+const route = useRoute();
 const usuario = computed(() => props.user || {});
 
-const rolNombre = computed(() => obtenerRolNombre(usuario.value));
+const items = computed(() => menuVisible((permiso) => tienePermiso(usuario.value, permiso)));
 
-const nombreCompleto = computed(() => {
-  return [
-    usuario.value.name,
-    usuario.value.paterno,
-    usuario.value.materno,
-  ]
-    .filter(Boolean)
-    .join(' ') || 'Usuario';
+const nombreCompleto = computed(
+  () => [usuario.value.name, usuario.value.paterno, usuario.value.materno].filter(Boolean).join(' ') || 'Usuario'
+);
+
+const iniciales = computed(() => {
+  const partes = [usuario.value.name, usuario.value.paterno].filter(Boolean);
+
+  return (partes.map((p) => p.charAt(0)).join('') || 'U').toUpperCase();
 });
 
-const inicialUsuario = computed(() => {
-  return nombreCompleto.value.charAt(0).toUpperCase() || 'U';
+function activoHijo(hijo) {
+  return rutaActiva(route.path, hijo.to, hijo.exacto);
+}
+
+function activo(item) {
+  return item.hijos ? item.hijos.some(activoHijo) : rutaActiva(route.path, item.to, item.exacto);
+}
+
+// ---------- pantalla angosta
+const esMovil = ref(false);
+let consulta = null;
+let temporizador = null;
+
+function actualizarMovil() {
+  esMovil.value = consulta?.matches ?? false;
+  abierto.value = null;
+}
+
+onMounted(() => {
+  consulta = window.matchMedia('(max-width: 767px)');
+  esMovil.value = consulta.matches;
+  consulta.addEventListener('change', actualizarMovil);
 });
 
-function tienePermiso(permiso) {
-  return usuarioTienePermiso(usuario.value, permiso);
+onBeforeUnmount(() => {
+  consulta?.removeEventListener('change', actualizarMovil);
+  clearTimeout(temporizador);
+});
+
+// ---------- panel flotante (escritorio) y hoja inferior (celular)
+const abierto = ref(null);
+const panelTop = ref(0);
+
+const grupoAbierto = computed(() => items.value.find((i) => i.id === abierto.value && i.hijos) || null);
+
+function posicionar(evento) {
+  const caja = evento.currentTarget.getBoundingClientRect();
+
+  panelTop.value = Math.max(8, Math.min(caja.top, window.innerHeight - 8 - 44 * 8));
 }
 
-function puedeVerGrupo(permisosGrupo = []) {
-  return tienePermiso(permisosGrupo);
+function abrirHover(evento, item) {
+  cancelarCierre();
+  posicionar(evento);
+  abierto.value = item.id;
 }
 
-function handleNavClick() {
-  emit('close-mobile');
+function alternar(evento, item) {
+  cancelarCierre();
+  posicionar(evento);
+  abierto.value = abierto.value === item.id ? null : item.id;
 }
 
-function handleLogout() {
-  emit('close-mobile');
+function programarCierre() {
+  cancelarCierre();
+  temporizador = setTimeout(() => (abierto.value = null), 180);
+}
+
+function cancelarCierre() {
+  clearTimeout(temporizador);
+}
+
+function cerrar() {
+  cancelarCierre();
+  abierto.value = null;
+}
+
+function salir() {
+  cerrar();
   emit('logout');
 }
+
+watch(() => route.fullPath, cerrar);
+
+// ---------- barra inferior
+const itemsBarra = computed(() => (items.value.length <= 5 ? items.value : items.value.slice(0, 4)));
+const itemsMas = computed(() => (items.value.length <= 5 ? [] : items.value.slice(4)));
+
+function abrirHoja(id) {
+  abierto.value = abierto.value === id ? null : id;
+}
+
+const hojaGrupos = computed(() => {
+  if (abierto.value === 'mas') return itemsMas.value;
+
+  const grupo = items.value.find((i) => i.id === abierto.value);
+
+  return grupo ? [grupo] : [];
+});
+
+const hojaTitulo = computed(() =>
+  abierto.value === 'mas' ? 'Más opciones' : items.value.find((i) => i.id === abierto.value)?.etiqueta || ''
+);
 </script>
