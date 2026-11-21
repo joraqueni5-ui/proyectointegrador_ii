@@ -36,6 +36,23 @@
 
   --white: #ffffff;
 
+  /* Versión 2: tokens nuevos (los anteriores se conservan) */
+  --fondo-app: #eef3f0;
+  --card-radius: 20px;
+  --card-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --naranja-700: #9a3412;
+  --amarillo-700: #92400e;
+  --rojo-700: #b91c1c;
+  --verde-foco: #3da87a;
+  --texto: #111827;
+  --texto-secundario: #4a6070;
+  --borde: #dce6ed;
+  --borde-fuerte: #cbd5e1;
+  --fuente-codigo-bg: #f4f7f9;
+  --menu-w: 88px;
+  --barra-superior-h: 72px;
+  --barra-inferior-h: 72px;
+
   /* Layout */
   --sidebar-w: 270px;
   --topbar-h: 62px;

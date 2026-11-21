@@ -1,0 +1,30 @@
+/* Versión 2: reglas generales del área del dashboard (el login y el OTP no se ven afectados). */
+
+.app-layout {
+  background: var(--fondo-app);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Códigos (CHI-HYC-01) */
+.codigo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: var(--fuente-codigo-bg);
+  color: var(--texto);
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.titulo-pagina {
+  font-size: clamp(26px, 3vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--texto);
+  margin: 0;
+}
+
+.texto-secundario {
+  color: var(--texto-secundario);
+  font-size: 13px;
+}

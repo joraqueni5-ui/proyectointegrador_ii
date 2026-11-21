@@ -15,7 +15,7 @@
       >
         <div class="sb-logo-box">
           <img
-            src="https://www.proinpa.org/web/wp-content/uploads/2024/01/Logo-PROINPA-2024-con-resplandor-2.png"
+            src="/logo-proinpa.png"
             alt="Logo PROINPA"
           />
         </div>

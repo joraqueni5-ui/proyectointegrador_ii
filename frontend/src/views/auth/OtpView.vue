@@ -58,7 +58,7 @@
       <aside class="brand-side">
         <div class="logo-container">
           <img
-            src="https://www.proinpa.org/web/wp-content/uploads/2024/01/Logo-PROINPA-2024-con-resplandor-2.png"
+            src="/logo-proinpa.png"
             alt="Logo Fundación PROINPA"
             class="logo-img"
           />
