@@ -43,6 +43,9 @@
           <RouterLink to="/dashboard/perfil" class="usuario-opcion" role="menuitem" @click="menuAbierto = false">
             <i class="ti ti-user-circle" aria-hidden="true"></i> Mi perfil
           </RouterLink>
+          <RouterLink v-if="puedeVerGuia" to="/dashboard/guia-ui" class="usuario-opcion" role="menuitem" @click="menuAbierto = false">
+            <i class="ti ti-palette" aria-hidden="true"></i> Guía de componentes
+          </RouterLink>
           <button type="button" class="usuario-opcion usuario-salir" role="menuitem" @click="salir">
             <i class="ti ti-logout" aria-hidden="true"></i> Cerrar sesión
           </button>
@@ -70,6 +73,7 @@ const route = useRoute();
 const usuario = computed(() => props.user || {});
 const rolNombre = computed(() => obtenerRolNombre(usuario.value));
 const puedeVerAlertas = computed(() => tienePermiso(usuario.value, 'ver_alertas'));
+const puedeVerGuia = computed(() => tienePermiso(usuario.value, 'gestionar_usuarios'));
 
 const nombreCorto = computed(() => [usuario.value.name, usuario.value.paterno].filter(Boolean).join(' ') || 'Usuario');
 const iniciales = computed(() =>

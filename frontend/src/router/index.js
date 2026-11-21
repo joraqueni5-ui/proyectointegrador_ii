@@ -121,6 +121,13 @@ const routes = [
         name: 'usuarios',
         meta: { permiso: 'gestionar_usuarios' },
       },
+      {
+        // Guía interna de componentes (solo administración)
+        path: 'guia-ui',
+        component: () => import('../views/dashboard/admin/GuiaUiView.vue'),
+        name: 'guia-ui',
+        meta: { permiso: 'gestionar_usuarios' },
+      },
 
       // ── Agrícola ─────────────────────────────────────────────────────────
       {

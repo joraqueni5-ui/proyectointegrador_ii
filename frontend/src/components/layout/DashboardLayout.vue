@@ -14,6 +14,8 @@
         <router-view v-else />
       </main>
     </div>
+
+    <ToastHost />
   </div>
 </template>
 
@@ -23,6 +25,7 @@ import { useRouter } from 'vue-router';
 
 import Sidebar from './Sidebar.vue';
 import TopBar from './TopBar.vue';
+import ToastHost from '@/components/ui/ToastHost.vue';
 import alertaService from '@/services/modules/alertaService';
 import authService from '@/services/modules/authService';
 import usuarioService from '@/services/modules/usuarioService';

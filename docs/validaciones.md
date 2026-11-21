@@ -56,3 +56,18 @@
 Registros actuales que NO cumplen las reglas nuevas (no se modifican):
 - Parcela id 2 (P-SUR-02): latitud 0,0000008 y longitud -0,0000004 (fuera de Bolivia).
 - Productor id 4 (Humberto Yucra Colque): declara 1,20 ha y sus parcelas suman 2,70 ha.
+
+## Decisión: stock vencido (se implementa en la etapa B8, inventario)
+
+Antes no existía ninguna validación de "no vender producto vencido" porque la base no guardaba vencimientos
+(`facturas.fecha_vencimiento` es la fecha de pago de un crédito, no del producto). Decisión acordada:
+
+- Se agrega `inventarios.fecha_vencimiento` (migración aditiva, `nullable`, con `down()`): **vencimiento más próximo del stock
+  de ese producto en ese almacén**. Los registros existentes quedan en `null` y se muestran como "—".
+- Se llena o actualiza al registrar una **entrada** (campo opcional de vencimiento): si la nueva fecha es anterior a la guardada,
+  la reemplaza.
+- **No se bloquea la venta.** Si el vencimiento más próximo ya pasó, la pantalla muestra un aviso ámbar: «Este almacén tiene
+  stock vencido de <producto> (vence <fecha>). Verifica el lote antes de vender» y pide confirmar. La confirmación queda
+  registrada en la observación de la venta.
+- Al registrar un **ajuste de salida por vencimiento**, el formulario pide la fecha de vencimiento del siguiente lote
+  (opcional): reemplaza la guardada, o la deja en `null`.
