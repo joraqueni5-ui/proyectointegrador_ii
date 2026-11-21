@@ -1511,3 +1511,110 @@
   padding: 9px 11px;
   border: 1px solid transparent;
 }
+
+/* ==============================
+   RECHAZO DE FOTO POR LA CNN (motivo + consejo)
+============================== */
+
+.diagnostico-rechazo {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #fcd34d;
+  border-radius: 14px;
+  background: #fffbeb;
+  animation: fadeIn 0.2s ease both;
+}
+
+.diagnostico-rechazo-icono {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 22px;
+}
+
+.diagnostico-rechazo-texto {
+  min-width: 0;
+}
+
+.diagnostico-rechazo-texto strong {
+  display: block;
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.diagnostico-rechazo-texto p {
+  margin: 4px 0 0;
+  color: var(--gris-700);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.diagnostico-rechazo-consejo {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: white;
+  color: var(--gris-800);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.diagnostico-rechazo-consejo i {
+  margin-top: 1px;
+  color: #f59e0b;
+  font-size: 17px;
+}
+
+/* ==============================
+   LO QUE CALCULÓ LA IA (modal de validación)
+============================== */
+
+.diagnostico-validar-ia {
+  margin-bottom: 16px;
+  border: 1px solid var(--gris-200);
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.diagnostico-validar-ia > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  color: var(--verde-700);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  list-style: none;
+}
+
+.diagnostico-validar-ia > summary::-webkit-details-marker {
+  display: none;
+}
+
+.diagnostico-validar-ia > summary::after {
+  content: '▾';
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+.diagnostico-validar-ia:not([open]) > summary::after {
+  transform: rotate(-90deg);
+}
+
+.diagnostico-validar-ia > :not(summary) {
+  margin: 0 14px 14px;
+}

@@ -54,7 +54,9 @@
         :saving="saving"
         :cnn-disponible="cnnStatus.disponible"
         :cnn-version="cnnStatus.version"
+        :rechazo="rechazoFoto"
         @save="handleSave"
+        @limpiar-rechazo="rechazoFoto = null"
       />
 
       <DiagnosticoResultadoPanel
@@ -155,6 +157,8 @@ const enfermedades = ref([]);
 const loading = ref(true);
 const saving = ref(false);
 const pageError = ref('');
+// Motivo por el que la CNN rechazó la última foto (mensaje + consejo + código).
+const rechazoFoto = ref(null);
 
 const cnnStatus = ref({
   disponible: false,
@@ -398,8 +402,13 @@ function closeValidar() {
 }
 
 async function handleSave(formData) {
+  if (saving.value) {
+    return; // evita registros duplicados por doble clic
+  }
+
   saving.value = true;
   pageError.value = '';
+  rechazoFoto.value = null;
 
   try {
     const { data } = await diagnosticoService.crear(formData);
@@ -418,10 +427,22 @@ async function handleSave(formData) {
     analizadorRef.value?.reset();
   } catch (err) {
     console.error(err);
-    pageError.value = obtenerMensajeError(
-      err,
-      'Error al registrar el diagnóstico.'
-    );
+
+    const motivo = err?.response?.data?.motivo;
+
+    if (motivo?.codigo) {
+      // La CNN rechazó la foto: se muestra el motivo exacto y qué hacer.
+      rechazoFoto.value = {
+        codigo: motivo.codigo,
+        consejo: motivo.consejo,
+        mensaje: err.response.data.message,
+      };
+    } else {
+      pageError.value = obtenerMensajeError(
+        err,
+        'Error al registrar el diagnóstico.'
+      );
+    }
   } finally {
     saving.value = false;
   }

@@ -94,6 +94,15 @@
 
         <div class="diagnostico-detail-section span-2">
           <h4>
+            <i class="ti ti-brain"></i>
+            Lo que calculó la IA
+          </h4>
+
+          <DiagnosticoIaInforme :diagnostico="diagnostico" />
+        </div>
+
+        <div class="diagnostico-detail-section span-2">
+          <h4>
             <i class="ti ti-notes"></i>
             Recomendación registrada
           </h4>
@@ -192,6 +201,7 @@
 <script setup>
 import { computed } from 'vue';
 import { urlArchivo } from '@/services/api';
+import DiagnosticoIaInforme from '@/components/diagnosticos/DiagnosticoIaInforme.vue';
 
 const props = defineProps({
   diagnostico: {

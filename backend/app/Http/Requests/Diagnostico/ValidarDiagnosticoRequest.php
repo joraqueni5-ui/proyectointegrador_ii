@@ -10,7 +10,12 @@ class ValidarDiagnosticoRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->tieneAlgunoDeEstosPermisos(['validar_diagnosticos']);
+    }
+
+    protected function failedAuthorization(): void
+    {
+        abort(403, 'Solo un agrónomo o un administrador puede validar diagnósticos.');
     }
 
     protected function prepareForValidation(): void

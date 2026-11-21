@@ -10,7 +10,12 @@ class StoreDiagnosticoRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->tieneAlgunoDeEstosPermisos(['crear_diagnosticos']);
+    }
+
+    protected function failedAuthorization(): void
+    {
+        abort(403, 'No tienes permiso para registrar diagnósticos.');
     }
 
     public function rules(): array
@@ -26,6 +31,8 @@ class StoreDiagnosticoRequest extends FormRequest
                 'image',
                 'mimes:jpg,jpeg,png,webp',
                 'max:5120',
+                // Mismo mínimo que exige el servicio CNN (160 × 160 px).
+                'dimensions:min_width=160,min_height=160',
             ],
         ];
     }
@@ -111,6 +118,8 @@ class StoreDiagnosticoRequest extends FormRequest
             'fotografia.image' => 'El archivo debe ser una imagen.',
             'fotografia.mimes' => 'La imagen debe ser JPG, JPEG, PNG o WEBP.',
             'fotografia.max' => 'La imagen no debe superar los 5 MB.',
+            'fotografia.dimensions' => 'La imagen es muy pequeña: debe medir al menos 160 × 160 píxeles. Acérquese a la hoja o use una foto de mayor resolución.',
+            'fotografia.uploaded' => 'No se pudo subir la fotografía. Verifique que no supere los 5 MB e inténtelo de nuevo.',
         ];
     }
 }

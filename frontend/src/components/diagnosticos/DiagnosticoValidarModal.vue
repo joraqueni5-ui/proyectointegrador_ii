@@ -64,6 +64,16 @@
           </div>
         </div>
 
+        <!-- LO QUE CALCULÓ LA IA (para decidir con información) -->
+        <details class="diagnostico-validar-ia" open>
+          <summary>
+            <i class="ti ti-brain"></i>
+            Lo que calculó la IA
+          </summary>
+
+          <DiagnosticoIaInforme :diagnostico="diagnostico" />
+        </details>
+
         <!-- OPCIONES DE VALIDACIÓN -->
         <div class="diagnostico-validar-options">
 
@@ -285,6 +295,8 @@
 
 <script setup>
 import { reactive, ref, watch } from 'vue';
+
+import DiagnosticoIaInforme from '@/components/diagnosticos/DiagnosticoIaInforme.vue';
 
 const props = defineProps({
   diagnostico: {

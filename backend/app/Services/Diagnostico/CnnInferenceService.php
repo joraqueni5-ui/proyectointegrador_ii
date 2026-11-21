@@ -2,6 +2,7 @@
 
 namespace App\Services\Diagnostico;
 
+use App\Exceptions\ImagenRechazadaException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
@@ -50,6 +51,18 @@ class CnnInferenceService
             $status = in_array($response->status(), [413, 422, 503], true)
                 ? $response->status()
                 : 502;
+
+            // El servicio CNN indica el motivo exacto del rechazo y un consejo para repetir la foto.
+            $codigo = $response->json('codigo');
+
+            if (in_array($status, [413, 422], true) && is_string($codigo) && $codigo !== '') {
+                throw new ImagenRechazadaException(
+                    (string) $message,
+                    $status,
+                    $codigo,
+                    (string) ($response->json('consejo') ?: 'Tome otra fotografía de la hoja con buena luz y enfoque.')
+                );
+            }
 
             throw new HttpException($status, (string) $message);
         }

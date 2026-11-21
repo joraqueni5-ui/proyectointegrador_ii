@@ -19,6 +19,16 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->render(function (\App\Exceptions\ImagenRechazadaException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'motivo' => [
+                    'codigo' => $exception->codigo(),
+                    'consejo' => $exception->consejo(),
+                ],
+            ], $exception->estado());
+        });
+
         $exceptions->render(function (\App\Exceptions\ReglaNegocioException $exception) {
             return response()->json([
                 'message' => $exception->getMessage(),

@@ -90,6 +90,22 @@
         El resultado queda pendiente de validación por el técnico o agrónomo.
       </div>
 
+      <div v-if="rechazo" class="diagnostico-rechazo" role="alert">
+        <div class="diagnostico-rechazo-icono">
+          <i :class="infoRechazo.icono"></i>
+        </div>
+
+        <div class="diagnostico-rechazo-texto">
+          <strong>{{ infoRechazo.titulo }}</strong>
+          <p>{{ rechazo.mensaje }}</p>
+
+          <div v-if="rechazo.consejo" class="diagnostico-rechazo-consejo">
+            <i class="ti ti-bulb"></i>
+            <span><b>Qué hacer:</b> {{ rechazo.consejo }}</span>
+          </div>
+        </div>
+      </div>
+
       <div v-if="localError" class="diagnostico-form-error">
         {{ localError }}
       </div>
@@ -112,7 +128,30 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, reactive, ref } from 'vue';
+import { computed, onBeforeUnmount, reactive, ref } from 'vue';
+
+// Mismos límites que valida Laravel y el servicio CNN.
+const MAX_BYTES = 5 * 1024 * 1024;
+const LADO_MINIMO_PX = 160;
+
+// Título e ícono según el motivo que devuelve la CNN.
+const MOTIVOS = {
+  borrosa: { titulo: 'La foto está borrosa', icono: 'ti ti-focus-2' },
+  muy_oscura: { titulo: 'La foto tiene poca luz', icono: 'ti ti-moon' },
+  sobreexpuesta: { titulo: 'La foto tiene demasiada luz', icono: 'ti ti-sun' },
+  poco_contraste: { titulo: 'La foto tiene poco contraste', icono: 'ti ti-contrast-2' },
+  no_vegetal: { titulo: 'No se ve una hoja en la foto', icono: 'ti ti-leaf-off' },
+  no_es_papa: { titulo: 'No parece una hoja de papa', icono: 'ti ti-plant-off' },
+  baja_certeza: { titulo: 'La IA no está segura del resultado', icono: 'ti ti-help-hexagon' },
+  clases_similares: { titulo: 'El resultado es ambiguo', icono: 'ti ti-arrows-diff' },
+  resolucion_baja: { titulo: 'La imagen es muy pequeña', icono: 'ti ti-arrows-minimize' },
+  resolucion_excesiva: { titulo: 'La imagen es demasiado grande', icono: 'ti ti-arrows-maximize' },
+  formato_invalido: { titulo: 'Formato de imagen no válido', icono: 'ti ti-file-alert' },
+  peso_excesivo: { titulo: 'La imagen pesa demasiado', icono: 'ti ti-weight' },
+  imagen_vacia: { titulo: 'El archivo está vacío', icono: 'ti ti-file-off' },
+  archivo_danado: { titulo: 'No se pudo leer la imagen', icono: 'ti ti-file-alert' },
+  imagen_animada: { titulo: 'La imagen es animada', icono: 'ti ti-file-alert' },
+};
 
 const props = defineProps({
   inspecciones: {
@@ -131,9 +170,21 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  // Motivo por el que la CNN rechazó la última foto: { mensaje, consejo, codigo }
+  rechazo: {
+    type: Object,
+    default: null,
+  },
 });
 
-const emit = defineEmits(['save']);
+const emit = defineEmits(['save', 'limpiar-rechazo']);
+
+const infoRechazo = computed(() => {
+  return MOTIVOS[props.rechazo?.codigo] || {
+    titulo: 'No se pudo analizar la foto',
+    icono: 'ti ti-alert-triangle',
+  };
+});
 
 const fileInput = ref(null);
 const fotoPreview = ref(null);
@@ -165,7 +216,29 @@ function onFotoChange(event) {
   if (archivo) procesarArchivo(archivo);
 }
 
-function procesarArchivo(archivo) {
+// Lee el ancho y alto reales de la imagen (null si el navegador no puede leerla).
+function leerDimensiones(archivo) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(archivo);
+    const imagen = new Image();
+
+    imagen.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve({ ancho: imagen.naturalWidth, alto: imagen.naturalHeight });
+    };
+
+    imagen.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+
+    imagen.src = url;
+  });
+}
+
+async function procesarArchivo(archivo) {
+  emit('limpiar-rechazo');
+
   if (!archivo || archivo.size <= 0) {
     removeFoto();
     localError.value = 'La fotografía seleccionada está vacía o no es válida.';
@@ -185,10 +258,23 @@ function procesarArchivo(archivo) {
     return;
   }
 
-  const maxSizeBytes = 5 * 1024 * 1024;
-  if (archivo.size > maxSizeBytes) {
+  if (archivo.size > MAX_BYTES) {
     removeFoto();
-    localError.value = 'La fotografía no debe superar los 5 MB.';
+    localError.value = 'La fotografía no debe superar los 5 MB. Reduzca su tamaño o tome otra foto.';
+    return;
+  }
+
+  const dimensiones = await leerDimensiones(archivo);
+
+  if (!dimensiones) {
+    removeFoto();
+    localError.value = 'No se pudo leer la imagen: el archivo puede estar dañado. Seleccione otra fotografía.';
+    return;
+  }
+
+  if (dimensiones.ancho < LADO_MINIMO_PX || dimensiones.alto < LADO_MINIMO_PX) {
+    removeFoto();
+    localError.value = `La imagen es muy pequeña (${dimensiones.ancho} × ${dimensiones.alto} px): debe medir al menos ${LADO_MINIMO_PX} × ${LADO_MINIMO_PX} píxeles. Acérquese a la hoja o use una foto de mayor resolución.`;
     return;
   }
 
@@ -200,6 +286,7 @@ function procesarArchivo(archivo) {
 }
 
 function removeFoto() {
+  emit('limpiar-rechazo');
   fotoArchivo.value = null;
 
   if (fotoPreview.value) URL.revokeObjectURL(fotoPreview.value);

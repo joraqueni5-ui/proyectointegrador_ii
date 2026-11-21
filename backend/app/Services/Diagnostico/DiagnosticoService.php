@@ -52,6 +52,8 @@ class DiagnosticoService
                 'id_enfermedad' => $enfermedad->id,
                 'porcentaje_confianza' => round((float) $prediction['confianza'], 2),
                 'top3_predicciones' => $prediction['top3'] ?? null,
+                // Calidad de la foto, margen entre clases y datos del modelo (calibración).
+                'detalle_inferencia' => $this->detalleInferencia($prediction),
                 'modelo_version' => mb_substr(
                     (string) ($prediction['modelo_version'] ?? 'PROINPA-CNN'),
                     0,
@@ -93,6 +95,20 @@ class DiagnosticoService
                 'enfermedad.productosRecomendados.inventarios.almacen',
             ]);
         });
+    }
+
+    /**
+     * Resumen de lo que la CNN calculó además de la clase (se descarta lo que no es dato).
+     */
+    private function detalleInferencia(array $prediction): array
+    {
+        return array_filter([
+            'calidad_imagen' => $prediction['calidad_imagen'] ?? null,
+            'validacion_contenido' => $prediction['validacion_contenido'] ?? null,
+            'validacion_nitidez' => $prediction['validacion_nitidez'] ?? null,
+            'validacion_prediccion' => $prediction['validacion_prediccion'] ?? null,
+            'modelo' => $prediction['modelo'] ?? null,
+        ], fn ($valor) => $valor !== null);
     }
 
     public function estadoModelo(): array

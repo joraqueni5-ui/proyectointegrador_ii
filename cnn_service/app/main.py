@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.responses import JSONResponse
 
 from app.inference import (
+    CONSEJOS,
     InvalidImageError,
     ModelNotReadyError,
     ModelRuntime,
@@ -32,6 +34,29 @@ app = FastAPI(
 runtime = ModelRuntime()
 
 
+def _rechazo(
+    status: int,
+    mensaje: str,
+    codigo: str,
+    consejo: str | None = None,
+) -> JSONResponse:
+    """
+    Respuesta de rechazo con motivo estructurado.
+
+    Mantiene `detail` (texto) por compatibilidad con Laravel y agrega
+    `codigo` y `consejo` para mostrar al usuario qué hacer.
+    """
+
+    return JSONResponse(
+        status_code=status,
+        content={
+            "detail": mensaje,
+            "codigo": codigo,
+            "consejo": consejo or CONSEJOS.get(codigo, ""),
+        },
+    )
+
+
 @app.get("/health")
 def health() -> dict:
     """
@@ -55,12 +80,10 @@ async def predict(
     # ---------------------------------------------------------
 
     if file.content_type not in ALLOWED_CONTENT_TYPES:
-        raise HTTPException(
-            status_code=422,
-            detail=(
-                "La imagen debe estar en formato "
-                "JPG, JPEG, PNG o WEBP."
-            ),
+        return _rechazo(
+            422,
+            "La imagen debe estar en formato JPG, JPEG, PNG o WEBP.",
+            "formato_invalido",
         )
 
     # ---------------------------------------------------------
@@ -70,20 +93,14 @@ async def predict(
     raw = await file.read()
 
     if not raw:
-        raise HTTPException(
-            status_code=422,
-            detail="La imagen está vacía.",
-        )
+        return _rechazo(422, "La imagen está vacía.", "imagen_vacia")
 
     # ---------------------------------------------------------
     # VALIDAR PESO
     # ---------------------------------------------------------
 
     if len(raw) > MAX_IMAGE_SIZE:
-        raise HTTPException(
-            status_code=413,
-            detail="La imagen no debe superar los 5 MB.",
-        )
+        return _rechazo(413, "La imagen no debe superar los 5 MB.", "peso_excesivo")
 
     # ---------------------------------------------------------
     # VALIDACIÓN + INFERENCIA
@@ -99,10 +116,7 @@ async def predict(
         ) from exc
 
     except InvalidImageError as exc:
-        raise HTTPException(
-            status_code=422,
-            detail=str(exc),
-        ) from exc
+        return _rechazo(422, str(exc), exc.codigo, exc.consejo)
 
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(

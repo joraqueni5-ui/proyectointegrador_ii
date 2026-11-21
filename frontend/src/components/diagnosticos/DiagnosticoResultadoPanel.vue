@@ -65,24 +65,11 @@
 
       <div class="diagnostico-resultado-section">
         <h4>
-          <i class="ti ti-list-details"></i>
-          Otras probabilidades
+          <i class="ti ti-brain"></i>
+          Lo que calculó la IA
         </h4>
 
-        <div v-if="predicciones.length" class="diagnostico-predicciones-list">
-          <div
-            v-for="(prediccion, index) in predicciones"
-            :key="index"
-            class="diagnostico-prediccion-item"
-          >
-            <span>{{ prediccion.nombre || prediccion.enfermedad || `Predicción ${index + 1}` }}</span>
-            <strong>{{ numero(prediccion.probabilidad || prediccion.confianza || 0) }}%</strong>
-          </div>
-        </div>
-
-        <div v-else class="diagnostico-mini-empty">
-          No se registraron probabilidades secundarias.
-        </div>
+        <DiagnosticoIaInforme :diagnostico="diagnostico" />
       </div>
 
       <div class="diagnostico-resultado-section diagnostico-recomendacion-box">
@@ -133,19 +120,13 @@
 <script setup>
 import { computed } from 'vue';
 
+import DiagnosticoIaInforme from '@/components/diagnosticos/DiagnosticoIaInforme.vue';
+
 const props = defineProps({
   diagnostico: {
     type: Object,
     default: null,
   },
-});
-
-const predicciones = computed(() => {
-  const data = props.diagnostico?.top3_predicciones;
-
-  return Array.isArray(data)
-    ? data
-    : [];
 });
 
 const productos = computed(() => {

@@ -15,6 +15,7 @@ class DiagnosticoCNN extends Model
         'nombre_archivo',
         'porcentaje_confianza',
         'top3_predicciones',
+        'detalle_inferencia',
         'modelo_version',
         'nivel_severidad',
         'recomendacion',
@@ -26,6 +27,7 @@ class DiagnosticoCNN extends Model
 
     protected $casts = [
         'top3_predicciones' => 'array',
+        'detalle_inferencia' => 'array',
         'fecha_validacion' => 'datetime',
     ];
 

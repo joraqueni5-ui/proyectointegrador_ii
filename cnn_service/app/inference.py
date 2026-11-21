@@ -249,11 +249,52 @@ class ModelNotReadyError(RuntimeError):
     """
 
 
+# Consejo concreto para cada motivo de rechazo (se muestra al usuario).
+CONSEJOS = {
+    "formato_invalido": "Use una fotografía en formato JPG, PNG o WEBP.",
+    "imagen_animada": "Suba una fotografía estática (no un GIF ni una animación).",
+    "archivo_danado": "Vuelva a tomar o a exportar la foto: el archivo no se pudo leer.",
+    "resolucion_baja": "Acérquese a la hoja o use una foto de al menos 160×160 píxeles (mejor de 1000 px o más).",
+    "resolucion_excesiva": "Reduzca la resolución de la foto antes de subirla.",
+    "muy_oscura": "Tome la foto con luz natural, de día y sin sombras fuertes sobre la hoja.",
+    "sobreexpuesta": "Evite el sol directo sobre la hoja: fotografíela a la sombra o con cielo nublado.",
+    "poco_contraste": "Tome la foto con luz uniforme y ponga la hoja sobre un fondo distinto (suelo o cielo).",
+    "no_vegetal": "Encuadre una hoja de papa de cerca, centrada y que ocupe gran parte de la foto.",
+    "borrosa": "Sostenga el celular firme, toque la hoja en la pantalla para enfocar y espere un segundo antes de disparar.",
+    "prediccion_invalida": "Intente nuevamente con otra fotografía.",
+    "baja_certeza": "Acérquese a una sola hoja con síntomas, con buena luz y buen enfoque, y repita la foto.",
+    "clases_similares": "Tome una foto más clara de una sola hoja; si persiste, consulte a un agrónomo.",
+    "no_es_papa": "Fotografíe una hoja de papa (no otra planta, suelo ni objetos), de cerca y sobre un fondo simple.",
+    "peso_excesivo": "Reduzca el tamaño de la foto a menos de 5 MB.",
+    "imagen_vacia": "El archivo está vacío: seleccione otra fotografía.",
+}
+
+
 class InvalidImageError(ValueError):
     """
     La fotografía no cumple las condiciones necesarias
     para ejecutar un diagnóstico confiable.
+
+    Lleva un código estable (para que el frontend decida qué mostrar)
+    y un consejo concreto para volver a tomar la foto.
     """
+
+    def __init__(
+        self,
+        mensaje: str,
+        codigo: str = "imagen_no_valida",
+        consejo: str | None = None,
+    ) -> None:
+
+        super().__init__(mensaje)
+
+        self.codigo = codigo
+
+        self.consejo = (
+            consejo
+            or CONSEJOS.get(codigo)
+            or "Tome otra fotografía de la hoja con buena luz y enfoque."
+        )
 
 
 # ============================================================
@@ -567,8 +608,9 @@ class ModelRuntime:
 
                     raise InvalidImageError(
                         "El archivo no corresponde a una "
-                        "imagen JPG, PNG, WEBP o AVIF válida."
-                    )
+                        "imagen JPG, PNG, WEBP o AVIF válida.",
+                codigo="formato_invalido",
+            )
 
                 frames = getattr(
                     test_image,
@@ -580,8 +622,9 @@ class ModelRuntime:
 
                     raise InvalidImageError(
                         "No se permiten imágenes animadas. "
-                        "Utilice una fotografía estática."
-                    )
+                        "Utilice una fotografía estática.",
+                codigo="imagen_animada",
+            )
 
                 test_image.verify()
 
@@ -615,7 +658,8 @@ class ModelRuntime:
 
             raise InvalidImageError(
                 "El archivo está dañado o su formato no es compatible (use JPG, PNG o WEBP). "
-                "no corresponde a una imagen válida."
+                "no corresponde a una imagen válida.",
+                codigo="archivo_danado",
             ) from exc
 
 
@@ -893,7 +937,8 @@ class ModelRuntime:
                 f"{width}x{height}px. "
                 "Utilice una fotografía de al menos "
                 f"{MIN_IMAGE_WIDTH}x"
-                f"{MIN_IMAGE_HEIGHT}px."
+                f"{MIN_IMAGE_HEIGHT}px.",
+                codigo="resolucion_baja",
             )
 
 
@@ -903,7 +948,8 @@ class ModelRuntime:
 
             raise InvalidImageError(
                 "La resolución de la imagen es "
-                "excesivamente grande."
+                "excesivamente grande.",
+                codigo="resolucion_excesiva",
             )
 
 
@@ -954,7 +1000,8 @@ class ModelRuntime:
             raise InvalidImageError(
                 "La fotografía está demasiado oscura. "
                 "Tome nuevamente la imagen con "
-                "mejor iluminación."
+                "mejor iluminación.",
+                codigo="muy_oscura",
             )
 
 
@@ -971,7 +1018,8 @@ class ModelRuntime:
             raise InvalidImageError(
                 "La fotografía está demasiado clara "
                 "o sobreexpuesta. "
-                "Evite luz directa intensa."
+                "Evite luz directa intensa.",
+                codigo="sobreexpuesta",
             )
 
 
@@ -993,7 +1041,8 @@ class ModelRuntime:
             raise InvalidImageError(
                 "La imagen presenta muy poco contraste. "
                 "Tome nuevamente la fotografía con "
-                "una iluminación más uniforme."
+                "una iluminación más uniforme.",
+                codigo="poco_contraste",
             )
 
 
@@ -1387,7 +1436,8 @@ class ModelRuntime:
                 "a una hoja o material vegetal válido. "
                 "Tome una fotografía donde la hoja de papa "
                 "sea claramente visible, esté centrada "
-                "y ocupe una parte importante de la imagen."
+                "y ocupe una parte importante de la imagen.",
+                codigo="no_vegetal",
             )
 
 
@@ -1468,7 +1518,8 @@ class ModelRuntime:
                 "diagnóstico confiable. "
                 "Tome nuevamente la fotografía "
                 "manteniendo la cámara estable y "
-                "enfocando claramente la hoja."
+                "enfocando claramente la hoja.",
+                codigo="borrosa",
             )
 
 
@@ -1597,7 +1648,8 @@ class ModelRuntime:
 
             raise InvalidImageError(
                 "El modelo no pudo generar "
-                "una predicción válida."
+                "una predicción válida.",
+                codigo="prediccion_invalida",
             )
 
 
@@ -1640,7 +1692,8 @@ class ModelRuntime:
                 "La CNN no tiene suficiente certeza "
                 "para emitir un diagnóstico confiable. "
                 "Tome otra fotografía de la hoja "
-                "con buena iluminación y enfoque."
+                "con buena iluminación y enfoque.",
+                codigo="baja_certeza",
             )
 
 
@@ -1657,7 +1710,8 @@ class ModelRuntime:
                 "La imagen genera resultados demasiado "
                 "similares entre varias clases. "
                 "Tome otra fotografía más clara "
-                "de la hoja."
+                "de la hoja.",
+                codigo="clases_similares",
             )
 
 
@@ -1886,7 +1940,8 @@ class ModelRuntime:
         if best["clase"] == "other":
             raise InvalidImageError(
                 "La fotografía no parece corresponder a una hoja de papa. "
-                "Tome una foto cercana de una sola hoja de papa."
+                "Tome una foto cercana de una sola hoja de papa.",
+                codigo="no_es_papa",
             )
 
         if not best.get(
@@ -1931,6 +1986,35 @@ class ModelRuntime:
                 self._metadata[
                     "model_version"
                 ],
+
+            "modelo": {
+                "version":
+                    self._metadata[
+                        "model_version"
+                    ],
+                "arquitectura":
+                    self._metadata.get(
+                        "architecture"
+                    ),
+                "calibrado":
+                    bool(
+                        self._metadata.get(
+                            "calibration"
+                        )
+                    ),
+                "temperatura":
+                    (
+                        self._metadata.get(
+                            "calibration"
+                        ) or {}
+                    ).get(
+                        "temperatura"
+                    ),
+                "confianza_minima":
+                    MIN_MODEL_CONFIDENCE,
+                "margen_minimo":
+                    MIN_PREDICTION_MARGIN,
+            },
 
             "top3":
                 top3,
