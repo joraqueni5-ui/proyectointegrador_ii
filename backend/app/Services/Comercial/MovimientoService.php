@@ -32,7 +32,9 @@ class MovimientoService
             ->when($tipo, fn ($q) => $q->where('tipo', $tipo))
             ->orderBy('fecha_movimiento', 'desc')
             ->orderBy('id', 'desc')
-            ->paginate($perPage);
+            ->paginate($perPage)
+            // El stock total del producto no se usa en este listado: evita una consulta por fila.
+            ->through(fn ($m) => tap($m, fn ($x) => $x->producto?->makeHidden('stock_total')));
     }
 
     public function registrar(MovimientoDTO $dto): Movimiento

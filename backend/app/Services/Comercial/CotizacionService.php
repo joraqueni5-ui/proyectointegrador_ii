@@ -40,7 +40,8 @@ class CotizacionService
             })
             ->when($estado, fn ($q) => $q->where('estado', $estado))
             ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+            ->paginate($perPage)
+            ->through(fn ($c) => tap($c, fn ($x) => $x->detalles->each(fn ($d) => $d->producto?->makeHidden('stock_total'))));
     }
 
     public function ver(Cotizacion $cotizacion): Cotizacion

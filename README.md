@@ -772,6 +772,32 @@ El frontend muestra el estado del modelo antes de permitir un análisis y el bac
 
 ---
 
+# Mejoras del aporte ingenieril (etapas 1 a 8)
+
+| Etapa | Qué se agregó | Dónde |
+|---|---|---|
+| 1 | Modelo `PROINPA-ResNet50-v2.1-prototipo` por defecto (`CNN_MODEL_PATH` y `CNN_METADATA_PATH` siguen funcionando) | `cnn_service/app/inference.py` |
+| 2 | El diagnóstico muestra lo que la IA calcula: top-3 con barras, margen, confianza calibrada, calidad de imagen y versión; los rechazos indican el motivo exacto y qué hacer | `DiagnosticoIaInforme.vue` |
+| 3 | Grad-CAM: mapa de calor sobre la hoja, guardado con el diagnóstico y mostrado lado a lado (si falla, el diagnóstico sigue funcionando; `CNN_GRADCAM=false` lo desactiva) | `cnn_service/app/gradcam.py` |
+| 4 | Vista y PDF «Desempeño del modelo»: matriz de confusión, precisión/recall/F1, confirmados/corregidos/rechazados y evolución mensual | `/dashboard/desempeno-modelo` |
+| 5 | Exportación del dataset validado (ZIP con fotos por clase final + `metadata.csv`) para reentrenar; solo Administrador y Agrónomo | `training_v2/README.md` |
+| 6 | Login facial como segundo factor (correo y contraseña primero; el rostro reemplaza al OTP, con límite de intentos y sin exponer distancias); OTP reforzado; validaciones de usuarios | `AuthController`, `LoginView.vue` |
+| 7 | Comparación ResNet50 vs EfficientNetB0 con la misma partición, prueba de McNemar, tamaño, parámetros y tiempo en CPU. **No cambia el modelo activo** | `cnn_service/artifacts_v2c/` |
+| 8 | Validaciones de módulos: coordenadas dentro de Bolivia, superficies, suma de parcelas, montos con 2 decimales, estados de ventas, agenda del técnico, rango de reportes | `backend/app/Http/Requests` |
+
+## Pruebas automáticas
+
+Las pruebas **nunca usan la base real**: `phpunit.xml` apunta a `proinpa_test` y `tests/TestCase.php` aborta si la base no se llama así.
+
+```bash
+cd backend
+php artisan test
+```
+
+Para crear la base de pruebas una sola vez: `createdb proinpa_test` (PostgreSQL). Las pruebas cubren diagnósticos, desempeño, dataset, autenticación, usuarios, módulos agrícolas, comercial (stock, ventas, cotizaciones) e inspecciones/alertas.
+
+---
+
 # Estado Actual del Proyecto
 
 El sistema se encuentra funcional en entorno de desarrollo local.

@@ -46,7 +46,9 @@ class InventarioService
             'almacen:id,nombre_almacen',
         ])
             ->orderBy('ultima_actualizacion', 'desc')
-            ->paginate($perPage);
+            ->paginate($perPage)
+            // Cada fila ya trae su stock_actual: no se recalcula el stock total del producto por fila.
+            ->through(fn ($i) => tap($i, fn ($x) => $x->producto?->makeHidden('stock_total')));
     }
 
     public function alertasStock(): array
