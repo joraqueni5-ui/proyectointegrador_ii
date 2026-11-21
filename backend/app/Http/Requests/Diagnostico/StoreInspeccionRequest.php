@@ -9,6 +9,8 @@ use Illuminate\Validation\Validator;
 
 class StoreInspeccionRequest extends FormRequest
 {
+    use ValidaTecnicoDisponible;
+
     public function authorize(): bool
     {
         return true;
@@ -128,6 +130,8 @@ class StoreInspeccionRequest extends FormRequest
 
     public function withValidator(Validator $validator): void
     {
+        $validator->after(fn (Validator $validator) => $this->validarTecnicoDisponible($validator, null));
+
         $validator->after(function (Validator $validator) {
             $tipoInspeccion = $this->input('tipo_inspeccion', 'Cultivo');
             $idCultivo = $this->input('id_cultivo');

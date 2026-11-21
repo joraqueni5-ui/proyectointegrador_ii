@@ -113,6 +113,7 @@ class StoreProductorRequest extends FormRequest
                 'nullable',
                 'numeric',
                 'min:0',
+                'max:5000',
             ],
 
             'observaciones' => [
@@ -128,9 +129,9 @@ class StoreProductorRequest extends FormRequest
             'id_comunidad.required' => 'Debe seleccionar una comunidad.',
             'id_comunidad.exists' => 'La comunidad seleccionada no existe.',
 
-            'nombres.min' => 'El nombre debe tener al menos 2 caracteres.',
-            'apellido_paterno.min' => 'El apellido paterno debe tener al menos 2 caracteres.',
-            'apellido_materno.min' => 'El apellido materno debe tener al menos 2 caracteres.',
+            'nombres.min' => 'El nombre debe tener al menos 3 caracteres.',
+            'apellido_paterno.min' => 'El apellido paterno debe tener al menos 3 caracteres.',
+            'apellido_materno.min' => 'El apellido materno debe tener al menos 3 caracteres.',
 
             'nombres.required' => 'Los nombres del productor son obligatorios.',
             'nombres.regex' => 'Los nombres solo deben contener letras y espacios.',
@@ -165,7 +166,8 @@ class StoreProductorRequest extends FormRequest
             'direccion.max' => 'La dirección no debe superar los 255 caracteres.',
 
             'superficie_total_ha.numeric' => 'La superficie total debe ser un número.',
-            'superficie_total_ha.min' => 'La superficie total no puede ser negativa.',
+            'superficie_total_ha.min' => 'La superficie total debe estar entre 0 y 5000 ha.',
+            'superficie_total_ha.max' => 'La superficie total debe estar entre 0 y 5000 ha.',
         ];
     }
 }

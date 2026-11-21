@@ -29,9 +29,9 @@ class UpdateComunidadRequest extends FormRequest
             'municipio' => ['sometimes', 'string', 'max:100'],
             'provincia' => ['nullable', 'string', 'max:100'],
             'departamento' => ['nullable', 'string', 'max:100'],
-            'latitud' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitud' => ['nullable', 'numeric', 'between:-180,180'],
-            'altitud_msnm' => ['nullable', 'integer', 'min:0'],
+            'latitud' => ['nullable', 'numeric', 'between:-23,-9'],
+            'longitud' => ['nullable', 'numeric', 'between:-70,-57'],
+            'altitud_msnm' => ['nullable', 'integer', 'between:0,6600'],
             'activo' => ['nullable', 'boolean'],
         ];
     }
@@ -47,13 +47,13 @@ class UpdateComunidadRequest extends FormRequest
             'departamento.max' => 'El departamento no debe superar los 100 caracteres.',
 
             'latitud.numeric' => 'La latitud debe ser un número.',
-            'latitud.between' => 'La latitud debe estar entre -90 y 90.',
+            'latitud.between' => 'La latitud debe estar dentro de Bolivia (entre -23 y -9).',
 
             'longitud.numeric' => 'La longitud debe ser un número.',
-            'longitud.between' => 'La longitud debe estar entre -180 y 180.',
+            'longitud.between' => 'La longitud debe estar dentro de Bolivia (entre -70 y -57).',
 
             'altitud_msnm.integer' => 'La altitud debe ser un número entero.',
-            'altitud_msnm.min' => 'La altitud no puede ser negativa.',
+            'altitud_msnm.between' => 'La altitud debe estar entre 0 y 6600 msnm.',
 
             'activo.boolean' => 'El estado activo debe ser verdadero o falso.',
         ];

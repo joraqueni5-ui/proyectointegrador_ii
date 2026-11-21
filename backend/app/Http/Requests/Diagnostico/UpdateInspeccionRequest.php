@@ -8,6 +8,8 @@ use Illuminate\Validation\Validator;
 
 class UpdateInspeccionRequest extends FormRequest
 {
+    use ValidaTecnicoDisponible;
+
     public function authorize(): bool
     {
         return true;
@@ -123,6 +125,8 @@ class UpdateInspeccionRequest extends FormRequest
 
     public function withValidator(Validator $validator): void
     {
+        $validator->after(fn (Validator $validator) => $this->validarTecnicoDisponible($validator, $this->route('inspeccion')));
+
         $validator->after(function (Validator $validator) {
             $inspeccion = $this->route('inspeccion');
 

@@ -72,7 +72,7 @@ class ReporteFitosanitarioController extends Controller
 
     private function validarReporte(Request $request): array
     {
-        return $request->validate([
+        $datos = $request->validate([
             'tipo_reporte' => [
                 'nullable',
                 'in:general,inspecciones,diagnosticos,por_parcela,por_tecnico,por_enfermedad,alertas,no_realizadas,pre_siembra',
@@ -95,6 +95,15 @@ class ReporteFitosanitarioController extends Controller
 
             'busqueda' => ['nullable', 'string'],
         ]);
+
+        if (! empty($datos['fecha_inicio']) && ! empty($datos['fecha_fin'])
+            && \Illuminate\Support\Carbon::parse($datos['fecha_inicio'])->diffInDays(\Illuminate\Support\Carbon::parse($datos['fecha_fin'])) > 1096) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'fecha_fin' => 'El rango del reporte no puede superar los 3 años. Acorta las fechas.',
+            ]);
+        }
+
+        return $datos;
     }
 
     private function checkPermisoReporte(Request $request): void

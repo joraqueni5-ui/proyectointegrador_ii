@@ -81,7 +81,7 @@ class ReporteController extends Controller
 
     private function validarReporte(Request $request): array
     {
-        return $request->validate([
+        $datos = $request->validate([
             'tipo' => [
                 'required',
                 'in:productos,inventario,movimientos,ventas,cotizaciones,alertas_stock',
@@ -105,7 +105,16 @@ class ReporteController extends Controller
             'motivo' => ['nullable', 'string'],
 
             'monto_min' => ['nullable', 'numeric', 'min:0'],
-            'monto_max' => ['nullable', 'numeric', 'min:0'],
+            'monto_max' => ['nullable', 'numeric', 'min:0', 'gte:monto_min'],
         ]);
+
+        if (! empty($datos['fecha_inicio']) && ! empty($datos['fecha_fin'])
+            && \Illuminate\Support\Carbon::parse($datos['fecha_inicio'])->diffInDays(\Illuminate\Support\Carbon::parse($datos['fecha_fin'])) > 1096) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'fecha_fin' => 'El rango del reporte no puede superar los 3 años. Acorta las fechas.',
+            ]);
+        }
+
+        return $datos;
     }
 }

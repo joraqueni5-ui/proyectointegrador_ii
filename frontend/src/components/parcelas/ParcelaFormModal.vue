@@ -169,7 +169,7 @@
                 step="0.0000001"
                 placeholder="-16.5000000"
               />
-              <small class="field-help">Debe estar entre -90 y 90.</small>
+              <small class="field-help">Dentro de Bolivia: entre -23 y -9.</small>
             </div>
 
             <div class="form-group">
@@ -180,7 +180,7 @@
                 step="0.0000001"
                 placeholder="-68.1500000"
               />
-              <small class="field-help">Debe estar entre -180 y 180.</small>
+              <small class="field-help">Dentro de Bolivia: entre -70 y -57.</small>
             </div>
 
             <div class="form-group">
@@ -419,10 +419,10 @@ function updateMarkerFromInputs() {
   if (
     Number.isNaN(lat) ||
     Number.isNaN(lng) ||
-    lat < -90 ||
-    lat > 90 ||
-    lng < -180 ||
-    lng > 180
+    lat < -23 ||
+    lat > -9 ||
+    lng < -70 ||
+    lng > -57
   ) {
     return;
   }
@@ -498,13 +498,13 @@ function centrarEnCoordenadas() {
     return;
   }
 
-  if (lat < -90 || lat > 90) {
-    localError.value = 'La latitud debe estar entre -90 y 90.';
+  if (lat < -23 || lat > -9) {
+    localError.value = 'La latitud debe estar dentro de Bolivia (entre -23 y -9).';
     return;
   }
 
-  if (lng < -180 || lng > 180) {
-    localError.value = 'La longitud debe estar entre -180 y 180.';
+  if (lng < -70 || lng > -57) {
+    localError.value = 'La longitud debe estar dentro de Bolivia (entre -70 y -57).';
     return;
   }
 
@@ -536,28 +536,28 @@ function submit() {
   const lat = Number(form.latitud);
   const lng = Number(form.longitud);
 
-  if (Number.isNaN(lat) || lat < -90 || lat > 90) {
-    return showError('La latitud debe estar entre -90 y 90.');
+  if (Number.isNaN(lat) || lat < -23 || lat > -9) {
+    return showError('La latitud debe estar dentro de Bolivia (entre -23 y -9).');
   }
 
-  if (Number.isNaN(lng) || lng < -180 || lng > 180) {
-    return showError('La longitud debe estar entre -180 y 180.');
+  if (Number.isNaN(lng) || lng < -70 || lng > -57) {
+    return showError('La longitud debe estar dentro de Bolivia (entre -70 y -57).');
   }
 
   if (
     form.superficie_ha !== '' &&
     form.superficie_ha !== null &&
-    Number(form.superficie_ha) <= 0
+    (Number(form.superficie_ha) < 0.01 || Number(form.superficie_ha) > 500)
   ) {
-    return showError('La superficie debe ser mayor a 0.');
+    return showError('La superficie debe estar entre 0,01 y 500 ha.');
   }
 
   if (
     form.altitud_msnm !== '' &&
     form.altitud_msnm !== null &&
-    Number(form.altitud_msnm) < 0
+    (Number(form.altitud_msnm) < 0 || Number(form.altitud_msnm) > 6600)
   ) {
-    return showError('La altitud no puede ser negativa.');
+    return showError('La altitud debe estar entre 0 y 6600 msnm.');
   }
 
   const payload = {

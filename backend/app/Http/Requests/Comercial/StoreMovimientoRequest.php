@@ -17,7 +17,7 @@ class StoreMovimientoRequest extends FormRequest
             'id_producto' => ['required', 'exists:productos,id'],
             'id_almacen' => ['required', 'exists:almacenes,id'],
             'tipo' => ['required', 'in:Entrada,Salida'],
-            'cantidad' => ['required', 'numeric', 'min:0.001'],
+            'cantidad' => ['required', 'numeric', 'min:0.001', 'max:1000000', 'decimal:0,3'],
             'motivo' => [
                 'required',
                 'in:Compra,Venta,Devolucion,Ajuste_entrada,Ajuste_salida,Traslado_entrada,Traslado_salida,Otro',
@@ -42,6 +42,8 @@ class StoreMovimientoRequest extends FormRequest
             'cantidad.required' => 'La cantidad es obligatoria.',
             'cantidad.numeric' => 'La cantidad debe ser numérica.',
             'cantidad.min' => 'La cantidad debe ser mayor a 0.',
+            'cantidad.max' => 'La cantidad no puede superar 1.000.000 unidades.',
+            'cantidad.decimal' => 'La cantidad admite como máximo 3 decimales.',
 
             'motivo.required' => 'Debe seleccionar el motivo.',
             'motivo.in' => 'El motivo seleccionado no es válido.',

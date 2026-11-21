@@ -121,6 +121,7 @@ class UpdateProductorRequest extends FormRequest
                 'nullable',
                 'numeric',
                 'min:0',
+                'max:5000',
             ],
 
             'observaciones' => [
@@ -177,7 +178,8 @@ class UpdateProductorRequest extends FormRequest
             'direccion.max' => 'La dirección no debe superar los 255 caracteres.',
 
             'superficie_total_ha.numeric' => 'La superficie total debe ser un número.',
-            'superficie_total_ha.min' => 'La superficie total no puede ser negativa.',
+            'superficie_total_ha.min' => 'La superficie total debe estar entre 0 y 5000 ha.',
+            'superficie_total_ha.max' => 'La superficie total debe estar entre 0 y 5000 ha.',
 
             'activo.boolean' => 'El estado activo debe ser verdadero o falso.',
         ];

@@ -63,6 +63,8 @@ class ProductoService
     {
         return DB::transaction(function () use ($dto, $idUsuario) {
             $data = $dto->toArray();
+            // La columna no admite nulos: sin stock mínimo declarado se guarda 0.
+            $data['stock_minimo'] ??= 0;
             $data['id_usuario_registro'] = $idUsuario;
             $data['id_usuario_actualizacion'] = $idUsuario;
 

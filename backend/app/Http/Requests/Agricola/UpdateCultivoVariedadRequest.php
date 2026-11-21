@@ -80,6 +80,7 @@ class UpdateCultivoVariedadRequest extends FormRequest
                 'nullable',
                 'numeric',
                 'min:0.01',
+                'max:100000',
             ],
 
             'procedencia_semilla' => [
@@ -122,6 +123,7 @@ class UpdateCultivoVariedadRequest extends FormRequest
 
             'cantidad_semilla_kg.numeric' => 'La cantidad de semilla debe ser un número.',
             'cantidad_semilla_kg.min' => 'La cantidad de semilla debe ser mayor a 0.',
+            'cantidad_semilla_kg.max' => 'La cantidad de semilla no puede superar los 100.000 kg.',
 
             'procedencia_semilla.max' => 'La procedencia de la semilla no debe superar los 150 caracteres.',
 

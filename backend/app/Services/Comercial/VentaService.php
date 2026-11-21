@@ -140,15 +140,31 @@ class VentaService
 
     public function cambiarEstado(Factura $factura, string $estado): Factura
     {
-        if ($factura->estado === 'Anulada') {
-            throw new ReglaNegocioException('No se puede cambiar el estado de una venta anulada.');
-        }
+        return DB::transaction(function () use ($factura, $estado) {
+            $factura = Factura::whereKey($factura->id)->lockForUpdate()->firstOrFail();
 
-        $factura->update([
-            'estado' => $estado,
-        ]);
+            if ($factura->estado === 'Anulada') {
+                throw new ReglaNegocioException('No se puede cambiar el estado de una venta anulada.');
+            }
 
-        return $this->ver($factura->fresh());
+            // Pendiente -> Parcial -> Pagada. Una venta pagada no vuelve atrás (se anula si hay un error).
+            $permitidas = [
+                'Pendiente' => ['Parcial', 'Pagada'],
+                'Parcial' => ['Pendiente', 'Pagada'],
+                'Pagada' => [],
+            ];
+
+            if ($estado !== $factura->estado && ! in_array($estado, $permitidas[$factura->estado] ?? [], true)) {
+                throw new ReglaNegocioException(
+                    "No se puede cambiar una venta de {$factura->estado} a {$estado}."
+                    .($factura->estado === 'Pagada' ? ' Si hubo un error, anula la venta.' : '')
+                );
+            }
+
+            $factura->update(['estado' => $estado]);
+
+            return $this->ver($factura->fresh());
+        });
     }
 
     public function anular(Factura $factura, int $idUsuario): Factura

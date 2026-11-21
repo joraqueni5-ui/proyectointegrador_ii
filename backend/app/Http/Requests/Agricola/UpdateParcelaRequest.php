@@ -8,6 +8,8 @@ use Illuminate\Validation\Rule;
 
 class UpdateParcelaRequest extends FormRequest
 {
+    use ValidaSuperficieParcela;
+
     public function authorize(): bool
     {
         return true;
@@ -79,14 +81,14 @@ class UpdateParcelaRequest extends FormRequest
                 'sometimes',
                 'required',
                 'numeric',
-                'between:-90,90',
+                'between:-23,-9',
             ],
 
             'longitud' => [
                 'sometimes',
                 'required',
                 'numeric',
-                'between:-180,180',
+                'between:-70,-57',
             ],
 
             'coordenadas_texto' => [
@@ -98,13 +100,15 @@ class UpdateParcelaRequest extends FormRequest
             'altitud_msnm' => [
                 'nullable',
                 'integer',
-                'min:0',
+                'between:0,6600',
             ],
 
             'superficie_ha' => [
                 'nullable',
                 'numeric',
                 'min:0.01',
+                'max:500',
+                'decimal:0,2',
             ],
 
             'tipo_suelo' => [
@@ -151,19 +155,21 @@ class UpdateParcelaRequest extends FormRequest
 
             'latitud.required' => 'La latitud es obligatoria para ubicar la parcela en el mapa.',
             'latitud.numeric' => 'La latitud debe ser un número.',
-            'latitud.between' => 'La latitud debe estar entre -90 y 90.',
+            'latitud.between' => 'La latitud debe estar dentro de Bolivia (entre -23 y -9).',
 
             'longitud.required' => 'La longitud es obligatoria para ubicar la parcela en el mapa.',
             'longitud.numeric' => 'La longitud debe ser un número.',
-            'longitud.between' => 'La longitud debe estar entre -180 y 180.',
+            'longitud.between' => 'La longitud debe estar dentro de Bolivia (entre -70 y -57).',
 
             'coordenadas_texto.max' => 'Las coordenadas en texto no deben superar los 100 caracteres.',
 
             'altitud_msnm.integer' => 'La altitud debe ser un número entero.',
-            'altitud_msnm.min' => 'La altitud no puede ser negativa.',
+            'altitud_msnm.between' => 'La altitud debe estar entre 0 y 6600 msnm.',
 
             'superficie_ha.numeric' => 'La superficie debe ser un número.',
-            'superficie_ha.min' => 'La superficie debe ser mayor a 0.',
+            'superficie_ha.min' => 'La superficie debe estar entre 0,01 y 500 ha.',
+            'superficie_ha.max' => 'La superficie debe estar entre 0,01 y 500 ha.',
+            'superficie_ha.decimal' => 'La superficie admite como máximo 2 decimales.',
 
             'tipo_suelo.in' => 'El tipo de suelo seleccionado no es válido.',
             'pendiente.in' => 'La pendiente seleccionada no es válida.',
@@ -173,5 +179,12 @@ class UpdateParcelaRequest extends FormRequest
 
             'estado.in' => 'El estado de la parcela no es válido.',
         ];
+    }
+
+    public function withValidator(\Illuminate\Validation\Validator $validator): void
+    {
+        $validator->after(function ($validator) {
+            $this->validarSuperficieContraTotal($validator, $this->route('parcela') instanceof \App\Models\Parcela ? $this->route('parcela') : \App\Models\Parcela::find($this->route('parcela')));
+        });
     }
 }

@@ -105,7 +105,7 @@
                 step="0.0000001"
                 placeholder="-16.5000000"
               />
-              <small class="field-help">Entre -90 y 90.</small>
+              <small class="field-help">Dentro de Bolivia: entre -23 y -9.</small>
             </div>
 
             <div class="form-group">
@@ -116,7 +116,7 @@
                 step="0.0000001"
                 placeholder="-68.1500000"
               />
-              <small class="field-help">Entre -180 y 180.</small>
+              <small class="field-help">Dentro de Bolivia: entre -70 y -57.</small>
             </div>
           </div>
         </div>
@@ -263,14 +263,14 @@ function submit() {
     return showError('Debes seleccionar un departamento.');
   }
 
-  if (form.altitud_msnm && Number(form.altitud_msnm) < 0) {
-    return showError('La altitud no puede ser negativa.');
+  if (form.altitud_msnm && (Number(form.altitud_msnm) < 0 || Number(form.altitud_msnm) > 6600)) {
+    return showError('La altitud debe estar entre 0 y 6600 msnm.');
   }
 
-  let message = validarCoordenada(form.latitud, -90, 90, 'La latitud');
+  let message = validarCoordenada(form.latitud, -23, -9, 'La latitud (Bolivia)');
   if (message) return showError(message);
 
-  message = validarCoordenada(form.longitud, -180, 180, 'La longitud');
+  message = validarCoordenada(form.longitud, -70, -57, 'La longitud (Bolivia)');
   if (message) return showError(message);
 
   const payload = {

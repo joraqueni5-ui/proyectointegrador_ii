@@ -19,9 +19,9 @@ class StoreProductoRequest extends FormRequest
             'categoria' => ['required', 'in:Semilla,Bioinsumo,Agroquimico,Fertilizante,Equipo,Otro'],
             'descripcion' => ['nullable', 'string'],
             'unidad_medida' => ['required', 'string', 'max:30'],
-            'precio_unitario' => ['required', 'numeric', 'min:0'],
-            'precio_costo' => ['nullable', 'numeric', 'min:0'],
-            'stock_minimo' => ['nullable', 'numeric', 'min:0'],
+            'precio_unitario' => ['required', 'numeric', 'min:0', 'max:9999999', 'decimal:0,2'],
+            'precio_costo' => ['nullable', 'numeric', 'min:0', 'max:9999999', 'decimal:0,2'],
+            'stock_minimo' => ['nullable', 'numeric', 'min:0', 'max:9999999'],
             'imagen_url' => ['nullable', 'string', 'max:500'],
             'activo' => ['nullable', 'boolean'],
         ];
@@ -46,9 +46,13 @@ class StoreProductoRequest extends FormRequest
             'precio_unitario.required' => 'El precio unitario es obligatorio.',
             'precio_unitario.numeric' => 'El precio unitario debe ser numérico.',
             'precio_unitario.min' => 'El precio unitario no puede ser negativo.',
+            'precio_unitario.max' => 'El precio unitario no puede superar 9.999.999 Bs.',
+            'precio_unitario.decimal' => 'El precio unitario admite como máximo 2 decimales.',
 
             'precio_costo.numeric' => 'El precio de costo debe ser numérico.',
             'precio_costo.min' => 'El precio de costo no puede ser negativo.',
+            'precio_costo.max' => 'El precio de costo no puede superar 9.999.999 Bs.',
+            'precio_costo.decimal' => 'El precio de costo admite como máximo 2 decimales.',
 
             'stock_minimo.numeric' => 'El stock mínimo debe ser numérico.',
             'stock_minimo.min' => 'El stock mínimo no puede ser negativo.',

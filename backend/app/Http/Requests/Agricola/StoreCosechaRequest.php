@@ -53,6 +53,8 @@ class StoreCosechaRequest extends FormRequest
                 'required',
                 'numeric',
                 'min:0.001',
+                'max:10000',
+                'decimal:0,3',
             ],
 
             'calidad' => [
@@ -141,6 +143,8 @@ class StoreCosechaRequest extends FormRequest
             'cantidad_toneladas.required' => 'La cantidad cosechada es obligatoria.',
             'cantidad_toneladas.numeric' => 'La cantidad cosechada debe ser un número.',
             'cantidad_toneladas.min' => 'La cantidad cosechada debe ser mayor a 0.',
+            'cantidad_toneladas.max' => 'La cantidad cosechada no puede superar las 10.000 toneladas.',
+            'cantidad_toneladas.decimal' => 'La cantidad cosechada admite como máximo 3 decimales.',
 
             'calidad.required' => 'Debe seleccionar la calidad.',
             'calidad.in' => 'La calidad seleccionada no es válida.',
