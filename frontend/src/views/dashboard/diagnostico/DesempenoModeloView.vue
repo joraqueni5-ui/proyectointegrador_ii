@@ -504,7 +504,7 @@ async function exportarPdf() {
 .dm-campo label {
   color: var(--gris-600);
   font-size: 11.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -597,7 +597,7 @@ async function exportarPdf() {
   display: block;
   color: var(--gris-500);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -607,7 +607,7 @@ async function exportarPdf() {
   margin-top: 4px;
   color: var(--gris-950);
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .dm-kpi small {
@@ -635,7 +635,7 @@ async function exportarPdf() {
   margin: 0 0 8px;
   color: var(--gris-950);
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .dm-panel h3 i {
@@ -667,7 +667,7 @@ async function exportarPdf() {
   padding: 8px 10px;
   color: var(--gris-600);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-align: center;
 }
 
@@ -686,7 +686,7 @@ async function exportarPdf() {
 .dm-matriz td strong {
   display: block;
   font-size: 17px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .dm-matriz td small {
@@ -698,7 +698,7 @@ async function exportarPdf() {
 .dm-matriz .total {
   background: transparent;
   color: var(--gris-500);
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .dm-tabla td,
@@ -782,7 +782,7 @@ async function exportarPdf() {
 .dm-grafico .valor {
   fill: var(--gris-800);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .dm-vacio {

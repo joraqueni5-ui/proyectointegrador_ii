@@ -20,7 +20,7 @@
   padding: 12px 14px;
   border-radius: 12px;
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .ventas-error {
@@ -114,7 +114,7 @@
 .venta-kpi-label {
   color: rgba(255, 255, 255, .72);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
 }
@@ -123,7 +123,7 @@
   margin-top: 10px;
   color: white;
   font-size: 32px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1.1;
 }
 
@@ -183,7 +183,7 @@
   display: block;
   color: var(--gris-500, #64748b);
   font-size: 11.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
@@ -193,7 +193,7 @@
   margin-top: 4px;
   color: var(--gris-950, #0f172a);
   font-size: 24px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1.1;
 }
 
@@ -252,7 +252,7 @@
   margin: 0;
   color: var(--gris-950, #0f172a);
   font-size: 16px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .ventas-filtros-head p {
@@ -328,7 +328,7 @@
   background: #f1f5f9;
   color: var(--gris-500, #64748b);
   font-size: 11px;
-  font-weight: 950;
+  font-weight: 800;
   text-align: left;
   text-transform: uppercase;
   letter-spacing: .05em;
@@ -360,7 +360,7 @@
   display: block;
   color: var(--gris-950, #0f172a);
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-code-cell small,
@@ -385,7 +385,7 @@
   gap: 7px;
   color: var(--gris-700, #334155);
   font-size: 12.5px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .venta-metodo i {
@@ -457,7 +457,7 @@
   text-align: center;
   color: var(--gris-400, #94a3b8);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .ventas-empty i {
@@ -564,7 +564,7 @@
 .venta-anular-header span {
   color: rgba(255, 255, 255, .72);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: .07em;
   text-transform: uppercase;
 }
@@ -575,7 +575,7 @@
   margin: 5px 0 5px;
   color: white;
   font-size: 23px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-form-header p,
@@ -640,7 +640,7 @@
   gap: 9px;
   color: var(--gris-950, #0f172a);
   font-size: 15px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-section-title i {
@@ -654,7 +654,7 @@
   background: #ecfdf5;
   color: #166534;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .venta-form-grid {
@@ -677,7 +677,7 @@
 
 .venta-help.danger {
   color: #b91c1c;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .venta-readonly {
@@ -750,7 +750,7 @@
   background: #ecfdf5;
   color: #166534;
   font-size: 15px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-producto-fields {
@@ -771,7 +771,7 @@
 
 .venta-line-total span {
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
@@ -779,7 +779,7 @@
 .venta-line-total strong {
   margin-top: 4px;
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-remove-line {
@@ -845,7 +845,7 @@
   margin: 14px 0 4px;
   color: white;
   font-size: 18px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-summary-card p {
@@ -883,7 +883,7 @@
   display: block;
   color: rgba(255, 255, 255, .72);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .06em;
 }
@@ -893,7 +893,7 @@
   margin-top: 5px;
   color: white;
   font-size: 26px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -928,7 +928,7 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .venta-summary-status strong {
@@ -936,7 +936,7 @@
   border-radius: 999px;
   background: #bfdbfe;
   font-size: 11px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-form-error {
@@ -946,7 +946,7 @@
   background: #fee2e2;
   color: #b91c1c;
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 800;
   animation: ventaShake .25s ease;
 }
 
@@ -1004,7 +1004,7 @@
   margin-bottom: 5px;
   color: var(--gris-500, #64748b);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
@@ -1013,7 +1013,7 @@
   margin: 0;
   color: var(--gris-950, #0f172a);
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-info-card.total p {
@@ -1043,7 +1043,7 @@
   margin: 0 0 9px;
   color: var(--gris-950, #0f172a);
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-detail-section h4 i {
@@ -1073,7 +1073,7 @@
   background: #f1f5f9;
   color: var(--gris-500, #64748b);
   font-size: 10.5px;
-  font-weight: 950;
+  font-weight: 800;
   text-align: left;
   text-transform: uppercase;
   letter-spacing: .05em;
@@ -1090,7 +1090,7 @@
 .venta-productos-table td strong {
   display: block;
   color: var(--gris-950, #0f172a);
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-productos-table td small {
@@ -1119,7 +1119,7 @@
 .venta-movimiento-item strong {
   color: var(--gris-950, #0f172a);
   font-size: 12.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-movimiento-item small {
@@ -1133,7 +1133,7 @@
 .venta-movimiento-item span {
   color: #166534;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-detail-note {
@@ -1177,7 +1177,7 @@
   display: block;
   margin-bottom: 5px;
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .06em;
 }
@@ -1185,7 +1185,7 @@
 .venta-anular-summary strong {
   display: block;
   font-size: 15px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-anular-summary p {
@@ -1205,7 +1205,7 @@
 .venta-anular-total small {
   display: block;
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
@@ -1213,7 +1213,7 @@
   display: block;
   margin-top: 4px;
   font-size: 20px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-anular-warning {
@@ -1433,7 +1433,7 @@
   margin: 0;
   color: #0f172a;
   font-size: 18px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-comprobante-toolbar p {
@@ -1487,7 +1487,7 @@
   transform: rotate(-90deg);
   color: rgba(22, 163, 74, .07);
   font-size: 44px;
-  font-weight: 950;
+  font-weight: 800;
   letter-spacing: .12em;
 }
 
@@ -1507,7 +1507,7 @@
   margin: 0;
   color: #064e3b;
   font-size: 25px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1.1;
 }
 
@@ -1515,7 +1515,7 @@
   margin: 6px 0 3px;
   color: #334155;
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .venta-comprobante-head small {
@@ -1526,7 +1526,7 @@
   background: #fef2f2;
   color: #b91c1c;
   font-size: 9.5px;
-  font-weight: 950;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
@@ -1544,7 +1544,7 @@
   display: block;
   color: #15803d;
   font-size: 10px;
-  font-weight: 950;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .08em;
 }
@@ -1554,7 +1554,7 @@
   margin-top: 5px;
   color: #064e3b;
   font-size: 24px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 /* INFO */
@@ -1578,7 +1578,7 @@
   display: block;
   color: #64748b;
   font-size: 9px;
-  font-weight: 950;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
@@ -1587,7 +1587,7 @@
   margin: 5px 0 0;
   color: #111827;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.25;
 }
 
@@ -1603,7 +1603,7 @@
   margin: 0 0 10px;
   color: #064e3b;
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-comprobante-table {
@@ -1619,7 +1619,7 @@
   background: #064e3b;
   color: white;
   font-size: 10px;
-  font-weight: 950;
+  font-weight: 800;
   text-align: left;
   text-transform: uppercase;
   letter-spacing: .04em;
@@ -1641,7 +1641,7 @@
 .venta-comprobante-table td strong {
   display: block;
   color: #111827;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .venta-comprobante-table td small {
@@ -1655,7 +1655,7 @@
 .venta-comprobante-empty {
   text-align: center;
   color: #94a3b8 !important;
-  font-weight: 850 !important;
+  font-weight: 800 !important;
 }
 
 /* TOTALES */
@@ -1677,7 +1677,7 @@
   background: #f8fafc;
   color: #334155;
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .venta-comprobante-totales .total {
@@ -1729,7 +1729,7 @@
   margin: 8px 0 0;
   color: #334155;
   font-size: 11.5px;
-  font-weight: 850;
+  font-weight: 800;
   text-align: center;
 }
 

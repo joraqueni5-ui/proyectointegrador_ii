@@ -306,7 +306,7 @@ const accionPrincipal = computed(() => {
   background: var(--gris-200);
   color: var(--gris-700);
   font-size: 11.5px;
-  font-weight: 900;
+  font-weight: 800;
   white-space: nowrap;
 }
 
@@ -332,7 +332,7 @@ const accionPrincipal = computed(() => {
 .insp-fecha strong {
   color: var(--gris-950);
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .insp-fecha span {
@@ -353,7 +353,7 @@ const accionPrincipal = computed(() => {
   color: var(--verde-700);
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

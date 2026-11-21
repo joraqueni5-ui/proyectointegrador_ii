@@ -73,7 +73,7 @@ defineEmits(['close']);
   margin: 0;
   color: #b91c1c;
   font-size: 30px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .user-alert-card p {
@@ -100,7 +100,7 @@ defineEmits(['close']);
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 800;
   cursor: pointer;
   box-shadow: 0 12px 24px rgba(220, 38, 38, 0.28);
 }

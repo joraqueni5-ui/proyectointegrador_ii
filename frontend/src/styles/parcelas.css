@@ -47,7 +47,7 @@
   margin: 0;
   color: var(--gris-950);
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .parcelas-toolbar p {
@@ -104,7 +104,7 @@
   color: var(--verde-700);
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .parcela-code-cell small {
@@ -135,7 +135,7 @@
   background: var(--verde-100);
   color: var(--verde-700);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .parcela-productor-cell span {
@@ -259,7 +259,7 @@
   margin-bottom: 14px;
   color: var(--verde-700);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .parcela-section-title.between {
@@ -376,7 +376,7 @@
   margin: 0;
   color: white;
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 800;
   font-family: 'JetBrains Mono', monospace;
 }
 
@@ -406,7 +406,7 @@
   margin: 4px 0 -2px;
   color: var(--verde-700);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -438,7 +438,7 @@
   margin: 0 0 4px;
   color: var(--gris-500);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

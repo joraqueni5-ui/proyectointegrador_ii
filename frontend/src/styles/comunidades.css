@@ -42,7 +42,7 @@
   margin: 0;
   color: var(--gris-950);
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .comunidades-toolbar p {
@@ -107,14 +107,14 @@
   background: linear-gradient(135deg, var(--verde-500), var(--verde-700));
   color: white;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .comunidad-name-cell strong {
   display: block;
   color: var(--gris-950);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .comunidad-name-cell small {
@@ -239,7 +239,7 @@
   margin-bottom: 14px;
   color: var(--verde-700);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .comunidad-section-title i {
@@ -309,14 +309,14 @@
   background: rgba(255, 255, 255, 0.16);
   border: 1px solid rgba(255, 255, 255, 0.22);
   font-size: 28px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .comunidad-view-main h3 {
   margin: 0 0 8px;
   color: white;
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .comunidad-view-badges {
@@ -338,7 +338,7 @@
   margin: 4px 0 -2px;
   color: var(--verde-700);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -370,7 +370,7 @@
   margin: 0 0 4px;
   color: var(--gris-500);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -418,14 +418,14 @@
   border-radius: 999px;
   background: var(--verde-100);
   color: var(--verde-700);
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .comunidad-producer-item strong {
   display: block;
   color: var(--gris-950);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .comunidad-producer-item small {
@@ -459,7 +459,7 @@
   margin: 0;
   color: var(--gris-950);
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .comunidad-delete-modal p {

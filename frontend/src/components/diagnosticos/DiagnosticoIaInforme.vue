@@ -298,7 +298,7 @@ const medidores = computed(() => {
   margin: 0 0 12px;
   color: var(--verde-700);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .ia-barras {
@@ -319,7 +319,7 @@ const medidores = computed(() => {
 
 .ia-barra.principal .ia-barra-cab {
   color: var(--gris-950);
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .ia-barra-pista {
@@ -360,7 +360,7 @@ const medidores = computed(() => {
   margin-bottom: 4px;
   color: var(--gris-500);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -370,7 +370,7 @@ const medidores = computed(() => {
   overflow-wrap: anywhere;
   color: var(--gris-950);
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .ia-metrica small,
@@ -405,14 +405,14 @@ const medidores = computed(() => {
   margin-top: 4px;
   color: var(--gris-950);
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .ia-chip {
   padding: 2px 8px;
   border-radius: 999px;
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .ia-chip.tono-ok { background: #dcfce7; color: #166534; }

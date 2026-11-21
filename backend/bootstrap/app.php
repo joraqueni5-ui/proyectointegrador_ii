@@ -18,11 +18,19 @@ return Application::configure(basePath: dirname(__DIR__))
             'usuario.activo' => \App\Http\Middleware\UsuarioActivo::class,
         ]);
 
+        // Sin sesión, las rutas api/* responden 401 en JSON (no intentan redirigir a una ruta "login" que no existe).
+        $middleware->redirectGuestsTo(fn (\Illuminate\Http\Request $request) => $request->is('api/*') ? null : url('/'));
+
         $middleware->encryptCookies(except: [
             'trusted_device_id',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Toda respuesta de error de api/* es JSON aunque la petición no traiga "Accept: application/json".
+        $exceptions->shouldRenderJsonWhen(
+            fn (\Illuminate\Http\Request $request, \Throwable $e) => $request->is('api/*') || $request->expectsJson()
+        );
+
         $exceptions->render(function (\App\Exceptions\ImagenRechazadaException $exception) {
             return response()->json([
                 'message' => $exception->getMessage(),

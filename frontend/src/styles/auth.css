@@ -298,7 +298,8 @@
   height: 24px;
 }
 
-.card-title {
+/* Solo en login/OTP: antes era global y deformaba los títulos de tarjeta del dashboard */
+.proinpa-auth-page .card-title {
   font-family: 'Lora', serif;
   font-size: 1.6rem;
   font-weight: 600;

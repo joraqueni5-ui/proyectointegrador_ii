@@ -187,7 +187,7 @@
 .inventario-stock-value {
   margin: 14px 0 8px;
   font-size: 28px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .inventario-stock-value small {
@@ -829,7 +829,7 @@
 .productos-kpi-label {
   color: rgba(255, 255, 255, .72);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
 }
@@ -837,7 +837,7 @@
 .productos-kpi-value {
   margin-top: 10px;
   font-size: 38px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -864,7 +864,7 @@
   display: block;
   color: #64748b;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
@@ -874,7 +874,7 @@
   margin-top: 5px;
   color: #0f172a;
   font-size: 28px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -1016,7 +1016,7 @@
   display: block;
   color: #0f172a;
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .producto-cell small {
@@ -1025,7 +1025,7 @@
   color: #64748b;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .producto-cell p {
@@ -1040,7 +1040,7 @@
 .producto-stock-cell strong {
   display: block;
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .producto-stock-cell small {
@@ -1169,7 +1169,7 @@
   margin-bottom: 14px;
   color: #166534;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .productos-section-title i {
@@ -1228,7 +1228,7 @@
   margin: 0;
   color: #0f172a;
   font-size: 20px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .productos-delete-modal p {
@@ -1427,7 +1427,7 @@
   margin: 0;
   color: white;
   font-size: 22px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .productos-view-header p {
@@ -1477,7 +1477,7 @@
   margin-bottom: 5px;
   color: #64748b;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
@@ -1486,7 +1486,7 @@
   margin: 0;
   color: #0f172a;
   font-size: 14px;
-  font-weight: 850;
+  font-weight: 800;
   line-height: 1.5;
 }
 
@@ -1585,7 +1585,7 @@
 .almacenes-kpi-label {
   color: rgba(255, 255, 255, .72);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
 }
@@ -1593,7 +1593,7 @@
 .almacenes-kpi-value {
   margin-top: 10px;
   font-size: 38px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -1620,7 +1620,7 @@
   display: block;
   color: #64748b;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
@@ -1630,7 +1630,7 @@
   margin-top: 5px;
   color: #0f172a;
   font-size: 28px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -1773,7 +1773,7 @@
   display: block;
   color: #0f172a;
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .almacen-cell small {
@@ -1782,7 +1782,7 @@
   color: #64748b;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .almacen-location {
@@ -1919,7 +1919,7 @@
   margin-bottom: 14px;
   color: #166534;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .almacenes-section-title i {
@@ -1977,7 +1977,7 @@
   margin: 0;
   color: white;
   font-size: 22px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .almacenes-view-header p {
@@ -2027,7 +2027,7 @@
   margin-bottom: 5px;
   color: #64748b;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
@@ -2036,7 +2036,7 @@
   margin: 0;
   color: #0f172a;
   font-size: 14px;
-  font-weight: 850;
+  font-weight: 800;
   line-height: 1.5;
 }
 
@@ -2051,7 +2051,7 @@
   margin: 4px 0 10px;
   color: #166534;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .almacenes-empty-block {
@@ -2092,7 +2092,7 @@
   display: block;
   color: #0f172a;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .almacenes-inventario-item small {
@@ -2106,7 +2106,7 @@
 .almacenes-inventario-item span {
   color: #166534;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 /* MODAL ESTADO */
@@ -2141,7 +2141,7 @@
   margin: 0;
   color: #0f172a;
   font-size: 20px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .almacenes-estado-modal p {
@@ -2371,7 +2371,7 @@
 .movimientos-kpi-label {
   color: rgba(255, 255, 255, .72);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
 }
@@ -2379,7 +2379,7 @@
 .movimientos-kpi-value {
   margin-top: 10px;
   font-size: 38px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -2406,7 +2406,7 @@
   display: block;
   color: #64748b;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
@@ -2416,7 +2416,7 @@
   margin-top: 5px;
   color: #0f172a;
   font-size: 28px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -2537,7 +2537,7 @@
   display: block;
   color: #0f172a;
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .movimiento-id-cell small,
@@ -2558,7 +2558,7 @@
   display: block;
   color: #0f172a;
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .movimiento-cantidad-cell small,
@@ -2660,7 +2660,7 @@
   margin-bottom: 14px;
   color: #166534;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .movimientos-section-title i {
@@ -2704,7 +2704,7 @@
   background: white;
   color: #64748b;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
   transition: .2s ease;
 }
 
@@ -2744,7 +2744,7 @@
   display: block;
   color: #166534;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
@@ -2754,7 +2754,7 @@
   margin-top: 4px;
   color: #14532d;
   font-size: 19px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .movimientos-stock-preview small {
@@ -2816,7 +2816,7 @@
   margin: 0;
   color: white;
   font-size: 22px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .movimientos-view-header p {
@@ -2866,7 +2866,7 @@
   margin-bottom: 5px;
   color: #64748b;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
@@ -2875,7 +2875,7 @@
   margin: 0;
   color: #0f172a;
   font-size: 14px;
-  font-weight: 850;
+  font-weight: 800;
   line-height: 1.5;
 }
 
@@ -2910,7 +2910,7 @@
   display: block;
   color: #0f172a;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .movimientos-pagination-info span {
@@ -3135,7 +3135,7 @@
 .inventario-dashboard-kpi-label {
   color: rgba(255, 255, 255, .72);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
 }
@@ -3143,7 +3143,7 @@
 .inventario-dashboard-kpi-value {
   margin-top: 10px;
   font-size: 38px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -3170,7 +3170,7 @@
   display: block;
   color: #64748b;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
@@ -3180,7 +3180,7 @@
   margin-top: 5px;
   color: #0f172a;
   font-size: 28px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -3295,7 +3295,7 @@
   display: block;
   color: #0f172a;
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .inventario-dashboard-quick-card span {
@@ -3335,7 +3335,7 @@
   margin: 0;
   color: #0f172a;
   font-size: 18px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .inventario-dashboard-section-title p {
@@ -3352,7 +3352,7 @@
   background: #ecfdf5;
   color: #166534;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .inventario-dashboard-stock-grid {
@@ -3384,7 +3384,7 @@
   display: block;
   color: #0f172a;
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .inventario-dashboard-stock-head small {
@@ -3393,14 +3393,14 @@
   color: #64748b;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .inventario-dashboard-stock-value {
   margin-top: 14px;
   color: #166534;
   font-size: 28px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -3504,7 +3504,7 @@
 .inventario-dashboard-mov-head strong {
   color: #0f172a;
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .inventario-dashboard-mov-content p {
@@ -3536,7 +3536,7 @@
   margin-top: 3px;
   color: #0f172a;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 /* ALERTAS RESUMEN */
@@ -3586,7 +3586,7 @@
 .inventario-dashboard-alert-head strong {
   color: #0f172a;
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .inventario-dashboard-alert-content p {
@@ -3794,7 +3794,7 @@
 .alertas-stock-kpi-label {
   color: rgba(255, 255, 255, .72);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
 }
@@ -3802,7 +3802,7 @@
 .alertas-stock-kpi-value {
   margin-top: 10px;
   font-size: 38px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -3829,7 +3829,7 @@
   display: block;
   color: #64748b;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
@@ -3839,7 +3839,7 @@
   margin-top: 5px;
   color: #0f172a;
   font-size: 28px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -3987,7 +3987,7 @@
   display: block;
   color: #0f172a;
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .alerta-producto-cell small {
@@ -3996,7 +3996,7 @@
   color: #64748b;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .alerta-almacen {
@@ -4012,7 +4012,7 @@
   display: block;
   color: #0f172a;
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .alerta-stock-cell small {
@@ -4047,7 +4047,7 @@
   background: white;
   color: #64748b;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   transition: .2s ease;
 }
 

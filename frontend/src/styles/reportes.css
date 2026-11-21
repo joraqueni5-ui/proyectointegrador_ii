@@ -20,7 +20,7 @@
   padding: 12px 14px;
   border-radius: 12px;
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .reportes-error {
@@ -159,7 +159,7 @@
   display: block;
   color: var(--gris-950, #0f172a);
   font-size: 13.5px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1.2;
 }
 
@@ -215,7 +215,7 @@
   margin: 0;
   color: var(--gris-950, #0f172a);
   font-size: 16px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .reportes-filtros-head p {
@@ -234,7 +234,7 @@
   background: #ecfdf5;
   color: #166534;
   font-size: 11.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .reportes-filtros-grid {
@@ -252,7 +252,7 @@
 .reportes-filtros-grid label {
   color: var(--gris-500, #64748b);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
@@ -349,7 +349,7 @@
 .reportes-empty-state strong {
   color: var(--gris-950, #0f172a);
   font-size: 18px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .reportes-empty-state span {
@@ -381,7 +381,7 @@
   margin: 0;
   color: var(--gris-950, #0f172a);
   font-size: 18px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .reportes-section-head p {
@@ -400,7 +400,7 @@
   background: #eff6ff;
   color: #1d4ed8;
   font-size: 11.5px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .reportes-resumen-grid {
@@ -444,7 +444,7 @@
   display: block;
   color: var(--gris-500, #64748b);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
@@ -454,7 +454,7 @@
   margin-top: 4px;
   color: var(--gris-950, #0f172a);
   font-size: 20px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1.1;
 }
 
@@ -481,7 +481,7 @@
   margin: 0;
   color: var(--gris-950, #0f172a);
   font-size: 16px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .reportes-table-head p {
@@ -555,7 +555,7 @@
 .reportes-empty-table strong {
   color: var(--gris-950, #0f172a);
   font-size: 16px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .reportes-empty-table span {
@@ -583,7 +583,7 @@
   background: #f1f5f9;
   color: var(--gris-500, #64748b);
   font-size: 10.5px;
-  font-weight: 950;
+  font-weight: 800;
   text-align: left;
   text-transform: uppercase;
   letter-spacing: .05em;
@@ -639,7 +639,7 @@
 .reporte-mobile-head strong {
   color: var(--gris-950, #0f172a);
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .reporte-mobile-head span {
@@ -648,7 +648,7 @@
   background: #ecfdf5;
   color: #166534;
   font-size: 11px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .reporte-mobile-fields {
@@ -662,7 +662,7 @@
   margin-bottom: 3px;
   color: var(--gris-500, #64748b);
   font-size: 9.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
@@ -694,7 +694,7 @@
   display: block;
   color: var(--gris-950, #0f172a);
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .reportes-pagination-info span {

@@ -513,7 +513,7 @@ function traducirErrorCamara(error) {
   padding: 32px;
   width: 520px;
   box-shadow: 0 40px 80px rgba(0,0,0,0.8);
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .modal-header {
@@ -691,7 +691,7 @@ function traducirErrorCamara(error) {
   background: transparent;
   border: 1px solid rgba(76,175,80,0.2);
   color: #5A6E5A;
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.1em;
   cursor: pointer;
@@ -704,7 +704,7 @@ function traducirErrorCamara(error) {
   background: #4CAF50;
   border: none;
   color: white;
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.1em;
   cursor: pointer;

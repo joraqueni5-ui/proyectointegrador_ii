@@ -259,7 +259,7 @@ async function imprimir() {
             margin: 0;
             color: #064e3b;
             font-size: 24px;
-            font-weight: 900;
+            font-weight: 800;
           }
 
           .venta-comprobante-head p {
@@ -276,7 +276,7 @@ async function imprimir() {
             background: #fef2f2;
             color: #b91c1c;
             font-size: 9px;
-            font-weight: 900;
+            font-weight: 800;
             text-transform: uppercase;
           }
 
@@ -292,7 +292,7 @@ async function imprimir() {
           .venta-comprobante-numero span {
             display: block;
             font-size: 9px;
-            font-weight: 900;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: .08em;
           }
@@ -302,7 +302,7 @@ async function imprimir() {
             margin-top: 5px;
             color: #064e3b;
             font-size: 22px;
-            font-weight: 900;
+            font-weight: 800;
           }
 
           .venta-comprobante-info {
@@ -323,7 +323,7 @@ async function imprimir() {
             display: block;
             color: #64748b;
             font-size: 8.5px;
-            font-weight: 900;
+            font-weight: 800;
             text-transform: uppercase;
           }
 
@@ -343,7 +343,7 @@ async function imprimir() {
             margin: 0 0 9px;
             color: #064e3b;
             font-size: 14px;
-            font-weight: 900;
+            font-weight: 800;
           }
 
           .venta-comprobante-table {
@@ -357,7 +357,7 @@ async function imprimir() {
             background: #064e3b;
             color: white;
             font-size: 9.5px;
-            font-weight: 900;
+            font-weight: 800;
             text-align: left;
             text-transform: uppercase;
           }
@@ -378,7 +378,7 @@ async function imprimir() {
           .venta-comprobante-table td strong {
             display: block;
             color: #111827;
-            font-weight: 900;
+            font-weight: 800;
           }
 
           .venta-comprobante-table td small {

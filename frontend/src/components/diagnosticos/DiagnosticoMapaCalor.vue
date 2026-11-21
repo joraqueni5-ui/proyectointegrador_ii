@@ -170,7 +170,7 @@ const mensajeSinMapa = computed(() => {
 .mapa-calor-figura figcaption strong {
   color: var(--gris-950);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .mapa-calor-figura figcaption span {

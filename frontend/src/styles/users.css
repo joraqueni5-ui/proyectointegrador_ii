@@ -42,7 +42,7 @@
   margin: 0;
   color: var(--gris-950);
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .users-toolbar p {
@@ -107,7 +107,7 @@
   background: linear-gradient(135deg, var(--verde-500), var(--verde-700));
   color: white;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
   overflow: hidden;
 }
 
@@ -125,7 +125,7 @@
   display: block;
   color: var(--gris-950);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -298,7 +298,7 @@
   margin: 0;
   color: var(--gris-950);
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .user-delete-modal p {
@@ -495,7 +495,7 @@
   border: 1px solid rgba(255, 255, 255, 0.22);
   color: white;
   font-size: 28px;
-  font-weight: 900;
+  font-weight: 800;
   overflow: hidden;
 }
 
@@ -509,7 +509,7 @@
   margin: 0 0 8px;
   color: white;
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: -0.03em;
 }
 
@@ -548,7 +548,7 @@
   margin: 0 0 4px;
   color: var(--gris-500);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -638,7 +638,7 @@
   display: block;
   color: var(--gris-950);
   font-size: 12.5px;
-  font-weight: 900;
+  font-weight: 800;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -675,7 +675,7 @@
   margin-bottom: 14px;
   color: var(--verde-700);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .user-form-section-title i {
@@ -715,7 +715,7 @@
   margin: 4px 0 -2px;
   color: var(--verde-700);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }

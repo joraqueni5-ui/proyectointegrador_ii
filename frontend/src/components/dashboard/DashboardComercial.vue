@@ -477,7 +477,7 @@ function inicial(value) {
 .dc-hero h1 {
   margin: 0;
   font-size: 34px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .dc-hero p {
@@ -597,7 +597,7 @@ function inicial(value) {
   margin-top: 3px;
   font-size: 29px;
   line-height: 1;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .dc-kpi small {
@@ -703,7 +703,7 @@ function inicial(value) {
 
 .dc-link {
   color: #198754;
-  font-weight: 900;
+  font-weight: 800;
   text-decoration: none;
 }
 
@@ -797,7 +797,7 @@ function inicial(value) {
   place-items: center;
   background: #dcfce7;
   color: #15803d;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .dc-avatar.blue {

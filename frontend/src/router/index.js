@@ -184,7 +184,7 @@ const routes = [
         path: 'desempeno-modelo',
         component: () => import('../views/dashboard/diagnostico/DesempenoModeloView.vue'),
         name: 'desempeno-modelo',
-        meta: { permiso: ['ver_reportes', 'ver_diagnosticos'] },
+        meta: { permiso: 'ver_diagnosticos' },
       },
       {
         path: 'alertas',

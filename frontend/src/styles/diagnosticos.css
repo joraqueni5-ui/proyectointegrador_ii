@@ -18,7 +18,7 @@
   background: var(--rojo-100, #fee2e2);
   color: var(--rojo-600, #dc2626);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 800;
   animation: diagnosticoShake .25s ease;
 }
 
@@ -87,7 +87,7 @@
   margin: 0;
   color: var(--gris-950, #0f172a);
   font-size: 18px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-cnn-card-head h2 i {
@@ -191,7 +191,7 @@
 .diagnostico-dropzone strong {
   color: var(--gris-950, #0f172a);
   font-size: 16px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-dropzone span {
@@ -244,7 +244,7 @@
   background: var(--rojo-100, #fee2e2);
   color: var(--rojo-600, #dc2626);
   font-size: 12.5px;
-  font-weight: 850;
+  font-weight: 800;
   animation: diagnosticoShake .25s ease;
 }
 
@@ -261,7 +261,7 @@
   background: linear-gradient(135deg, #0d3d2b, #22c55e);
   color: white;
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 800;
   box-shadow: 0 14px 26px rgba(22, 163, 74, .25);
   transition: .22s ease;
 }
@@ -320,7 +320,7 @@
 .diagnostico-resultado-empty strong {
   color: var(--gris-950, #0f172a);
   font-size: 16px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-resultado-empty span {
@@ -382,7 +382,7 @@
 .diagnostico-resultado-label {
   color: rgba(255, 255, 255, .72);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .08em;
 }
@@ -402,7 +402,7 @@
   margin: 0;
   color: white;
   font-size: 26px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1.15;
 }
 
@@ -420,12 +420,12 @@
   gap: 12px;
   color: rgba(255, 255, 255, .9);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .diagnostico-confidence-row strong {
   font-size: 18px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-confidence-bar,
@@ -489,7 +489,7 @@
   margin: 0 0 10px;
   color: var(--gris-950, #0f172a);
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-resultado-section h4 i,
@@ -541,14 +541,14 @@
 .diagnostico-producto-item strong {
   color: var(--gris-950, #0f172a);
   font-size: 12.8px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .diagnostico-prediccion-item strong,
 .diagnostico-producto-item span {
   color: var(--verde-700, #166534);
   font-size: 12px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-producto-item small {
@@ -611,7 +611,7 @@
 .diagnostico-kpi-label {
   color: rgba(255, 255, 255, .72);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
 }
@@ -620,7 +620,7 @@
   margin-top: 10px;
   color: white;
   font-size: 36px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -674,7 +674,7 @@
   display: block;
   color: var(--gris-500, #64748b);
   font-size: 11.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
@@ -684,7 +684,7 @@
   margin-top: 4px;
   color: var(--gris-950, #0f172a);
   font-size: 26px;
-  font-weight: 950;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -718,7 +718,7 @@
   margin: 0;
   color: var(--gris-950, #0f172a);
   font-size: 16px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnosticos-panel-head p {
@@ -794,7 +794,7 @@
   background: #f1f5f9;
   color: var(--gris-500, #64748b);
   font-size: 11px;
-  font-weight: 950;
+  font-weight: 800;
   text-align: left;
   text-transform: uppercase;
   letter-spacing: .05em;
@@ -824,7 +824,7 @@
   color: var(--gris-400, #94a3b8);
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .diagnostico-photo-cell img {
@@ -846,7 +846,7 @@
   display: block;
   color: var(--gris-950, #0f172a);
   font-size: 12.8px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-inspeccion-cell small,
@@ -927,7 +927,7 @@
   text-align: center;
   color: var(--gris-400, #94a3b8);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 800;
 }
 
 .diagnosticos-empty i {
@@ -955,7 +955,7 @@
   display: block;
   color: var(--gris-950, #0f172a);
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnosticos-pagination-info span {
@@ -1041,7 +1041,7 @@
   margin: 0;
   color: white;
   font-size: 22px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-detalle-header p {
@@ -1094,7 +1094,7 @@
   margin-bottom: 5px;
   color: var(--gris-500, #64748b);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
@@ -1103,7 +1103,7 @@
   margin: 0;
   color: var(--gris-950, #0f172a);
   font-size: 13.5px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .diagnostico-detail-card small {
@@ -1135,14 +1135,14 @@
   display: block;
   color: var(--gris-400, #94a3b8);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
 .diagnostico-producto-stock strong {
   color: var(--verde-700, #166534);
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-movimiento-help {
@@ -1192,7 +1192,7 @@
   margin: 0;
   color: white;
   font-size: 21px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-validar-header p {
@@ -1227,14 +1227,14 @@
   margin-bottom: 5px;
   color: var(--gris-500, #64748b);
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
 .diagnostico-validar-summary strong {
   color: var(--gris-950, #0f172a);
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-validar-options {
@@ -1269,7 +1269,7 @@
 
 .diagnostico-validar-options button strong {
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .diagnostico-validar-options button span {
@@ -1547,7 +1547,7 @@
   display: block;
   color: #92400e;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .diagnostico-rechazo-texto p {
@@ -1596,7 +1596,7 @@
   padding: 12px 14px;
   color: var(--verde-700);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
   cursor: pointer;
   list-style: none;
 }
