@@ -64,6 +64,16 @@
           </div>
         </div>
 
+        <!-- FOTO ORIGINAL Y MAPA DE CALOR (para decidir con información) -->
+        <details class="diagnostico-validar-ia" open>
+          <summary>
+            <i class="ti ti-flame"></i>
+            Foto y mapa de calor
+          </summary>
+
+          <DiagnosticoMapaCalor :diagnostico="diagnostico" />
+        </details>
+
         <!-- LO QUE CALCULÓ LA IA (para decidir con información) -->
         <details class="diagnostico-validar-ia" open>
           <summary>
@@ -297,6 +307,7 @@
 import { reactive, ref, watch } from 'vue';
 
 import DiagnosticoIaInforme from '@/components/diagnosticos/DiagnosticoIaInforme.vue';
+import DiagnosticoMapaCalor from '@/components/diagnosticos/DiagnosticoMapaCalor.vue';
 
 const props = defineProps({
   diagnostico: {

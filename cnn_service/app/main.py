@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from threading import Thread
+
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
@@ -32,6 +34,13 @@ app = FastAPI(
 
 
 runtime = ModelRuntime()
+
+
+@app.on_event("startup")
+def precargar_modelo() -> None:
+    """Carga el modelo y Grad-CAM en segundo plano, sin retrasar el arranque del servicio."""
+
+    Thread(target=runtime.warmup, daemon=True).start()
 
 
 def _rechazo(

@@ -235,4 +235,55 @@ class DiagnosticoTest extends TestCase
         $this->assertSame($this->usuarios['Agrónomo']->id, (int) $d->validado_por);
         $this->assertSame(1, DB::table('alertas')->where('id_diagnostico', $id)->count());
     }
+
+    // ------------------------------------------------------------------ mapa de calor (Grad-CAM)
+
+    private const PNG_1X1 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+
+    private function conMapa(?string $base64): array
+    {
+        return $this->prediccionFalsa() + ['mapa_calor' => $base64 === null ? null : [
+            'metodo' => 'Grad-CAM', 'capa' => 'conv5_block3_out', 'clase_explicada' => 'Tizón Tardío',
+            'tiempo_ms' => 130.5, 'imagen_png_base64' => $base64,
+        ]];
+    }
+
+    public function test_guarda_el_mapa_de_calor_como_archivo_y_su_ruta(): void
+    {
+        Http::fake(['cnn.test/*' => Http::response($this->conMapa(self::PNG_1X1), 200)]);
+
+        $id = $this->enviar()->assertCreated()->json('id');
+        $d = DB::table('diagnosticos_cnn')->where('id', $id)->first();
+
+        $this->assertNotNull($d->ruta_mapa_calor);
+        $this->assertStringStartsWith('diagnosticos/mapas/', $d->ruta_mapa_calor);
+        Storage::disk('public')->assertExists($d->ruta_mapa_calor);
+
+        // La imagen no se duplica dentro del JSON de detalle: solo su información.
+        $detalle = json_decode($d->detalle_inferencia, true);
+        $this->assertSame('Grad-CAM', $detalle['mapa_calor']['metodo']);
+        $this->assertArrayNotHasKey('imagen_png_base64', $detalle['mapa_calor']);
+    }
+
+    public function test_si_el_mapa_no_es_un_png_valido_el_diagnostico_se_guarda_sin_mapa(): void
+    {
+        foreach (['esto-no-es-base64!!', base64_encode('texto plano, no es una imagen')] as $malo) {
+            Http::fake(['cnn.test/*' => Http::response($this->conMapa($malo), 200)]);
+            DB::table('diagnosticos_cnn')->delete();
+            DB::table('inspecciones')->where('id', $this->idInspeccion)->update(['estado' => 'En_proceso']);
+
+            $id = $this->enviar()->assertCreated()->json('id');
+
+            $this->assertNull(DB::table('diagnosticos_cnn')->where('id', $id)->value('ruta_mapa_calor'));
+        }
+    }
+
+    public function test_si_la_cnn_no_envia_mapa_el_diagnostico_funciona_igual(): void
+    {
+        Http::fake(['cnn.test/*' => Http::response($this->conMapa(null), 200)]);
+
+        $id = $this->enviar()->assertCreated()->json('id');
+
+        $this->assertNull(DB::table('diagnosticos_cnn')->where('id', $id)->value('ruta_mapa_calor'));
+    }
 }

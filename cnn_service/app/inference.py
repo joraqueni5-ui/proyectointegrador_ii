@@ -17,6 +17,11 @@ from PIL import (
     UnidentifiedImageError,
 )
 
+from app.gradcam import (
+    GradCAM,
+    generar as generar_gradcam,
+)
+
 
 # ============================================================
 # CONFIGURACIÓN GENERAL
@@ -239,6 +244,17 @@ MIN_PREDICTION_MARGIN = float(
 
 
 # ============================================================
+# EXPLICABILIDAD (Grad-CAM)
+# ============================================================
+
+# CNN_GRADCAM=0 desactiva el mapa de calor (el diagnóstico no cambia).
+GRADCAM_ENABLED = os.getenv(
+    "CNN_GRADCAM",
+    "1",
+).strip().lower() not in {"0", "false", "no"}
+
+
+# ============================================================
 # EXCEPCIONES
 # ============================================================
 
@@ -331,6 +347,10 @@ class ModelRuntime:
         )
 
         self._model = None
+
+        self._gradcam: GradCAM | None = None
+
+        self._gradcam_lock = Lock()
 
         self._metadata: (
             dict[str, Any]
@@ -451,9 +471,56 @@ class ModelRuntime:
 
             self._metadata = metadata
 
+            # El calculador de Grad-CAM depende del modelo cargado.
+            self._gradcam = None
+
             self._loaded_signature = (
                 signature
             )
+
+
+    # ========================================================
+    # GRAD-CAM (se crea una sola vez por modelo cargado)
+    # ========================================================
+
+    def _obtener_gradcam(
+        self,
+    ) -> GradCAM:
+
+        with self._gradcam_lock:
+
+            if self._gradcam is None:
+
+                self._gradcam = GradCAM(
+                    self._model
+                )
+
+            return self._gradcam
+
+
+    # ========================================================
+    # PRECARGA (al iniciar el servicio)
+    #
+    # Carga el modelo y compila Grad-CAM antes de la primera
+    # fotografía, para que el primer usuario no espere ~8 s.
+    # Es opcional: si falla, todo se hace al primer uso.
+    # ========================================================
+
+    def warmup(
+        self,
+    ) -> None:
+
+        try:
+
+            self._load_if_needed()
+
+            if GRADCAM_ENABLED:
+
+                self._obtener_gradcam()
+
+        except Exception:  # noqa: BLE001
+
+            pass
 
 
     # ========================================================
@@ -1957,6 +2024,36 @@ class ModelRuntime:
 
 
         # ----------------------------------------------------
+        # 10b. EXPLICABILIDAD (Grad-CAM)
+        #
+        # Es opcional: si falla, el diagnóstico sigue sin mapa.
+        # ----------------------------------------------------
+
+        mapa_calor = None
+
+        mapa_calor_error = None
+
+        if GRADCAM_ENABLED:
+
+            try:
+
+                mapa_calor = generar_gradcam(
+                    self._obtener_gradcam(),
+                    image,
+                    array,
+                    class_names.index(
+                        best["clase"]
+                    ),
+                    best["nombre"],
+                )
+
+            except Exception as exc:  # noqa: BLE001
+
+                mapa_calor_error = (
+                    f"{type(exc).__name__}: {exc}"
+                )[:240]
+
+        # ----------------------------------------------------
         # 11. RESPUESTA
         # ----------------------------------------------------
 
@@ -2018,6 +2115,12 @@ class ModelRuntime:
 
             "top3":
                 top3,
+
+            "mapa_calor":
+                mapa_calor,
+
+            "mapa_calor_error":
+                mapa_calor_error,
 
 
             # ------------------------------------------------

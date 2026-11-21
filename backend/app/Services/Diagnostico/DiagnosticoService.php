@@ -10,6 +10,9 @@ use App\Models\DiagnosticoCNN;
 use App\Models\Enfermedad;
 use App\Models\Inspeccion;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Throwable;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class DiagnosticoService
@@ -43,6 +46,7 @@ class DiagnosticoService
 
         return DB::transaction(function () use ($dto, $prediction, $enfermedad) {
             $ruta = $dto->fotografia->store('diagnosticos', 'public');
+            $rutaMapa = $this->guardarMapaCalor($prediction['mapa_calor'] ?? null);
 
             $data = [
                 ...$dto->toArray(
@@ -50,6 +54,7 @@ class DiagnosticoService
                     $dto->fotografia->getClientOriginalName()
                 ),
                 'id_enfermedad' => $enfermedad->id,
+                'ruta_mapa_calor' => $rutaMapa,
                 'porcentaje_confianza' => round((float) $prediction['confianza'], 2),
                 'top3_predicciones' => $prediction['top3'] ?? null,
                 // Calidad de la foto, margen entre clases y datos del modelo (calibración).
@@ -108,7 +113,45 @@ class DiagnosticoService
             'validacion_nitidez' => $prediction['validacion_nitidez'] ?? null,
             'validacion_prediccion' => $prediction['validacion_prediccion'] ?? null,
             'modelo' => $prediction['modelo'] ?? null,
+            // Datos del mapa de calor (sin la imagen, que se guarda como archivo).
+            'mapa_calor' => is_array($prediction['mapa_calor'] ?? null)
+                ? array_diff_key($prediction['mapa_calor'], ['imagen_png_base64' => true])
+                : null,
         ], fn ($valor) => $valor !== null);
+    }
+
+    /**
+     * Guarda el mapa de calor (PNG en base64) como archivo. Es opcional: si la imagen no es un
+     * PNG válido o algo falla, el diagnóstico se registra igual, sin mapa.
+     */
+    private function guardarMapaCalor(mixed $mapa): ?string
+    {
+        $base64 = is_array($mapa) ? ($mapa['imagen_png_base64'] ?? null) : null;
+
+        if (! is_string($base64) || $base64 === '') {
+            return null;
+        }
+
+        try {
+            $binario = base64_decode($base64, true);
+
+            if (
+                $binario === false
+                || strlen($binario) > 3 * 1024 * 1024
+                || ! str_starts_with($binario, "\x89PNG\r\n\x1a\n")
+            ) {
+                return null;
+            }
+
+            $ruta = 'diagnosticos/mapas/'.Str::uuid().'.png';
+            Storage::disk('public')->put($ruta, $binario);
+
+            return $ruta;
+        } catch (Throwable $e) {
+            report($e);
+
+            return null;
+        }
     }
 
     public function estadoModelo(): array

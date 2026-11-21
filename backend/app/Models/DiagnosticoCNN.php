@@ -12,6 +12,7 @@ class DiagnosticoCNN extends Model
         'id_inspeccion',
         'id_enfermedad',
         'ruta_fotografia',
+        'ruta_mapa_calor',
         'nombre_archivo',
         'porcentaje_confianza',
         'top3_predicciones',

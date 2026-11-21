@@ -40,11 +40,7 @@
 
       <div class="diagnostico-detalle-body">
         <div class="diagnostico-detalle-photo">
-          <img
-            :src="fotoUrl(diagnostico?.ruta_fotografia)"
-            alt="Fotografía del diagnóstico"
-            @error="onImageError"
-          />
+          <DiagnosticoMapaCalor :diagnostico="diagnostico" />
         </div>
 
         <div class="diagnostico-detalle-info-grid">
@@ -200,8 +196,8 @@
 
 <script setup>
 import { computed } from 'vue';
-import { urlArchivo } from '@/services/api';
 import DiagnosticoIaInforme from '@/components/diagnosticos/DiagnosticoIaInforme.vue';
+import DiagnosticoMapaCalor from '@/components/diagnosticos/DiagnosticoMapaCalor.vue';
 
 const props = defineProps({
   diagnostico: {
@@ -222,17 +218,6 @@ function close() {
   emit('close');
 }
 
-function fotoUrl(ruta) {
-  return ruta ? urlArchivo(ruta) : placeholderImage();
-}
-
-function onImageError(event) {
-  event.target.src = placeholderImage();
-}
-
-function placeholderImage() {
-  return 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="260" height="220"><rect width="260" height="220" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="14">Sin fotografía</text></svg>';
-}
 
 function numero(valor) {
   return Number(valor || 0).toLocaleString('es-BO', {

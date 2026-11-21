@@ -1618,3 +1618,20 @@
 .diagnostico-validar-ia > :not(summary) {
   margin: 0 14px 14px;
 }
+
+/* Detalle del diagnóstico: foto original y mapa de calor ocupan todo el ancho, lado a lado */
+.diagnostico-detalle-photo {
+  grid-column: 1 / -1;
+}
+
+.diagnostico-detalle-info-grid {
+  grid-column: 1 / -1;
+}
+
+.diagnostico-detalle-photo .mapa-calor-marco img {
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  object-fit: contain;
+}
