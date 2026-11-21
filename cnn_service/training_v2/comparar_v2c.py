@@ -152,19 +152,19 @@ def main() -> None:
 
     nombres = list(res)
     mc: dict = {}
-    if len(nombres) == 2:
-        a, b = nombres
-        for k in conj:
-            mc[k] = mcnemar(aciertos[a][k], aciertos[b][k])
-        todo_a = np.concatenate([aciertos[a][k] for k in conj])
-        todo_b = np.concatenate([aciertos[b][k] for k in conj])
-        mc["todos_los_conjuntos"] = mcnemar(todo_a, todo_b)
+    for i in range(len(nombres)):
+        for j in range(i + 1, len(nombres)):
+            x, y = nombres[i], nombres[j]
+            par = {k: mcnemar(aciertos[x][k], aciertos[y][k]) for k in conj}
+            par["todos_los_conjuntos"] = mcnemar(
+                np.concatenate([aciertos[x][k] for k in conj]), np.concatenate([aciertos[y][k] for k in conj]))
+            mc[f"{x} vs {y}"] = par
 
-    salida = {"modelos": res, "mcnemar": {"A": nombres[0], "B": nombres[-1], "pruebas": mc}}
-    (args.out / "comparacion_resnet50_vs_efficientnetb0.json").write_text(
+    salida = {"modelos": res, "mcnemar": mc}
+    (args.out / "comparacion_modelos.json").write_text(
         json.dumps(salida, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    L = ["# ResNet50 vs EfficientNetB0 (v2c, misma partición)\n",
+    L = ["# Comparación de modelos: v2b (activo), v2c ResNet50 y v2c EfficientNetB0\n",
          "## Tamaño, parámetros y velocidad (CPU, 1 imagen)\n",
          "| Modelo | Archivo (MB) | Parámetros | Mediana (ms) | P95 (ms) |", "|---|---|---|---|---|"]
     for n in nombres:
@@ -182,14 +182,15 @@ def main() -> None:
         if k == "otros_cultivos":
             continue
         L.append(f"| {k} | " + " | ".join(f"{res[n]['conjuntos'][k]['f1_macro']:.3f}" for n in nombres) + " |")
-    if mc:
-        L += [f"\n## Prueba de McNemar ({nombres[0]} = A, {nombres[-1]} = B)\n",
+    for par, pruebas in mc.items():
+        x, y = par.split(" vs ")
+        L += [f"\n## Prueba de McNemar: {x} (A) vs {y} (B)\n",
               "H0: ambos modelos tienen la misma tasa de error. Diferencia significativa si p < 0,05.\n",
               "| Conjunto | Solo A acierta | Solo B acierta | p-valor | Método | ¿Significativa? |", "|---|---|---|---|---|---|"]
-        for k, v in mc.items():
+        for k, v in pruebas.items():
             L.append(f"| {k} | {v['solo_A_acierta']} | {v['solo_B_acierta']} | {v['p_valor']} | {v['metodo']} | "
                      f"{'sí' if v['p_valor'] < 0.05 else 'no'} |")
-    (args.out / "comparacion_resnet50_vs_efficientnetb0.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    (args.out / "comparacion_modelos.md").write_text("\n".join(L) + "\n", encoding="utf-8")
     print("\n".join(L))
 
 
