@@ -25,6 +25,7 @@ use App\Http\Controllers\Diagnostico\EnfermedadController;
 use App\Http\Controllers\Diagnostico\InspeccionController;
 use App\Http\Controllers\Diagnostico\ProductoRecomendadoController;
 use App\Http\Controllers\Diagnostico\ReporteFitosanitarioController;
+use App\Http\Controllers\BuscarController;
 use App\Http\Controllers\UserController;
 use App\Models\EtapaFenologica;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,7 @@ Route::middleware(['auth:sanctum', 'usuario.activo'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', [UserController::class, 'profile']);
+    Route::get('/buscar', BuscarController::class)->middleware('throttle:buscar');
 
     Route::get('/version', function () {
         return response()->json([

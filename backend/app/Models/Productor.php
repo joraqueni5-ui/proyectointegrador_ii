@@ -46,6 +46,15 @@ class Productor extends Model
         });
     }
 
+    /** "Nombre Apellido" para listas y etiquetas (el nombre completo con CI va en el detalle). */
+    public function getNombreCortoAttribute(): string
+    {
+        $nombre = trim((string) explode(' ', trim((string) $this->nombres))[0]);
+        $corto = trim($nombre.' '.trim((string) $this->apellido_paterno));
+
+        return $corto !== '' ? $corto : trim((string) $this->nombre_completo);
+    }
+
     public function comunidad()
     {
         return $this->belongsTo(Comunidad::class, 'id_comunidad');

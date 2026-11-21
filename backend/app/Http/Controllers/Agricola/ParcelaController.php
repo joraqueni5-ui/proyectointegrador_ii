@@ -24,9 +24,7 @@ class ParcelaController extends Controller
         // También la usan el historial y los reportes fitosanitarios.
         $this->checkPermiso($request, ['gestionar_parcelas', 'ver_inspecciones', 'ver_diagnosticos', 'ver_alertas', 'ver_reportes']);
 
-        $parcelas = Parcela::with([
-            'productor:id,nombre_completo,nombres,apellido_paterno,apellido_materno,carnet_identidad',
-        ])
+        $parcelas = Parcela::conEtiqueta()
             ->orderBy('id', 'desc')
             ->get();
 

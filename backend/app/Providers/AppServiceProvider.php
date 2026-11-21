@@ -39,5 +39,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('auth-reenvio', $porIp(3));
         RateLimiter::for('auth-rostro', $porIp(10));
         RateLimiter::for('auth-rostro-otp', $porIp(5));
+
+        // Buscador general: 60 consultas por minuto y por usuario.
+        RateLimiter::for('buscar', fn (Request $request) => Limit::perMinute(60)->by($request->user()?->id ?: $request->ip()));
     }
 }
