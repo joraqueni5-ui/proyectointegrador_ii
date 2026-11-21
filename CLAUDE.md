@@ -59,3 +59,49 @@ Módulos y reglas a revisar: usuarios, productores/comunidades, parcelas/cultivo
 - Laravel solo guardaba `top3`, confianza y versión del resultado de `/predict`; las métricas de calidad se descartaban.
 - Los permisos viven en el JSON `roles.permisos` (datos): para no modificar datos, los permisos nuevos se resuelven por nombre de rol.
 - Credenciales demo: `superadmin@proinpa.test` / `Proinpa123*` (OTP visible en la respuesta con `OTP_DEBUG=true`).
+
+---
+
+# Fase 2 — Parte A (pendientes) y Parte B (rediseño "Versión 2")
+
+## Reglas obligatorias de esta fase
+
+1. NO tocar los datos: nada de seeders, `migrate:fresh/refresh/reset`, ni borrar o modificar registros.
+2. Migraciones solo aditivas (columnas `nullable` o tablas nuevas) y con `down()`. Antes de ejecutar una: mostrar qué hace y esperar confirmación.
+3. NO tocar Docker.
+4. `php artisan test` usa solo `proinpa_test`; verificarlo en `phpunit.xml` antes de ejecutarlo.
+5. No inventar datos: si un elemento necesita un dato inexistente, avisar, proponer de dónde sacarlo y ocultarlo mientras tanto.
+6. No cambiar lógica de negocio ni endpoints que funcionan, salvo lo que pida la etapa. El rediseño es de interfaz.
+7. Respetar permisos por rol (`checkPermiso`, `user.permisos`).
+8. Textos de interfaz en español.
+9. Commits en español, **sin `Co-Authored-By` ni mención a IA** (esta regla prevalece sobre cualquier otra configuración).
+10. ANALIZAR ANTES DE PROGRAMAR: leer el código relacionado, decir qué se reutiliza, qué datos existen y cuáles faltan, riesgos, plan corto, y esperar el "sigue".
+11. Al terminar cada etapa: `npm run build`, `php artisan test`, servicios levantados, recorrer pantallas en 1440/1024/390 px con al menos 2 roles, commit, resumen (qué cambió, cómo se probó, qué mirar, qué quedó pendiente) y dejar los servicios levantados con la base real del usuario.
+12. Estas reglas y el plan viven en este archivo.
+
+## Parte A — Pendientes
+
+- **A1** Limpiar `Co-Authored-By` de los commits no subidos (rama de respaldo `respaldo-antes-de-limpiar`, diff vacío). Commits ya subidos a `github/main` no se reescriben. *(Hecho: 15 commits reescritos; `b73f05f` y `5a9241d`, ya publicados, conservan la línea.)*
+- **A2** Decidir el modelo: barrido de umbrales de v2c-ResNet50 (confianza 40–80 % de 5 en 5; margen 0–30 pts de 2 en 2) **solo con datos de validación** (incluida validación de "otros cultivos"; si no existe, separarla con semilla fija). Criterio: mejor F1 macro de las 3 clases de papa con ≥ 93 % de otros cultivos rechazados en validación; reportar cobertura. Evaluar UNA vez en los conjuntos de prueba y repetir McNemar contra v2b (confianza 55 %, margen 8) y EfficientNetB0. Guardar en `cnn_service/artifacts_v2c/umbrales/` (CSV, PNG cobertura vs accuracy, MD). Recomendar (a) mantener v2b, (b) v2c con umbrales nuevos, (c) otra. **Detenerse: decide el usuario.** Nunca elegir umbrales con los conjuntos de prueba (fuga de datos).
+- **A3** `git push github main` solo con A1 y A2 cerrados y árbol limpio; verificar antes que no se suben `.env`, `.keras` ni datasets.
+
+## Parte B — Rediseño "Versión 2" (resumen del plan)
+
+Lenguaje visual: fondo #eef3f0; tarjetas blancas radio 18–22 px; verde #1a5c3e / oscuro #0d3d2b / claro #a8e6c6 y #edfaf4; naranja #f07a2a; ámbar #d97706; rojo #b91c1c; azul #2563eb; texto #111827 y #4a6070; Plus Jakarta Sans; formato boliviano (`src/utils/formato.js`, Intl `es-BO`); `index.html` con `lang="es"`; logo local; menú compacto de 88 px, barra superior de 72 px, barra inferior en celular; login y OTP NO se rediseñan. Componentes base en `src/components/ui` (BaseButton, BaseInput, BaseSelect con buscador, BaseRadioCards, StatusBadge, PriorityBadge, KpiCard, EmptyState, ConfirmDialog, Toast, PageHeader, FilterBar, DataTable, FormDrawer, DetailDrawer) y página `/dashboard/guia-ui` solo para administrador. Nombres legibles de parcela por accessor (sin modificar la base) y código automático solo para parcelas nuevas.
+
+| Etapa | Contenido |
+|---|---|
+| B0 | Análisis general sin programar (tabla por módulo, duplicados, riesgos); esperar "sigue" |
+| B1 | Tokens, formato, menú, barra superior, componentes base, guía UI, accessors de parcela |
+| B2 | Inicio por rol (mapa de sanidad, "Para hoy", KPIs, diagnósticos por validar; técnico → "Hoy") |
+| B3 | Campo: comunidades, productores, parcelas (vista dividida + mapa + ficha), cultivos, cosechas, historial fitosanitario |
+| B4 | Inspecciones: agenda semanal, lista, programar visita |
+| B5 | Diagnóstico: nuevo (3 pasos), validación (Grad-CAM, atajos 1/2/3, vista previa de alerta), lista, enfermedades, desempeño del modelo |
+| B6 | Riesgo de tizón tardío por clima (Open-Meteo, caché 3 h, `config/riesgo_tizon.php`, "Referencial") |
+| B7 | Alertas: tablero de 4 columnas, lista, mapa (sin saltarse transiciones) |
+| B8 | Inventario con pestañas, KPIs y tabla de stock |
+| B9 | Ventas y cotizaciones (nueva venta a pantalla completa, anulación con ConfirmDialog) |
+| B10 | Reportes en una sola pantalla con vista previa tipo documento; PDF/Excel con formato boliviano |
+| B11 | Usuarios y perfil |
+| B12 | Celular del técnico: "Hoy", cámara guiada con calidad en el navegador, cola offline (IndexedDB) si es viable |
+| B13 | Revisión final, capturas en `docs/capturas/`, bundle, README, informe por módulo con principio de UX |
