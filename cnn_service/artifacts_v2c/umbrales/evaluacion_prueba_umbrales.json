@@ -1,0 +1,300 @@
+{
+  "elegido": {
+    "confianza_min": 80,
+    "margen_min": 0,
+    "cobertura": 0.9514,
+    "accuracy_entregada": 0.9971,
+    "f1_macro": 0.9962,
+    "errores_entregados": 4,
+    "otros_rechazados": 0.9552
+  },
+  "referencia_actual_validacion": {
+    "confianza_min": 55,
+    "margen_min": 8,
+    "cobertura": 0.9774,
+    "accuracy_entregada": 0.9916,
+    "f1_macro": 0.989,
+    "errores_entregados": 12,
+    "otros_rechazados": 0.8756
+  },
+  "prueba": {
+    "v2c_resnet50 (umbrales nuevos)": {
+      "tanzania_test": {
+        "n": 1313,
+        "acierto_sistema": 0.968,
+        "cobertura": 0.9756,
+        "accuracy_entregada": 0.9922,
+        "f1_macro_entregadas": 0.9904,
+        "errores_entregados": 10
+      },
+      "etiopia_holeta": {
+        "n": 429,
+        "acierto_sistema": 0.7599,
+        "cobertura": 0.7622,
+        "accuracy_entregada": 0.9969,
+        "f1_macro_entregadas": 0.6613,
+        "errores_entregados": 1
+      },
+      "peru_reserva": {
+        "n": 160,
+        "acierto_sistema": 0.9625,
+        "cobertura": 0.9688,
+        "accuracy_entregada": 0.9935,
+        "f1_macro_entregadas": 0.6623,
+        "errores_entregados": 1
+      },
+      "plantdoc_papa": {
+        "n": 75,
+        "acierto_sistema": 0.2533,
+        "cobertura": 0.4133,
+        "accuracy_entregada": 0.6129,
+        "f1_macro_entregadas": 0.3535,
+        "errores_entregados": 12
+      },
+      "otros_cultivos": {
+        "n": 473,
+        "rechazadas": 0.9577
+      }
+    },
+    "v2c_resnet50 (sin umbrales)": {
+      "tanzania_test": {
+        "n": 1313,
+        "acierto_sistema": 0.9832,
+        "cobertura": 1.0,
+        "accuracy_entregada": 0.9832,
+        "f1_macro_entregadas": 0.9798,
+        "errores_entregados": 22
+      },
+      "etiopia_holeta": {
+        "n": 429,
+        "acierto_sistema": 0.958,
+        "cobertura": 0.9767,
+        "accuracy_entregada": 0.9809,
+        "f1_macro_entregadas": 0.6432,
+        "errores_entregados": 8
+      },
+      "peru_reserva": {
+        "n": 160,
+        "acierto_sistema": 0.9812,
+        "cobertura": 1.0,
+        "accuracy_entregada": 0.9812,
+        "f1_macro_entregadas": 0.6541,
+        "errores_entregados": 3
+      },
+      "plantdoc_papa": {
+        "n": 75,
+        "acierto_sistema": 0.3867,
+        "cobertura": 0.7467,
+        "accuracy_entregada": 0.5179,
+        "f1_macro_entregadas": 0.3447,
+        "errores_entregados": 27
+      },
+      "otros_cultivos": {
+        "n": 473,
+        "rechazadas": 0.8584
+      }
+    },
+    "v2b_activo (55 % / 8)": {
+      "tanzania_test": {
+        "n": 1313,
+        "acierto_sistema": 0.984,
+        "cobertura": 0.9962,
+        "accuracy_entregada": 0.9878,
+        "f1_macro_entregadas": 0.9857,
+        "errores_entregados": 16
+      },
+      "etiopia_holeta": {
+        "n": 429,
+        "acierto_sistema": 0.8135,
+        "cobertura": 0.8625,
+        "accuracy_entregada": 0.9432,
+        "f1_macro_entregadas": 0.5976,
+        "errores_entregados": 21
+      },
+      "peru_reserva": {
+        "n": 160,
+        "acierto_sistema": 0.9688,
+        "cobertura": 0.9812,
+        "accuracy_entregada": 0.9873,
+        "f1_macro_entregadas": 0.6581,
+        "errores_entregados": 2
+      },
+      "plantdoc_papa": {
+        "n": 75,
+        "acierto_sistema": 0.3733,
+        "cobertura": 0.5467,
+        "accuracy_entregada": 0.6829,
+        "f1_macro_entregadas": 0.4469,
+        "errores_entregados": 13
+      },
+      "otros_cultivos": {
+        "n": 473,
+        "rechazadas": 0.9577
+      }
+    },
+    "v2c_efficientnetb0 (55 % / 8)": {
+      "tanzania_test": {
+        "n": 1313,
+        "acierto_sistema": 0.9848,
+        "cobertura": 0.997,
+        "accuracy_entregada": 0.9878,
+        "f1_macro_entregadas": 0.9854,
+        "errores_entregados": 16
+      },
+      "etiopia_holeta": {
+        "n": 429,
+        "acierto_sistema": 0.7855,
+        "cobertura": 0.7925,
+        "accuracy_entregada": 0.9912,
+        "f1_macro_entregadas": 0.6552,
+        "errores_entregados": 3
+      },
+      "peru_reserva": {
+        "n": 160,
+        "acierto_sistema": 0.975,
+        "cobertura": 0.9875,
+        "accuracy_entregada": 0.9873,
+        "f1_macro_entregadas": 0.6581,
+        "errores_entregados": 2
+      },
+      "plantdoc_papa": {
+        "n": 75,
+        "acierto_sistema": 0.4267,
+        "cobertura": 0.6533,
+        "accuracy_entregada": 0.6531,
+        "f1_macro_entregadas": 0.4332,
+        "errores_entregados": 17
+      },
+      "otros_cultivos": {
+        "n": 473,
+        "rechazadas": 0.945
+      }
+    }
+  },
+  "mcnemar": {
+    "v2c_resnet50 (umbrales nuevos) vs v2b_activo (55 % / 8)": {
+      "tanzania_test": {
+        "solo_A_acierta": 4,
+        "solo_B_acierta": 25,
+        "discordantes": 29,
+        "chi2_con_correccion": 13.7931,
+        "p_chi2": 0.000204,
+        "p_exacto": 0.000104,
+        "p_valor": 0.000204,
+        "metodo": "chi-cuadrado con corrección de continuidad"
+      },
+      "etiopia_holeta": {
+        "solo_A_acierta": 18,
+        "solo_B_acierta": 41,
+        "discordantes": 59,
+        "chi2_con_correccion": 8.2034,
+        "p_chi2": 0.004181,
+        "p_exacto": 0.003794,
+        "p_valor": 0.004181,
+        "metodo": "chi-cuadrado con corrección de continuidad"
+      },
+      "peru_reserva": {
+        "solo_A_acierta": 2,
+        "solo_B_acierta": 3,
+        "discordantes": 5,
+        "chi2_con_correccion": 0.0,
+        "p_chi2": 1.0,
+        "p_exacto": 1.0,
+        "p_valor": 1.0,
+        "metodo": "exacta binomial"
+      },
+      "plantdoc_papa": {
+        "solo_A_acierta": 2,
+        "solo_B_acierta": 11,
+        "discordantes": 13,
+        "chi2_con_correccion": 4.9231,
+        "p_chi2": 0.0265,
+        "p_exacto": 0.022461,
+        "p_valor": 0.022461,
+        "metodo": "exacta binomial"
+      },
+      "otros_cultivos": {
+        "solo_A_acierta": 12,
+        "solo_B_acierta": 12,
+        "discordantes": 24,
+        "chi2_con_correccion": 0.0417,
+        "p_chi2": 0.838256,
+        "p_exacto": 1.0,
+        "p_valor": 1.0,
+        "metodo": "exacta binomial"
+      },
+      "todos_los_conjuntos": {
+        "solo_A_acierta": 38,
+        "solo_B_acierta": 92,
+        "discordantes": 130,
+        "chi2_con_correccion": 21.6077,
+        "p_chi2": 3e-06,
+        "p_exacto": 2e-06,
+        "p_valor": 3e-06,
+        "metodo": "chi-cuadrado con corrección de continuidad"
+      }
+    },
+    "v2c_resnet50 (umbrales nuevos) vs v2c_efficientnetb0 (55 % / 8)": {
+      "tanzania_test": {
+        "solo_A_acierta": 5,
+        "solo_B_acierta": 27,
+        "discordantes": 32,
+        "chi2_con_correccion": 13.7812,
+        "p_chi2": 0.000205,
+        "p_exacto": 0.000113,
+        "p_valor": 0.000205,
+        "metodo": "chi-cuadrado con corrección de continuidad"
+      },
+      "etiopia_holeta": {
+        "solo_A_acierta": 34,
+        "solo_B_acierta": 45,
+        "discordantes": 79,
+        "chi2_con_correccion": 1.2658,
+        "p_chi2": 0.260552,
+        "p_exacto": 0.260426,
+        "p_valor": 0.260552,
+        "metodo": "chi-cuadrado con corrección de continuidad"
+      },
+      "peru_reserva": {
+        "solo_A_acierta": 3,
+        "solo_B_acierta": 5,
+        "discordantes": 8,
+        "chi2_con_correccion": 0.125,
+        "p_chi2": 0.723674,
+        "p_exacto": 0.726562,
+        "p_valor": 0.726562,
+        "metodo": "exacta binomial"
+      },
+      "plantdoc_papa": {
+        "solo_A_acierta": 0,
+        "solo_B_acierta": 13,
+        "discordantes": 13,
+        "chi2_con_correccion": 11.0769,
+        "p_chi2": 0.000874,
+        "p_exacto": 0.000244,
+        "p_valor": 0.000244,
+        "metodo": "exacta binomial"
+      },
+      "otros_cultivos": {
+        "solo_A_acierta": 19,
+        "solo_B_acierta": 13,
+        "discordantes": 32,
+        "chi2_con_correccion": 0.7812,
+        "p_chi2": 0.376759,
+        "p_exacto": 0.377086,
+        "p_valor": 0.376759,
+        "metodo": "chi-cuadrado con corrección de continuidad"
+      },
+      "todos_los_conjuntos": {
+        "solo_A_acierta": 61,
+        "solo_B_acierta": 103,
+        "discordantes": 164,
+        "chi2_con_correccion": 10.25,
+        "p_chi2": 0.001367,
+        "p_exacto": 0.001296,
+        "p_valor": 0.001367,
+        "metodo": "chi-cuadrado con corrección de continuidad"
+      }
+    }
+  }
+}
