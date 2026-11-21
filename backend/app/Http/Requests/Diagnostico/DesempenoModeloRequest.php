@@ -17,7 +17,7 @@ class DesempenoModeloRequest extends FormRequest
 
     public function authorize(): bool
     {
-        return (bool) $this->user()?->tieneAlgunoDeEstosPermisos(['ver_diagnosticos']);
+        return (bool) $this->user()?->tieneTodosLosPermisos(['ver_diagnosticos', 'ver_reportes']);
     }
 
     protected function failedAuthorization(): void

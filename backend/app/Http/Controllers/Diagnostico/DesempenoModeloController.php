@@ -9,7 +9,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
  * Desempeño de la CNN calculado con los diagnósticos ya validados (solo lectura).
- * El permiso (ver_diagnosticos) lo comprueba DesempenoModeloRequest.
+ * Los permisos (ver_diagnosticos y ver_reportes) los comprueba DesempenoModeloRequest.
  */
 class DesempenoModeloController extends Controller
 {

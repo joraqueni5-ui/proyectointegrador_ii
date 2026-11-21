@@ -184,7 +184,7 @@ const routes = [
         path: 'desempeno-modelo',
         component: () => import('../views/dashboard/diagnostico/DesempenoModeloView.vue'),
         name: 'desempeno-modelo',
-        meta: { permiso: 'ver_diagnosticos' },
+        meta: { permiso: { todos: ['ver_diagnosticos', 'ver_reportes'] } },
       },
       {
         path: 'alertas',
@@ -202,7 +202,7 @@ const routes = [
         path: 'reportes-fitosanitarios',
         component: () => import('../views/dashboard/diagnostico/ReportesFitosanitariosView.vue'),
         name: 'reportes-fitosanitarios',
-        meta: { permiso: ['ver_reportes', 'ver_diagnosticos', 'ver_inspecciones'] },
+        meta: { permiso: { todos: ['ver_reportes', 'ver_diagnosticos'] } },
       },
     ],
   },

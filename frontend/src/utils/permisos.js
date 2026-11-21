@@ -25,10 +25,14 @@ export function obtenerPermisos(user) {
   return [];
 }
 
-// Acepta un permiso o un arreglo (basta con tener uno de ellos).
+// Acepta un permiso, un arreglo (basta con tener uno de ellos) o { todos: [...] } (hacen falta todos).
 export function tienePermiso(user, permiso) {
   if (!permiso) {
     return true;
+  }
+
+  if (permiso.todos) {
+    return permiso.todos.every((p) => tienePermiso(user, p));
   }
 
   if (obtenerRolNombre(user) === 'Superadmin') {

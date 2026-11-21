@@ -194,15 +194,9 @@ class DesempenoModeloTest extends TestCase
 
     public function test_respeta_los_permisos_por_rol(): void
     {
-        // Exige ver_diagnosticos (también el PDF)
-        foreach (['Superadmin', 'Administrador', 'Agrónomo', 'Técnico', 'Agricultor'] as $rol) {
+        // Exige ver_diagnosticos Y ver_reportes (el detalle por rol está en PermisosReportesTest)
+        foreach (['Superadmin', 'Administrador', 'Agrónomo', 'Técnico'] as $rol) {
             $this->consultar([], $rol)->assertOk();
-        }
-
-        // Tener solo ver_reportes (Comercial y Encargado de almacén) ya no alcanza
-        foreach (['Comercial', 'Encargado de almacén'] as $rol) {
-            $this->consultar([], $rol)->assertForbidden();
-            $this->get('/api/diagnosticos/desempeno-modelo/pdf')->assertForbidden();
         }
 
         // Sin ningún permiso

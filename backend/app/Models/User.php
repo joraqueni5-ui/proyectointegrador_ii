@@ -134,6 +134,18 @@ class User extends Authenticatable
         return in_array($permiso, $this->permisos(), true);
     }
 
+    /** Exige TODOS los permisos indicados (el Superadmin los tiene todos). */
+    public function tieneTodosLosPermisos(array $permisos): bool
+    {
+        foreach ($permisos as $permiso) {
+            if (! $this->tienePermiso($permiso)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function tieneAlgunoDeEstosPermisos(array $permisos): bool
     {
         if ($this->tieneRol('Superadmin')) {

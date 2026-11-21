@@ -24,7 +24,7 @@ export const MENU = [
     hijos: [
       { etiqueta: 'Diagnósticos', to: '/dashboard/diagnosticos', permiso: 'ver_diagnosticos' },
       { etiqueta: 'Enfermedades', to: '/dashboard/enfermedades', permiso: 'gestionar_enfermedades' },
-      { etiqueta: 'Desempeño del modelo', to: '/dashboard/desempeno-modelo', permiso: 'ver_diagnosticos' },
+      { etiqueta: 'Desempeño del modelo', to: '/dashboard/desempeno-modelo', permiso: { todos: ['ver_diagnosticos', 'ver_reportes'] } },
     ],
   },
   { id: 'alertas', etiqueta: 'Alertas', icono: 'ti-bell-ringing', to: '/dashboard/alertas', permiso: 'ver_alertas', contador: true },
@@ -57,7 +57,7 @@ export const MENU = [
       {
         etiqueta: 'Fitosanitarios',
         to: '/dashboard/reportes-fitosanitarios',
-        permiso: ['ver_reportes', 'ver_diagnosticos', 'ver_inspecciones'],
+        permiso: { todos: ['ver_reportes', 'ver_diagnosticos'] },
       },
       { etiqueta: 'Comerciales', to: '/dashboard/reportes', permiso: 'ver_reportes' },
     ],

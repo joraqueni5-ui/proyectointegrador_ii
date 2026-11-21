@@ -108,9 +108,9 @@ class ReporteFitosanitarioController extends Controller
 
     private function checkPermisoReporte(Request $request): void
     {
-        $this->checkPermiso(
+        $this->checkTodosLosPermisos(
             $request,
-            ['ver_reportes', 'ver_inspecciones', 'ver_diagnosticos', 'ver_alertas'],
+            ['ver_reportes', 'ver_diagnosticos'],
             'No tienes permiso para generar reportes fitosanitarios.'
         );
     }
