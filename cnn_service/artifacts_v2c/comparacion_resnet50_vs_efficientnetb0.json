@@ -1,0 +1,494 @@
+{
+  "modelos": {
+    "resnet50": {
+      "archivo_mb": 97.2,
+      "parametros_totales": 24113284,
+      "cpu": {
+        "mediana_ms": 146.2,
+        "p95_ms": 163.0,
+        "repeticiones": 30
+      },
+      "conjuntos": {
+        "tanzania_test": {
+          "n": 1313,
+          "accuracy": 0.9832,
+          "f1_macro": 0.9799,
+          "por_clase": {
+            "early_blight": {
+              "n": 309,
+              "precision": 0.9932,
+              "recall": 0.9417,
+              "f1": 0.9668
+            },
+            "healthy": {
+              "n": 580,
+              "precision": 0.9966,
+              "recall": 1.0,
+              "f1": 0.9983
+            },
+            "late_blight": {
+              "n": 424,
+              "precision": 0.9589,
+              "recall": 0.9906,
+              "f1": 0.9745
+            }
+          },
+          "ece": 0.0055,
+          "matriz": {
+            "filas_reales": [
+              "early_blight",
+              "healthy",
+              "late_blight"
+            ],
+            "columnas_pred": [
+              "early_blight",
+              "healthy",
+              "late_blight",
+              "other"
+            ],
+            "valores": [
+              [
+                291,
+                0,
+                18,
+                0
+              ],
+              [
+                0,
+                580,
+                0,
+                0
+              ],
+              [
+                2,
+                2,
+                420,
+                0
+              ]
+            ]
+          }
+        },
+        "etiopia_holeta": {
+          "n": 429,
+          "accuracy": 0.958,
+          "f1_macro": 0.9467,
+          "por_clase": {
+            "healthy": {
+              "n": 362,
+              "precision": 1.0,
+              "recall": 0.9641,
+              "f1": 0.9817
+            },
+            "late_blight": {
+              "n": 67,
+              "precision": 0.8986,
+              "recall": 0.9254,
+              "f1": 0.9118
+            }
+          },
+          "ece": 0.0935,
+          "matriz": {
+            "filas_reales": [
+              "healthy",
+              "late_blight"
+            ],
+            "columnas_pred": [
+              "early_blight",
+              "healthy",
+              "late_blight",
+              "other"
+            ],
+            "valores": [
+              [
+                0,
+                349,
+                7,
+                6
+              ],
+              [
+                1,
+                0,
+                62,
+                4
+              ]
+            ]
+          }
+        },
+        "peru_reserva": {
+          "n": 160,
+          "accuracy": 0.9812,
+          "f1_macro": 0.9811,
+          "por_clase": {
+            "healthy": {
+              "n": 72,
+              "precision": 0.9726,
+              "recall": 0.9861,
+              "f1": 0.9793
+            },
+            "late_blight": {
+              "n": 88,
+              "precision": 0.9885,
+              "recall": 0.9773,
+              "f1": 0.9829
+            }
+          },
+          "ece": 0.0075,
+          "matriz": {
+            "filas_reales": [
+              "healthy",
+              "late_blight"
+            ],
+            "columnas_pred": [
+              "early_blight",
+              "healthy",
+              "late_blight",
+              "other"
+            ],
+            "valores": [
+              [
+                0,
+                71,
+                1,
+                0
+              ],
+              [
+                0,
+                2,
+                86,
+                0
+              ]
+            ]
+          }
+        },
+        "plantdoc_papa": {
+          "n": 75,
+          "accuracy": 0.3867,
+          "f1_macro": 0.4406,
+          "por_clase": {
+            "early_blight": {
+              "n": 40,
+              "precision": 0.6429,
+              "recall": 0.225,
+              "f1": 0.3333
+            },
+            "late_blight": {
+              "n": 35,
+              "precision": 0.5263,
+              "recall": 0.5714,
+              "f1": 0.5479
+            }
+          },
+          "ece": 0.3575,
+          "matriz": {
+            "filas_reales": [
+              "early_blight",
+              "late_blight"
+            ],
+            "columnas_pred": [
+              "early_blight",
+              "healthy",
+              "late_blight",
+              "other"
+            ],
+            "valores": [
+              [
+                9,
+                3,
+                18,
+                10
+              ],
+              [
+                5,
+                1,
+                20,
+                9
+              ]
+            ]
+          }
+        },
+        "otros_cultivos": {
+          "n": 473,
+          "rechazadas_como_no_papa": 0.8584
+        }
+      }
+    },
+    "efficientnetb0": {
+      "archivo_mb": 18.4,
+      "parametros_totales": 4378535,
+      "cpu": {
+        "mediana_ms": 121.3,
+        "p95_ms": 134.4,
+        "repeticiones": 30
+      },
+      "conjuntos": {
+        "tanzania_test": {
+          "n": 1313,
+          "accuracy": 0.9863,
+          "f1_macro": 0.9837,
+          "por_clase": {
+            "early_blight": {
+              "n": 309,
+              "precision": 1.0,
+              "recall": 0.9482,
+              "f1": 0.9734
+            },
+            "healthy": {
+              "n": 580,
+              "precision": 0.9966,
+              "recall": 0.9983,
+              "f1": 0.9974
+            },
+            "late_blight": {
+              "n": 424,
+              "precision": 0.9636,
+              "recall": 0.9976,
+              "f1": 0.9803
+            }
+          },
+          "ece": 0.0036,
+          "matriz": {
+            "filas_reales": [
+              "early_blight",
+              "healthy",
+              "late_blight"
+            ],
+            "columnas_pred": [
+              "early_blight",
+              "healthy",
+              "late_blight",
+              "other"
+            ],
+            "valores": [
+              [
+                293,
+                1,
+                15,
+                0
+              ],
+              [
+                0,
+                579,
+                1,
+                0
+              ],
+              [
+                0,
+                1,
+                423,
+                0
+              ]
+            ]
+          }
+        },
+        "etiopia_holeta": {
+          "n": 429,
+          "accuracy": 0.8112,
+          "f1_macro": 0.8614,
+          "por_clase": {
+            "healthy": {
+              "n": 362,
+              "precision": 1.0,
+              "recall": 0.8232,
+              "f1": 0.903
+            },
+            "late_blight": {
+              "n": 67,
+              "precision": 0.9091,
+              "recall": 0.7463,
+              "f1": 0.8197
+            }
+          },
+          "ece": 0.0351,
+          "matriz": {
+            "filas_reales": [
+              "healthy",
+              "late_blight"
+            ],
+            "columnas_pred": [
+              "early_blight",
+              "healthy",
+              "late_blight",
+              "other"
+            ],
+            "valores": [
+              [
+                0,
+                298,
+                5,
+                59
+              ],
+              [
+                7,
+                0,
+                50,
+                10
+              ]
+            ]
+          }
+        },
+        "peru_reserva": {
+          "n": 160,
+          "accuracy": 0.975,
+          "f1_macro": 0.9804,
+          "por_clase": {
+            "healthy": {
+              "n": 72,
+              "precision": 0.9722,
+              "recall": 0.9722,
+              "f1": 0.9722
+            },
+            "late_blight": {
+              "n": 88,
+              "precision": 1.0,
+              "recall": 0.9773,
+              "f1": 0.9885
+            }
+          },
+          "ece": 0.0321,
+          "matriz": {
+            "filas_reales": [
+              "healthy",
+              "late_blight"
+            ],
+            "columnas_pred": [
+              "early_blight",
+              "healthy",
+              "late_blight",
+              "other"
+            ],
+            "valores": [
+              [
+                0,
+                70,
+                0,
+                2
+              ],
+              [
+                0,
+                2,
+                86,
+                0
+              ]
+            ]
+          }
+        },
+        "plantdoc_papa": {
+          "n": 75,
+          "accuracy": 0.4933,
+          "f1_macro": 0.5685,
+          "por_clase": {
+            "early_blight": {
+              "n": 40,
+              "precision": 0.8333,
+              "recall": 0.375,
+              "f1": 0.5172
+            },
+            "late_blight": {
+              "n": 35,
+              "precision": 0.6111,
+              "recall": 0.6286,
+              "f1": 0.6197
+            }
+          },
+          "ece": 0.3094,
+          "matriz": {
+            "filas_reales": [
+              "early_blight",
+              "late_blight"
+            ],
+            "columnas_pred": [
+              "early_blight",
+              "healthy",
+              "late_blight",
+              "other"
+            ],
+            "valores": [
+              [
+                15,
+                1,
+                14,
+                10
+              ],
+              [
+                3,
+                1,
+                22,
+                9
+              ]
+            ]
+          }
+        },
+        "otros_cultivos": {
+          "n": 473,
+          "rechazadas_como_no_papa": 0.9302
+        }
+      }
+    }
+  },
+  "mcnemar": {
+    "A": "resnet50",
+    "B": "efficientnetb0",
+    "pruebas": {
+      "tanzania_test": {
+        "solo_A_acierta": 9,
+        "solo_B_acierta": 13,
+        "discordantes": 22,
+        "chi2_con_correccion": 0.4091,
+        "p_chi2": 0.522431,
+        "p_exacto": 0.523467,
+        "p_valor": 0.523467,
+        "metodo": "exacta binomial"
+      },
+      "etiopia_holeta": {
+        "solo_A_acierta": 68,
+        "solo_B_acierta": 5,
+        "discordantes": 73,
+        "chi2_con_correccion": 52.6575,
+        "p_chi2": 0.0,
+        "p_exacto": 0.0,
+        "p_valor": 0.0,
+        "metodo": "chi-cuadrado con corrección de continuidad"
+      },
+      "peru_reserva": {
+        "solo_A_acierta": 3,
+        "solo_B_acierta": 2,
+        "discordantes": 5,
+        "chi2_con_correccion": 0.0,
+        "p_chi2": 1.0,
+        "p_exacto": 1.0,
+        "p_valor": 1.0,
+        "metodo": "exacta binomial"
+      },
+      "plantdoc_papa": {
+        "solo_A_acierta": 4,
+        "solo_B_acierta": 12,
+        "discordantes": 16,
+        "chi2_con_correccion": 3.0625,
+        "p_chi2": 0.080118,
+        "p_exacto": 0.076813,
+        "p_valor": 0.076813,
+        "metodo": "exacta binomial"
+      },
+      "otros_cultivos": {
+        "solo_A_acierta": 9,
+        "solo_B_acierta": 43,
+        "discordantes": 52,
+        "chi2_con_correccion": 20.9423,
+        "p_chi2": 5e-06,
+        "p_exacto": 2e-06,
+        "p_valor": 5e-06,
+        "metodo": "chi-cuadrado con corrección de continuidad"
+      },
+      "todos_los_conjuntos": {
+        "solo_A_acierta": 93,
+        "solo_B_acierta": 75,
+        "discordantes": 168,
+        "chi2_con_correccion": 1.7202,
+        "p_chi2": 0.189662,
+        "p_exacto": 0.189505,
+        "p_valor": 0.189662,
+        "metodo": "chi-cuadrado con corrección de continuidad"
+      }
+    }
+  }
+}
