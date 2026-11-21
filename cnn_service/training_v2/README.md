@@ -150,6 +150,50 @@ uvicorn app.main:app --port 8001
 Para volver a v1 basta quitar esas variables. Si la clase ganadora es `other`, el
 servicio responde "la fotografía no parece corresponder a una hoja de papa".
 
+## Ciclo de retroalimentación: reentrenar con diagnósticos validados
+
+Cada diagnóstico que un agrónomo **confirma** o **corrige** es una foto etiquetada por un experto,
+tomada en las condiciones reales de PROINPA. El sistema permite exportarlas para reentrenar la CNN
+(es justo lo que faltaba: fotos de campo de Bolivia).
+
+**1. Exportar desde el sistema.** En *Diagnóstico IA → Diagnósticos*, botón **Exportar dataset
+validado** (solo Administrador, Agrónomo y Superadmin). Descarga un ZIP con:
+
+| Contenido | Descripción |
+|---|---|
+| `early_blight/`, `healthy/`, `late_blight/` | Fotos Confirmadas o Corregidas, en la carpeta de la enfermedad **final** (la validada), con los mismos nombres de clase que usa `train_v2.py` |
+| `metadata.csv` | `id_diagnostico, archivo, clase_predicha, clase_final, estado_validacion, confianza, version_modelo, fecha, comunidad, parcela` |
+| `LEEME.txt` | Conteos y qué no se pudo incluir |
+
+No se incluyen los diagnósticos Rechazados ni Pendientes, los que terminaron en una enfermedad que
+la CNN no clasifica (por ejemplo Rizoctoniasis) ni los que ya no tienen su foto en el servidor.
+La clase `other` ("no es papa") no sale del sistema: viene del dataset base.
+
+**2. Integrarlo con el dataset de entrenamiento.** Desde `cnn_service/`:
+
+```powershell
+python training_v2/integrar_dataset_validado.py --zip dataset_validado_AAAAMMDD.zip --base dataset_v2c --out dataset_v3
+```
+
+El script reparte las fotos en `train/val/test` **agrupando por parcela** (fotos de una misma parcela
+se parecen mucho; si quedaran en conjuntos distintos, la prueba saldría inflada), omite fotos
+repetidas y conserva el dataset base. Con menos de 3 parcelas no puede reservar validación ni
+prueba y lo avisa: en ese caso usa el ZIP solo como refuerzo del entrenamiento.
+
+**3. Entrenar y comparar.**
+
+```powershell
+python training_v2/train_v2.py --data dataset_v3 --out model_v3 --artifacts artifacts_v3 --zoom 0.35 --epochs-head 4 --epochs-finetune 3 --version PROINPA-v3
+python training_v2/evaluate_v2c.py --out artifacts_v3 --modelo "actual=model_v2b/potato_resnet50_v2.keras,model_v2b/model_metadata.json" --modelo "v3=model_v3/potato_resnet50_v2.keras,model_v3/model_metadata.json"
+```
+
+Para activar el modelo nuevo basta con `CNN_MODEL_PATH` y `CNN_METADATA_PATH` (ver "Activar v2 en el
+servicio"). **Antes de activarlo**, compara con la prueba reservada (parcelas que el modelo no vio) y
+con las vistas *Desempeño del modelo*; reentrenar con pocas fotos puede empeorar el modelo.
+
+> Recomendación: reunir al menos unas 100 fotos validadas por clase y de varias parcelas antes de
+> reentrenar. Con menos, el resultado es poco confiable.
+
 ## Archivos
 
 | Archivo | Para qué |
@@ -160,3 +204,4 @@ servicio responde "la fotografía no parece corresponder a una hoja de papa".
 | `train_v2.py` | entrenamiento en dos etapas + calibración |
 | `build_v2b.py` | dataset v2b (papa de varias fuentes, repetición de fotos de campo) |
 | `evaluate_v2.py` | comparación v1 vs v2 |
+| `integrar_dataset_validado.py` | integra el ZIP del dataset validado (exportado del sistema) con un dataset de entrenamiento, dividiendo por parcela |

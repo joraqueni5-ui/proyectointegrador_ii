@@ -11,6 +11,18 @@
       </div>
 
       <div class="cbar-right">
+        <button
+          v-if="puedeExportarDataset"
+          class="btn btn-s"
+          type="button"
+          title="Descarga un ZIP con las fotos confirmadas o corregidas por el agrónomo, para reentrenar la CNN"
+          :disabled="exportandoDataset"
+          @click="exportarDataset"
+        >
+          <i class="ti ti-database-export"></i>
+          {{ exportandoDataset ? 'Preparando ZIP...' : 'Exportar dataset validado' }}
+        </button>
+
         <button class="btn btn-s" type="button" :disabled="loading" @click="cargarTodo">
           <i class="ti ti-refresh"></i>
           {{ loading ? 'Actualizando...' : 'Actualizar' }}
@@ -43,6 +55,11 @@
 
     <div v-if="pageError" class="diagnosticos-error">
       {{ pageError }}
+    </div>
+
+    <div v-if="mensajeExito" class="diagnosticos-exito" role="status">
+      <i class="ti ti-circle-check"></i>
+      {{ mensajeExito }}
     </div>
 
     <!-- PANEL TIPO MOCKUP -->
@@ -135,7 +152,8 @@ import '@/styles/diagnosticos.css';
 
 import diagnosticoService from '@/services/modules/diagnosticoService';
 import inspeccionService from '@/services/modules/inspeccionService';
-import { tienePermiso, usuarioGuardado } from '@/utils/permisos';
+import { obtenerRolNombre, tienePermiso, usuarioGuardado } from '@/utils/permisos';
+import { descargarBlob } from '@/services/api';
 import enfermedadService from '@/services/modules/enfermedadService';
 import { obtenerMensajeError } from '@/services/errorService';
 
@@ -191,6 +209,37 @@ const validarError = ref('');
 const usuario = usuarioGuardado();
 const puedeValidar = tienePermiso(usuario, 'validar_diagnosticos');
 const puedeCrear = tienePermiso(usuario, 'crear_diagnosticos');
+
+// Mismos roles que acepta el backend para exportar el dataset validado.
+const puedeExportarDataset = ['Administrador', 'Agrónomo', 'Superadmin'].includes(obtenerRolNombre(usuario));
+const exportandoDataset = ref(false);
+const mensajeExito = ref('');
+
+async function exportarDataset() {
+  if (exportandoDataset.value) {
+    return; // evita descargas duplicadas por doble clic
+  }
+
+  exportandoDataset.value = true;
+  pageError.value = '';
+  mensajeExito.value = '';
+
+  try {
+    const respuesta = await diagnosticoService.exportarDataset();
+    const total = respuesta.headers?.['x-total-fotos'];
+
+    descargarBlob(respuesta.data, `dataset_validado_${new Date().toISOString().slice(0, 10)}.zip`, 'application/zip');
+
+    mensajeExito.value = total
+      ? `Dataset exportado: ${total} fotografías con su metadata.csv. Revisa el archivo LEEME.txt del ZIP.`
+      : 'Dataset exportado. Revisa el archivo LEEME.txt del ZIP.';
+  } catch (err) {
+    console.error(err);
+    pageError.value = obtenerMensajeError(err, 'No se pudo exportar el dataset validado.');
+  } finally {
+    exportandoDataset.value = false;
+  }
+}
 
 const totalPendientes = computed(() => {
   return diagnosticos.value.filter((d) => d.estado_validacion === 'Pendiente').length;

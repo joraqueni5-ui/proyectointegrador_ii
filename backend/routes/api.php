@@ -18,6 +18,7 @@ use App\Http\Controllers\Comercial\VentaController;
 use App\Http\Controllers\DashboardController;
 // Comercial / Inventario
 use App\Http\Controllers\Diagnostico\AlertaController;
+use App\Http\Controllers\Diagnostico\DatasetValidadoController;
 use App\Http\Controllers\Diagnostico\DesempenoModeloController;
 use App\Http\Controllers\Diagnostico\DiagnosticoController;
 use App\Http\Controllers\Diagnostico\EnfermedadController;
@@ -152,6 +153,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('diagnosticos/cnn/estado', [DiagnosticoController::class, 'estadoCnn']);
     Route::get('diagnosticos/desempeno-modelo', [DesempenoModeloController::class, 'index']);
     Route::get('diagnosticos/desempeno-modelo/pdf', [DesempenoModeloController::class, 'pdf']);
+    Route::get('diagnosticos/exportar-dataset', [DatasetValidadoController::class, 'exportar']);
     Route::patch('diagnosticos/{diagnostico}/validar', [DiagnosticoController::class, 'validar']);
     Route::apiResource('diagnosticos', DiagnosticoController::class)
         ->only(['index', 'show', 'store'])

@@ -22,7 +22,7 @@ return [
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => [],
+    'exposed_headers' => ['X-Total-Fotos', 'Content-Disposition'],
 
     'max_age' => 0,
 

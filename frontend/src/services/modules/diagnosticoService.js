@@ -21,6 +21,11 @@ const diagnosticoService = {
     return api.patch(`/diagnosticos/${id}/validar`, data);
   },
 
+  // ZIP con las fotos de diagnósticos validados (por clase final) y su metadata.csv.
+  exportarDataset(params = {}) {
+    return api.get('/diagnosticos/exportar-dataset', { params, responseType: 'blob', timeout: 300000 });
+  },
+
   // Desempeño de la CNN calculado con los diagnósticos validados (solo lectura).
   desempenoModelo(params = {}) {
     return api.get('/diagnosticos/desempeno-modelo', { params });
