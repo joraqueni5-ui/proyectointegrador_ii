@@ -224,7 +224,7 @@
 ============================== */
 
 .user-modal-overlay {
-  z-index: 400;
+  z-index: 3000;
 }
 
 .user-form-modal {

@@ -270,25 +270,30 @@ class ModelRuntime:
             .parents[1]
         )
 
+        # Modelo por defecto: el prototipo v2c (fotos de campo + clase "no es papa") si
+        # existe; si no, el modelo v1 original. CNN_MODEL_PATH / CNN_METADATA_PATH
+        # permiten forzar otro (por ejemplo, volver a v1).
+        v2c_dir = base_dir / "model_v2c_resnet50"
+        usar_v2c = (
+            (v2c_dir / "potato_resnet50_v2.keras").exists()
+            and (v2c_dir / "model_metadata.json").exists()
+        )
+        default_dir = v2c_dir if usar_v2c else base_dir / "model"
+        default_model = (
+            "potato_resnet50_v2.keras" if usar_v2c else "potato_resnet50.keras"
+        )
+
         self.model_path = Path(
             os.getenv(
                 "CNN_MODEL_PATH",
-                str(
-                    base_dir
-                    / "model"
-                    / "potato_resnet50.keras"
-                ),
+                str(default_dir / default_model),
             )
         )
 
         self.metadata_path = Path(
             os.getenv(
                 "CNN_METADATA_PATH",
-                str(
-                    base_dir
-                    / "model"
-                    / "model_metadata.json"
-                ),
+                str(default_dir / "model_metadata.json"),
             )
         )
 

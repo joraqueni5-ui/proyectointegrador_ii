@@ -270,7 +270,7 @@
 
 /* MODALES */
 .cosecha-modal-overlay {
-  z-index: 400;
+  z-index: 3000;
 }
 
 .cosecha-modal-subtitle {

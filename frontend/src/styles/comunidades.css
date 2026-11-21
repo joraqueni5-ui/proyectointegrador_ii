@@ -200,7 +200,7 @@
 
 /* MODAL FORM */
 .comunidad-modal-overlay {
-  z-index: 400;
+  z-index: 3000;
 }
 
 .comunidad-form-modal {

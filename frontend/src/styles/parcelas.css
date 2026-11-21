@@ -220,7 +220,7 @@
 
 /* MODALES */
 .parcela-modal-overlay {
-  z-index: 400;
+  z-index: 3000;
 }
 
 .parcela-modal-subtitle {

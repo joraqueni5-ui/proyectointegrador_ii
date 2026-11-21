@@ -968,7 +968,7 @@
 
 /* Modal detalle */
 .diagnostico-modal-overlay {
-  z-index: 430;
+  z-index: 3010;
 }
 
 .diagnostico-detalle-modal {

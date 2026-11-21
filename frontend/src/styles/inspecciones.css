@@ -217,7 +217,7 @@
 
 /* MODALES */
 .inspeccion-modal-overlay {
-  z-index: 400;
+  z-index: 3000;
 }
 
 .inspeccion-modal-subtitle {

@@ -99,7 +99,7 @@
               <select v-model="form.id_etapa_fenologica">
                 <option value="">Sin etapa asignada</option>
                 <option v-for="e in etapas" :key="e.id" :value="e.id">
-                  {{ e.nombre }}
+                  {{ e.nombre }}{{ e.codigo ? ` (${e.codigo})` : '' }}
                 </option>
               </select>
               <small v-if="!etapas.length" class="field-help">

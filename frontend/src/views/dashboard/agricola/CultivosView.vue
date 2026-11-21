@@ -138,7 +138,7 @@
       v-if="showFormModal"
       :mode="modalMode"
       :cultivo="selectedCultivo"
-      :parcelas="parcelas"
+      :parcelas="parcelasParaFormulario"
       :etapas="etapas"
       :saving="saving"
       :error="formError"
@@ -167,6 +167,7 @@ import { ref, computed, onMounted } from 'vue';
 
 import cultivoVariedadService from '@/services/modules/cultivoVariedadService';
 import parcelaService from '@/services/modules/parcelaService';
+import catalogoAgricolaService from '@/services/modules/catalogoAgricolaService';
 import { obtenerMensajeError } from '@/services/errorService';
 
 import CultivoCard from '@/components/cultivos/CultivoCard.vue';
@@ -191,7 +192,7 @@ const saving = ref(false);
 
 const pageError = ref('');
 const estadoError = ref('');
-const formError = ref('');;
+const formError = ref('');
 
 const search = ref('');
 const filtroEstado = ref('');
@@ -222,6 +223,14 @@ const variedadesUnicas = computed(() => {
       .map((c) => String(c.variedad_papa || '').trim().toLowerCase())
       .filter(Boolean)
   ).size;
+});
+
+// El formulario solo ofrece parcelas activas, pero al editar debe incluir la parcela actual
+// del cultivo aunque esté inactiva (si no, el campo quedaría en blanco).
+const parcelasParaFormulario = computed(() => {
+  const actual = Number(selectedCultivo.value?.id_parcela ?? selectedCultivo.value?.parcela?.id);
+
+  return parcelas.value.filter((p) => p.estado === 'Activa' || Number(p.id) === actual);
 });
 
 const filteredCultivos = computed(() => {
@@ -286,6 +295,7 @@ async function fetchAll() {
     await Promise.all([
       fetchCultivos(),
       fetchParcelas(),
+      fetchEtapas(),
     ]);
   } finally {
     loading.value = false;
@@ -312,12 +322,23 @@ async function fetchParcelas() {
       todos: 1,
     });
 
-    parcelas.value = normalizeList(data)
-      .filter((p) => p.estado === 'Activa');
+    parcelas.value = normalizeList(data);
   } catch (err) {
     console.error(err);
     pageError.value = obtenerMensajeError(err, 'No se pudieron cargar las parcelas.');
     parcelas.value = [];
+  }
+}
+
+async function fetchEtapas() {
+  try {
+    const { data } = await catalogoAgricolaService.etapasFenologicas();
+
+    etapas.value = normalizeList(data);
+  } catch (err) {
+    // La etapa es opcional: el formulario sigue funcionando sin el catálogo.
+    console.error(err);
+    etapas.value = [];
   }
 }
 

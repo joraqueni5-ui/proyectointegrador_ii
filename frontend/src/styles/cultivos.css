@@ -3,6 +3,11 @@
 }
 
 .cultivos-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
   padding-inline: 22px;
 }
 
@@ -18,7 +23,7 @@
 
 .cultivos-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(210px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   padding-inline: 22px;
 }
@@ -32,7 +37,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 12px 16px;
   padding: 16px 20px;
   border-bottom: 1px solid var(--gris-200);
   background: white;
@@ -53,15 +59,19 @@
 }
 
 .cultivos-filters {
+  flex: 1 1 460px;
+  min-width: 0;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 9px;
   flex-wrap: wrap;
 }
 
 .cultivos-select {
+  flex: 1 1 170px;
+  min-width: 150px;
   min-height: 38px;
-  min-width: 145px;
   padding: 8px 34px 8px 12px;
   border: 1.5px solid var(--gris-300);
   border-radius: 10px;
@@ -72,16 +82,18 @@
 }
 
 .cultivos-select-lg {
-  min-width: 230px;
+  flex-basis: 230px;
+  min-width: 190px;
 }
 
 .cultivos-search {
-  min-width: 280px;
+  flex: 2 1 220px;
+  min-width: 0;
 }
 
 .cultivos-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
   gap: 14px;
   padding: 18px;
 }
@@ -314,24 +326,27 @@
   font-size: 36px;
 }
 
-@media (max-width: 1200px) {
-  .cultivos-stats,
-  .cultivos-grid {
-    grid-template-columns: repeat(2, minmax(240px, 1fr));
+/* Con la barra lateral visible (286 px) el contenido es más angosto que la ventana. */
+@media (max-width: 1180px) {
+  .cultivos-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
-  .cultivos-toolbar {
-    align-items: flex-start;
-    flex-direction: column;
+@media (max-width: 1250px) {
+  .cultivos-filters {
+    flex-basis: 100%;
+    justify-content: stretch;
+  }
+}
+
+@media (max-width: 560px) {
+  .cultivos-stats {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 760px) {
-  .cultivos-stats,
-  .cultivos-grid {
-    grid-template-columns: 1fr;
-  }
-
   .cultivos-stats {
     padding-inline: 14px;
   }
@@ -355,8 +370,8 @@
   .cultivos-select,
   .cultivos-select-lg,
   .cultivos-search {
-    width: 100%;
-    min-width: 100%;
+    flex-basis: 100%;
+    min-width: 0;
   }
 }
 /* ==============================
@@ -364,7 +379,7 @@
 ============================== */
 
 .cultivo-modal-overlay {
-  z-index: 400;
+  z-index: 3000;
 }
 
 .cultivo-modal-subtitle {
@@ -377,7 +392,8 @@
 .cultivo-form-modal {
   width: min(100%, 920px);
   border-radius: 20px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .cultivo-modal-header {
@@ -438,7 +454,8 @@
 /* VIEW */
 .cultivo-view-modal {
   width: min(100%, 860px);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .cultivo-view-header {
@@ -601,6 +618,10 @@
 }
 
 @media (max-width: 760px) {
+  .cultivo-modal-overlay {
+    padding: 10px;
+  }
+
   .cultivo-form-grid,
   .cultivo-view-body {
     grid-template-columns: 1fr;
