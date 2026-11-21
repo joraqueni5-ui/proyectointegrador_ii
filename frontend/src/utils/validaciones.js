@@ -53,6 +53,38 @@ export const ciDigitos = () => (valor) => {
   return t !== '' && !/^\d{5,10}$/.test(t) ? 'El carnet de identidad debe tener entre 5 y 10 dígitos.' : '';
 };
 
+// Exactamente n dígitos (teléfono de 8 dígitos).
+export const digitosExactos = (n, mensaje) => (valor) => {
+  const t = texto(valor);
+
+  return t !== '' && !new RegExp(`^[0-9]{${n}}$`).test(t) ? mensaje : '';
+};
+
+export const alfanumerico = (max, mensaje) => (valor) => {
+  const t = texto(valor);
+
+  if (t === '') return '';
+
+  return /^[A-Za-z0-9]+$/.test(t) && t.length <= max ? '' : mensaje;
+};
+
+// Mayor de edad (18 años cumplidos) y no anterior a 1900, como el backend.
+export const fechaNacimientoAdulta = () => (valor) => {
+  const t = texto(valor);
+
+  if (t === '') return '';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) return 'La fecha de nacimiento no tiene un formato válido.';
+  if (t < '1900-01-01') return 'La fecha de nacimiento no puede ser anterior al año 1900.';
+
+  const limite = new Date();
+
+  limite.setFullYear(limite.getFullYear() - 18);
+
+  const iso = `${limite.getFullYear()}-${String(limite.getMonth() + 1).padStart(2, '0')}-${String(limite.getDate()).padStart(2, '0')}`;
+
+  return t <= iso ? '' : 'El productor debe ser mayor de edad (al menos 18 años).';
+};
+
 // 8 a 72 caracteres con mayúscula, minúscula, número y símbolo.
 export const contrasenaSegura = () => (valor) => {
   const t = String(valor ?? '');
@@ -74,7 +106,9 @@ export const unoDe = (opciones, mensaje) => (valor) =>
 export const cuando = (condicion, regla) => (valor, formulario) =>
   (condicion(formulario) ? regla(valor, formulario) : '');
 
-export function numeroEntre(min, max, etiqueta = 'El valor') {
+const miles = new Intl.NumberFormat('es-BO', { maximumFractionDigits: 3 });
+
+export function numeroEntre(min, max, etiqueta = 'El valor', unidad = '') {
   return (valor) => {
     const t = texto(valor);
 
@@ -83,7 +117,7 @@ export function numeroEntre(min, max, etiqueta = 'El valor') {
     const n = Number(t.replace(',', '.'));
 
     if (!Number.isFinite(n)) return `${etiqueta} debe ser un número.`;
-    if (n < min || n > max) return `${etiqueta} debe estar entre ${String(min).replace('.', ',')} y ${String(max).replace('.', ',')}.`;
+    if (n < min || n > max) return `${etiqueta} debe estar entre ${miles.format(min)} y ${miles.format(max)}${unidad ? ` ${unidad}` : ''}.`;
 
     return '';
   };

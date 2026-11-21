@@ -37,6 +37,7 @@ class Parcela extends Model
         'longitud' => 'float',
         'altitud_msnm' => 'integer',
         'superficie_ha' => 'float',
+        'alertas_activas' => 'integer',
     ];
 
     public function productor()
@@ -80,6 +81,21 @@ class Parcela extends Model
             ->with([
                 'productor:id,id_comunidad,nombre_completo,nombres,apellido_paterno,apellido_materno,carnet_identidad,telefono',
                 'productor.comunidad:id,nombre_comunidad',
+            ]);
+    }
+
+    /** Agrega `alertas_activas`: alertas en estado Activa de la parcela (subconsulta, sin N+1). */
+    public function scopeConAlertasActivas(Builder $query): Builder
+    {
+        return $query
+            ->addSelect('parcelas.*')
+            ->addSelect([
+                'alertas_activas' => DB::table('alertas')
+                    ->join('diagnosticos_cnn', 'diagnosticos_cnn.id', '=', 'alertas.id_diagnostico')
+                    ->join('inspecciones', 'inspecciones.id', '=', 'diagnosticos_cnn.id_inspeccion')
+                    ->whereColumn('inspecciones.id_parcela', 'parcelas.id')
+                    ->where('alertas.estado', 'Activa')
+                    ->selectRaw('count(*)'),
             ]);
     }
 

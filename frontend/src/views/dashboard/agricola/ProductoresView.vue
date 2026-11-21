@@ -1,840 +1,428 @@
 <template>
-  <div class="productores-page fade-in">
-    <!-- Contextbar -->
-    <div class="cbar">
-      <div class="bread">
-        <i class="ti ti-home" style="font-size:14px"></i>
-        <span>›</span>
-        <span>Módulo Agrícola</span>
-        <span>›</span>
-        <span class="cur">Productores</span>
+  <div class="pagina">
+    <PageHeader
+      titulo="Productores"
+      :resumen="resumen"
+      :migas="[{ texto: 'Inicio', to: '/dashboard' }, { texto: 'Campo' }, { texto: 'Productores' }]"
+    >
+      <div class="pagina-acciones">
+        <BaseButton variante="secundario" icono="ti-file-spreadsheet" :disabled="!filtrados.length" @click="exportar('excel')">Excel</BaseButton>
+        <BaseButton variante="secundario" icono="ti-file-type-pdf" :disabled="!filtrados.length" @click="exportar('pdf')">PDF</BaseButton>
+        <BaseButton v-if="puedeGestionar" icono="ti-plus" @click="abrirCrear">Nuevo productor</BaseButton>
       </div>
+    </PageHeader>
 
-      <div class="cbar-right">
-        <button class="btn btn-s" type="button" @click="exportProductoresExcel">
-          <i class="ti ti-file-spreadsheet"></i>
-          Excel
-        </button>
+    <p v-if="errorPagina" class="aviso-error" role="alert">{{ errorPagina }}</p>
 
-        <button class="btn btn-s" type="button" @click="exportProductoresPdf">
-          <i class="ti ti-file-type-pdf"></i>
-          PDF
-        </button>
-        <button class="btn btn-p" type="button" @click="openCreate">
-          <i class="ti ti-plus"></i>
-          Nuevo productor
-        </button>
-      </div>
+    <div class="rejilla-kpi">
+      <KpiCard etiqueta="Productores activos" :valor="numero(activos.length, { decimales: 0 })" :contexto="`de ${productores.length} registrados`" icono="ti-users" />
+      <KpiCard etiqueta="Sin parcelas registradas" :valor="numero(sinParcelas, { decimales: 0 })" contexto="activos todavía sin parcela" icono="ti-map-off" />
+      <KpiCard
+        etiqueta="Con parcelas en alerta"
+        :valor="numero(conAlerta, { decimales: 0 })"
+        :contexto="conAlerta > 0 ? 'requieren seguimiento' : 'ninguno con alerta activa'"
+        :alerta="conAlerta > 0"
+        icono="ti-alert-triangle"
+      />
+      <KpiCard etiqueta="Superficie declarada" :valor="hectareas(superficieDeclarada)" :contexto="`${hectareas(superficieUsada)} ya en parcelas`" icono="ti-ruler-2" />
     </div>
 
-    <!-- Header -->
-    <div class="pg-header productores-header">
-      <div>
-        <div class="pg-title">Productores</div>
-        <div class="pg-sub">
-          Administra el padrón de productores agrícolas y sus datos productivos.
+    <FilterBar
+      v-model:busqueda="busqueda"
+      v-model:activo="filtro"
+      placeholder="Nombre, carnet, teléfono o comunidad"
+      :filtros="pildoras"
+      :filtros-extra="(comunidad ? 1 : 0) + (sexo ? 1 : 0)"
+    >
+      <template #mas>
+        <BaseSelect v-model="comunidad" etiqueta="Comunidad" limpiable :opciones="opcionesComunidadFiltro" placeholder="Todas las comunidades" />
+        <BaseSelect v-model="sexo" etiqueta="Sexo" limpiable :opciones="[{ valor: 'M', etiqueta: 'Masculino' }, { valor: 'F', etiqueta: 'Femenino' }, { valor: 'Otro', etiqueta: 'Otro' }]" placeholder="Todos" />
+      </template>
+    </FilterBar>
+
+    <DataTable
+      :columnas="columnas"
+      :filas="filtrados"
+      :total="productores.length"
+      :por-pagina="1000"
+      :cargando="cargando"
+      :acciones="puedeGestionar ? acciones : null"
+      :resaltar-id="resaltado"
+      vacio-icono="ti-users"
+      :vacio-titulo="productores.length ? 'Ningún productor coincide con la búsqueda' : 'Todavía no hay productores'"
+      :vacio-texto="productores.length ? 'Prueba con otro nombre o quita los filtros.' : 'Registra al primer productor para poder asociarle parcelas.'"
+      @ver="abrirDetalle"
+      @accion="alAccion"
+    >
+      <template #celda-nombre_completo="{ fila }">
+        <strong class="vp-nombre">{{ nombreCorto(fila) }}</strong>
+        <span class="vp-secundario">{{ ciYTelefono(fila) }}</span>
+      </template>
+      <template #celda-comunidad="{ fila }">{{ fila.comunidad?.nombre_comunidad || '—' }}</template>
+      <template #celda-parcelas_count="{ fila }">{{ numero(fila.parcelas_count ?? 0, { decimales: 0 }) }}</template>
+      <template #celda-superficie="{ fila }">
+        <div class="vp-sup" :title="textoSuperficie(fila)">
+          <span>{{ textoSuperficie(fila) }}</span>
+          <span v-if="tieneDeclarada(fila)" class="vp-barra" :class="{ 'excede': excede(fila) }" role="img" :aria-label="excede(fila) ? 'Supera la superficie declarada' : 'Dentro de la superficie declarada'">
+            <i :style="{ width: porcentajeUso(fila) + '%' }"></i>
+          </span>
         </div>
-      </div>
+      </template>
+      <template #celda-activo="{ fila }">
+        <StatusBadge :estado="fila.activo ? 'Activo' : 'Inactivo'" />
+        <StatusBadge v-if="fila.parcelas_con_alerta > 0" tono="naranja" :texto="`${fila.parcelas_con_alerta} con alerta`" class="vp-alerta" />
+      </template>
+    </DataTable>
 
-      <button class="btn btn-s" type="button" :disabled="loading" @click="fetchAll">
-        <i class="ti ti-refresh"></i>
-        {{ loading ? 'Actualizando...' : 'Actualizar' }}
-      </button>
-    </div>
-
-    <div v-if="pageError" class="productores-error">
-      {{ pageError }}
-    </div>
-
-    <!-- Stats -->
-    <div v-if="!loading" class="productores-stats mb20">
-      <div class="sc">
-        <div class="slabel">Total productores</div>
-        <div class="sval">{{ productores.length }}</div>
-        <div class="ssub">
-          <i class="ti ti-user-check up"></i>
-          registrados
-        </div>
-      </div>
-
-      <div class="sc blue">
-        <div class="slabel">Activos</div>
-        <div class="sval">{{ productoresActivos }}</div>
-        <div class="ssub">
-          <i class="ti ti-check up"></i>
-          en producción
-        </div>
-      </div>
-
-      <div class="sc amber">
-        <div class="slabel">Comunidades</div>
-        <div class="sval">{{ comunidadesUnicas }}</div>
-        <div class="ssub">
-          <i class="ti ti-building-community"></i>
-          representadas
-        </div>
-      </div>
-
-      <div class="sc purple">
-        <div class="slabel">Superficie total</div>
-        <div class="sval">
-          {{ superficieTotal.toFixed(1) }}
-          <span class="productores-unit">ha</span>
-        </div>
-        <div class="ssub">
-          <i class="ti ti-ruler-measure"></i>
-          registradas
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabla -->
-    <div class="card productores-card">
-      <div class="productores-toolbar">
-        <div>
-          <h3>Listado de productores</h3>
-          <p>Filtra por comunidad, estado, sexo o búsqueda general.</p>
-        </div>
-
-        <div class="productores-filters">
-          <select v-model="filtroEstado" class="productores-select">
-            <option value="">Todos</option>
-            <option value="true">Activos</option>
-            <option value="false">Inactivos</option>
-          </select>
-
-          <select v-model="filtroComunidad" class="productores-select productores-select-lg">
-            <option value="">Todas las comunidades</option>
-            <option v-for="c in comunidades" :key="c.id" :value="c.id">
-              {{ c.nombre_comunidad }}
-            </option>
-          </select>
-
-          <select v-model="filtroSexo" class="productores-select">
-            <option value="">Sexo: todos</option>
-            <option value="M">Masculino</option>
-            <option value="F">Femenino</option>
-            <option value="Otro">Otro</option>
-          </select>
-
-          <div class="search-box productores-search">
-            <i class="ti ti-search"></i>
-            <input v-model="search" placeholder="Buscar productor..." />
-          </div>
-        </div>
-      </div>
-
-      <div v-if="loading" class="loading-state">
-        <div class="spinner"></div>
-        <span>Cargando productores...</span>
-      </div>
-
-      <div v-else class="productores-table-wrap">
-        <table class="tbl productores-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Productor</th>
-              <th>CI</th>
-              <th>Teléfono</th>
-              <th>Comunidad</th>
-              <th>Sexo</th>
-              <th>Superficie</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr v-for="p in filteredProductores" :key="p.id">
-              <td class="productor-id">
-                {{ p.id }}
-              </td>
-
-              <td>
-                <div class="productor-name-cell">
-                  <div
-                    class="productor-avatar"
-                    :class="{ inactive: !p.activo }"
-                  >
-                    {{ inicialProductor(p) }}
-                  </div>
-
-                  <div>
-                    <strong>{{ nombreProductor(p) }}</strong>
-                    <small>{{ p.direccion || 'Sin dirección registrada' }}</small>
-                  </div>
-                </div>
-              </td>
-
-              <td class="productor-ci">
-                {{ ciCompleto(p) }}
-              </td>
-
-              <td>
-                {{ p.telefono || '—' }}
-              </td>
-
-              <td>
-                <span class="b bb">
-                  {{ p.comunidad?.nombre_comunidad || '—' }}
-                </span>
-              </td>
-
-              <td>
-                <span v-if="p.sexo" class="b" :class="badgeSexo(p.sexo)">
-                  {{ textoSexo(p.sexo) }}
-                </span>
-                <span v-else class="muted">—</span>
-              </td>
-
-              <td>
-                <span v-if="p.superficie_total_ha" class="b bg">
-                  {{ p.superficie_total_ha }} ha
-                </span>
-                <span v-else class="muted">—</span>
-              </td>
-
-              <td>
-                <span class="b" :class="p.activo ? 'bg' : 'bgr'">
-                  <i :class="p.activo ? 'ti ti-check' : 'ti ti-x'"></i>
-                  {{ p.activo ? 'Activo' : 'Inactivo' }}
-                </span>
-              </td>
-
-              <td>
-                <div class="productores-actions">
-                  <button
-                    class="productor-action view"
-                    type="button"
-                    title="Ver detalle"
-                    :disabled="saving"
-                    @click="openView(p)"
-                  >
-                    <i class="ti ti-eye"></i>
-                  </button>
-
-                  <button
-                    class="productor-action parcelas"
-                    type="button"
-                    title="Ver parcelas"
-                    :disabled="saving"
-                    @click="openParcelas(p)"
-                  >
-                    <i class="ti ti-map-2"></i>
-                  </button>
-
-                  <button
-                    class="productor-action edit"
-                    type="button"
-                    title="Editar"
-                    :disabled="saving"
-                    @click="openEdit(p)"
-                  >
-                    <i class="ti ti-pencil"></i>
-                  </button>
-
-                  <button
-                    v-if="p.activo"
-                    class="productor-action delete"
-                    type="button"
-                    title="Desactivar"
-                    :disabled="saving"
-                    @click="openDelete(p)"
-                  >
-                    <i class="ti ti-user-off"></i>
-                  </button>
-
-                  <button
-                    v-else
-                    class="productor-action activate"
-                    type="button"
-                    title="Activar"
-                    :disabled="saving"
-                    @click="handleActivate(p)"
-                  >
-                    <i class="ti ti-user-check"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-
-            <tr v-if="filteredProductores.length === 0">
-              <td colspan="9">
-                <div class="productores-empty">
-                  <i class="ti ti-users"></i>
-                  <span>No se encontraron productores</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <ProductorFormModal
-      v-if="showFormModal"
-      :mode="modalMode"
-      :productor="selectedProductor"
+    <ProductorFormDrawer
+      v-model="formAbierto"
+      :productor="productorEditar"
       :comunidades="comunidades"
-      :saving="saving"
-      :error="formError"
-      @close="closeFormModal"
-      @save="handleSave"
+      :guardando="guardando"
+      :errores-servidor="erroresServidor"
+      :error-general="errorGeneral"
+      @guardar="guardar"
     />
 
-    <ProductorViewModal
-      v-if="showViewModal"
-      :productor="selectedProductor"
-      @close="closeViewModal"
-    />
+    <ProductorDetailDrawer v-model="detalleAbierto" :productor="productorDetalle" @editar="abrirEditar" @cambiar-estado="pedirCambioEstado" />
 
-    <ProductorParcelasModal
-      v-if="showParcelasModal"
-      :productor="selectedProductor"
-      :parcelas="parcelas"
-      :loading="loadingParcelas"
-      @close="closeParcelasModal"
-    />
-
-    <ProductorDeleteModal
-      v-if="showDeleteModal"
-      :productor="selectedProductor"
-      :saving="saving"
-      :error="deleteError"
-      @close="closeDeleteModal"
-      @confirm="handleDelete"
-    />
+    <ConfirmDialog
+      v-model="confirmarAbierto"
+      :titulo="`¿Desactivar a ${productorConfirmar?.nombre_completo || ''}?`"
+      texto-confirmar="Sí, desactivar"
+      texto-cargando="Desactivando…"
+      :cargando="cambiandoEstado"
+      @confirmar="desactivar"
+    >
+      Dejará de aparecer en los formularios nuevos. No se borra ningún dato y se puede volver a activar. Si todavía tiene parcelas activas, el
+      sistema no lo permitirá.
+    </ConfirmDialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import PageHeader from '@/components/ui/PageHeader.vue';
+import BaseButton from '@/components/ui/BaseButton.vue';
+import BaseSelect from '@/components/ui/BaseSelect.vue';
+import KpiCard from '@/components/ui/KpiCard.vue';
+import FilterBar from '@/components/ui/FilterBar.vue';
+import DataTable from '@/components/ui/DataTable.vue';
+import StatusBadge from '@/components/ui/StatusBadge.vue';
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue';
+import ProductorFormDrawer from '@/components/productores/ProductorFormDrawer.vue';
+import ProductorDetailDrawer from '@/components/productores/ProductorDetailDrawer.vue';
 import productorService from '@/services/modules/productorService';
 import comunidadService from '@/services/modules/comunidadService';
 import { obtenerMensajeError } from '@/services/errorService';
-
-import ProductorFormModal from '@/components/productores/ProductorFormModal.vue';
-import ProductorViewModal from '@/components/productores/ProductorViewModal.vue';
-import ProductorParcelasModal from '@/components/productores/ProductorParcelasModal.vue';
-import ProductorDeleteModal from '@/components/productores/ProductorDeleteModal.vue';
-
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-
-import '@/styles/productores.css';
+import { useToast } from '@/composables/useToast';
 import { normalizeList } from '@/utils/datos';
+import { hectareas, numero } from '@/utils/formato';
+import { tienePermiso, usuarioGuardado } from '@/utils/permisos';
+
+const route = useRoute();
+const toast = useToast();
+
+const puedeGestionar = computed(() => tienePermiso(usuarioGuardado(), 'gestionar_productores'));
 
 const productores = ref([]);
 const comunidades = ref([]);
-const parcelas = ref([]);
+const cargando = ref(true);
+const errorPagina = ref('');
+const busqueda = ref(String(route.query.buscar || ''));
+const filtro = ref('todos');
+const comunidad = ref(null);
+const sexo = ref(null);
+const resaltado = ref(null);
 
-const loading = ref(true);
-const loadingParcelas = ref(false);
-const saving = ref(false);
+// ---------- datos
+async function cargar() {
+  cargando.value = true;
+  errorPagina.value = '';
 
-const search = ref('');
-const filtroComunidad = ref('');
-const filtroEstado = ref('');
-const filtroSexo = ref('');
+  try {
+    const [p, c] = await Promise.all([
+      productorService.listar({ todos: 1 }),
+      comunidadService.listar({ todos: 1 }).catch(() => ({ data: [] })),
+    ]);
 
-const pageError = ref('');
-const formError = ref('');
-const deleteError = ref('');
+    productores.value = normalizeList(p.data);
+    comunidades.value = normalizeList(c.data);
+  } catch (e) {
+    errorPagina.value = obtenerMensajeError(e, 'No se pudieron cargar los productores. Revisa tu conexión e intenta de nuevo.');
+    productores.value = [];
+  } finally {
+    cargando.value = false;
+  }
+}
 
-const showFormModal = ref(false);
-const showViewModal = ref(false);
-const showParcelasModal = ref(false);
-const showDeleteModal = ref(false);
+onMounted(cargar);
+watch(() => route.query.buscar, (q) => (busqueda.value = String(q || '')));
 
-const modalMode = ref('create');
-const selectedProductor = ref(null);
+// ---------- indicadores
+const activos = computed(() => productores.value.filter((p) => p.activo));
+const sinParcelas = computed(() => activos.value.filter((p) => !p.parcelas_count).length);
+const conAlerta = computed(() => activos.value.filter((p) => p.parcelas_con_alerta > 0).length);
+const superficieDeclarada = computed(() => activos.value.reduce((s, p) => s + Number(p.superficie_total_ha || 0), 0));
+const superficieUsada = computed(() => activos.value.reduce((s, p) => s + Number(p.superficie_parcelas_ha || 0), 0));
 
-const productoresActivos = computed(() => {
-  return productores.value.filter((p) => Boolean(p.activo)).length;
+const resumen = computed(() => {
+  if (cargando.value) return '';
+
+  const comunidadesConProductores = new Set(productores.value.map((p) => p.id_comunidad)).size;
+  const parcelas = productores.value.reduce((s, p) => s + Number(p.parcelas_count || 0), 0);
+
+  return `${numero(productores.value.length, { decimales: 0 })} productores en ${numero(comunidadesConProductores, { decimales: 0 })} comunidades · ${numero(parcelas, { decimales: 0 })} parcelas`;
 });
 
-const comunidadesUnicas = computed(() => {
-  return new Set(productores.value.map((p) => p.id_comunidad).filter(Boolean)).size;
+// ---------- filtros
+const pildoras = computed(() => [
+  { valor: 'todos', etiqueta: 'Todos', conteo: productores.value.length },
+  { valor: 'activos', etiqueta: 'Activos', conteo: activos.value.length },
+  { valor: 'inactivos', etiqueta: 'Inactivos', conteo: productores.value.length - activos.value.length },
+  { valor: 'sin_parcelas', etiqueta: 'Sin parcelas', conteo: sinParcelas.value },
+  { valor: 'con_alerta', etiqueta: 'Con alerta', conteo: conAlerta.value },
+]);
+
+const opcionesComunidadFiltro = computed(() => {
+  const vistas = new Map();
+
+  for (const p of productores.value) if (p.comunidad) vistas.set(p.id_comunidad, p.comunidad.nombre_comunidad);
+
+  return [...vistas].map(([valor, etiqueta]) => ({ valor, etiqueta })).sort((a, b) => a.etiqueta.localeCompare(b.etiqueta, 'es'));
 });
 
-const superficieTotal = computed(() => {
-  return productores.value.reduce((sum, p) => {
-    return sum + Number(p.superficie_total_ha || 0);
-  }, 0);
-});
+const sinTildes = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
-const filteredProductores = computed(() => {
-  const q = search.value.trim().toLowerCase();
+const filtrados = computed(() => {
+  const q = sinTildes(busqueda.value).trim();
 
   return productores.value.filter((p) => {
-    const texto = [
-      nombreProductor(p),
-      p.carnet_identidad,
-      p.ci_extension,
-      p.complemento_ci,
-      p.telefono,
-      p.direccion,
-      p.comunidad?.nombre_comunidad,
-      p.comunidad?.municipio,
-      p.sexo,
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase();
+    const texto = sinTildes([p.nombre_completo, p.carnet_identidad, p.telefono, p.comunidad?.nombre_comunidad].filter(Boolean).join(' '));
 
-    const matchSearch = !q || texto.includes(q);
+    if (q && !texto.includes(q)) return false;
+    if (filtro.value === 'activos' && !p.activo) return false;
+    if (filtro.value === 'inactivos' && p.activo) return false;
+    if (filtro.value === 'sin_parcelas' && (!p.activo || p.parcelas_count)) return false;
+    if (filtro.value === 'con_alerta' && !(p.parcelas_con_alerta > 0)) return false;
+    if (comunidad.value && p.id_comunidad !== comunidad.value) return false;
+    if (sexo.value && p.sexo !== sexo.value) return false;
 
-    const matchComunidad =
-      !filtroComunidad.value || Number(p.id_comunidad) === Number(filtroComunidad.value);
-
-    const matchEstado =
-      filtroEstado.value === ''
-        ? true
-        : Boolean(p.activo) === (filtroEstado.value === 'true');
-
-    const matchSexo =
-      !filtroSexo.value || p.sexo === filtroSexo.value;
-
-    return matchSearch && matchComunidad && matchEstado && matchSexo;
+    return true;
   });
 });
 
-const currentUser = computed(() => {
-  try {
-    return JSON.parse(localStorage.getItem('user_data') || '{}');
-  } catch {
-    return {};
-  }
-});
-
-onMounted(fetchAll);
-
-async function fetchAll() {
-  loading.value = true;
-  pageError.value = '';
-
-  try {
-    await Promise.all([
-      fetchProductores(),
-      fetchComunidades(),
-    ]);
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function fetchProductores() {
-  try {
-    const { data } = await productorService.listar({
-      todos: 1,
-    });
-
-    productores.value = normalizeList(data);
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'No se pudieron cargar los productores.');
-    productores.value = [];
-  }
-}
-
-async function fetchComunidades() {
-  try {
-    const { data } = await comunidadService.listar({
-      todos: 1,
-    });
-
-    comunidades.value = normalizeList(data);
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'No se pudieron cargar las comunidades.');
-    comunidades.value = [];
-  }
-}
-
-function openCreate() {
-  selectedProductor.value = null;
-  modalMode.value = 'create';
-  showFormModal.value = true;
-}
-
-function openEdit(productor) {
-  selectedProductor.value = productor;
-  modalMode.value = 'edit';
-  showFormModal.value = true;
-}
-
-async function openView(productor) {
-  pageError.value = '';
-
-  try {
-    const { data } = await productorService.obtener(productor.id);
-    selectedProductor.value = data;
-    showViewModal.value = true;
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'No se pudo cargar el detalle del productor.');
-  }
-}
-
-function closeViewModal() {
-  showViewModal.value = false;
-  selectedProductor.value = null;
-}
-
-function closeFormModal() {
-  formError.value = '';
-  showFormModal.value = false;
-  selectedProductor.value = null;
-}
-
-async function openParcelas(productor) {
-  selectedProductor.value = productor;
-  parcelas.value = [];
-  showParcelasModal.value = true;
-  loadingParcelas.value = true;
-
-  try {
-    const { data } = await productorService.obtener(productor.id);
-    parcelas.value = data.parcelas || [];
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'No se pudieron cargar las parcelas del productor.');
-  } finally {
-    loadingParcelas.value = false;
-  }
-}
-
-function closeParcelasModal() {
-  showParcelasModal.value = false;
-  selectedProductor.value = null;
-  parcelas.value = [];
-}
-
-function openDelete(productor) {
-  selectedProductor.value = productor;
-  deleteError.value = '';
-  showDeleteModal.value = true;
-}
-
-function closeDeleteModal() {
-  showDeleteModal.value = false;
-  selectedProductor.value = null;
-  deleteError.value = '';
-}
-
-async function handleSave(payload) {
-  saving.value = true;
-  formError.value = '';
-
-  try {
-    if (modalMode.value === 'create') {
-      await productorService.crear(payload);
-    } else {
-      await productorService.actualizar(selectedProductor.value.id, payload);
-    }
-
-    await fetchProductores();
-    closeFormModal();
-  } catch (err) {
-    console.error(err);
-    formError.value = obtenerMensajeError(err, 'Error al guardar productor.');
-  } finally {
-    saving.value = false;
-  }
-}
-
-async function handleDelete() {
-  if (!selectedProductor.value?.id) {
-    return;
-  }
-
-  saving.value = true;
-  deleteError.value = '';
-
-  try {
-    await productorService.eliminar(selectedProductor.value.id);
-    await fetchProductores();
-    closeDeleteModal();
-  } catch (err) {
-    console.error(err);
-    deleteError.value = obtenerMensajeError(err, 'Error al desactivar productor.');
-  } finally {
-    saving.value = false;
-  }
-}
-
-async function handleActivate(productor) {
-  if (!productor?.id) {
-    return;
-  }
-
-  saving.value = true;
-  pageError.value = '';
-
-  try {
-    await productorService.activar(productor.id);
-    await fetchProductores();
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'Error al activar productor.');
-  } finally {
-    saving.value = false;
-  }
-}
-
-function nombreProductor(productor) {
-  if (!productor) {
-    return '—';
-  }
-
-  if (productor.nombre_completo) {
-    return productor.nombre_completo;
-  }
-
-  return [
-    productor.nombres,
-    productor.apellido_paterno,
-    productor.apellido_materno,
+const descripcionFiltros = computed(() =>
+  [
+    busqueda.value && `búsqueda «${busqueda.value}»`,
+    filtro.value !== 'todos' && pildoras.value.find((p) => p.valor === filtro.value)?.etiqueta,
+    comunidad.value && opcionesComunidadFiltro.value.find((o) => o.valor === comunidad.value)?.etiqueta,
+    sexo.value && { M: 'Masculino', F: 'Femenino', Otro: 'Otro' }[sexo.value],
   ]
     .filter(Boolean)
-    .join(' ') || '—';
+    .join(' · ')
+);
+
+// ---------- tabla
+const columnas = [
+  { clave: 'nombre_completo', titulo: 'Productor' },
+  { clave: 'comunidad', titulo: 'Comunidad' },
+  { clave: 'parcelas_count', titulo: 'Parcelas', align: 'der' },
+  { clave: 'superficie', titulo: 'Superficie (usada / declarada)' },
+  { clave: 'activo', titulo: 'Estado' },
+];
+
+const nombreCorto = (p) => p.nombre_completo || [p.nombres, p.apellido_paterno, p.apellido_materno].filter(Boolean).join(' ');
+const ciYTelefono = (p) =>
+  [`CI ${p.carnet_identidad ?? ''}${p.complemento_ci ? `-${p.complemento_ci}` : ''} ${p.ci_extension ?? ''}`.trim(), p.telefono].filter(Boolean).join(' · ');
+
+const tieneDeclarada = (p) => p.superficie_total_ha !== null && p.superficie_total_ha !== '' && p.superficie_total_ha !== undefined && Number(p.superficie_total_ha) > 0;
+const excede = (p) => tieneDeclarada(p) && Number(p.superficie_parcelas_ha || 0) > Number(p.superficie_total_ha);
+const porcentajeUso = (p) => Math.min(100, Math.round((Number(p.superficie_parcelas_ha || 0) / Number(p.superficie_total_ha)) * 100));
+const textoSuperficie = (p) =>
+  `${hectareas(p.superficie_parcelas_ha ?? 0)} / ${p.superficie_total_ha !== null && p.superficie_total_ha !== '' && p.superficie_total_ha !== undefined ? hectareas(p.superficie_total_ha) : 'sin declarar'}`;
+
+const acciones = (p) => [
+  { id: 'editar', etiqueta: 'Editar', icono: 'ti-pencil' },
+  p.activo ? { id: 'desactivar', etiqueta: 'Desactivar', icono: 'ti-circle-off', peligro: true } : { id: 'activar', etiqueta: 'Activar', icono: 'ti-circle-check' },
+];
+
+function alAccion({ id, fila }) {
+  if (id === 'editar') abrirEditar(fila);
+  else if (id === 'desactivar') pedirCambioEstado(fila);
+  else if (id === 'activar') activar(fila);
 }
 
-function inicialProductor(productor) {
-  const nombre = nombreProductor(productor);
-
-  return nombre && nombre !== '—'
-    ? nombre.charAt(0).toUpperCase()
-    : '?';
+function resaltar(id) {
+  resaltado.value = id;
+  setTimeout(() => (resaltado.value = null), 2200);
 }
 
-function ciCompleto(productor) {
-  if (!productor?.carnet_identidad) {
-    return '—';
+// ---------- crear / editar
+const formAbierto = ref(false);
+const productorEditar = ref(null);
+const guardando = ref(false);
+const erroresServidor = ref({});
+const errorGeneral = ref('');
+
+function abrirCrear() {
+  productorEditar.value = null;
+  erroresServidor.value = {};
+  errorGeneral.value = '';
+  formAbierto.value = true;
+}
+
+function abrirEditar(p) {
+  productorEditar.value = p;
+  erroresServidor.value = {};
+  errorGeneral.value = '';
+  detalleAbierto.value = false;
+  formAbierto.value = true;
+}
+
+async function guardar(payload) {
+  if (guardando.value) return;
+
+  guardando.value = true;
+  erroresServidor.value = {};
+  errorGeneral.value = '';
+
+  try {
+    const editando = productorEditar.value;
+    const { data } = editando ? await productorService.actualizar(editando.id, payload) : await productorService.crear(payload);
+
+    await cargar();
+    formAbierto.value = false;
+    resaltar(data?.id ?? editando?.id);
+    toast.exito(`Productor «${[payload.nombres, payload.apellido_paterno].join(' ')}» ${editando ? 'actualizado' : 'creado'}`);
+  } catch (e) {
+    const errores = e?.response?.data?.errors;
+
+    if (errores) {
+      erroresServidor.value = Object.fromEntries(Object.entries(errores).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v]));
+      errorGeneral.value = 'Revisa los campos marcados en rojo.';
+    } else {
+      errorGeneral.value = obtenerMensajeError(e, 'No se pudo guardar el productor. Intenta de nuevo.');
+    }
+  } finally {
+    guardando.value = false;
   }
-
-  const numero = productor.carnet_identidad;
-  const complemento = productor.complemento_ci ? `-${productor.complemento_ci}` : '';
-  const extension = productor.ci_extension ? ` ${productor.ci_extension}` : '';
-
-  return `${numero}${complemento}${extension}`;
 }
 
-function textoSexo(sexo) {
-  return {
-    M: 'Masculino',
-    F: 'Femenino',
-    Otro: 'Otro',
-  }[sexo] || '—';
+// ---------- detalle
+const detalleAbierto = ref(false);
+const productorDetalle = ref(null);
+
+async function abrirDetalle(p) {
+  productorDetalle.value = p;
+  detalleAbierto.value = true;
+
+  try {
+    const { data } = await productorService.obtener(p.id);
+
+    productorDetalle.value = { ...p, ...data };
+  } catch (e) {
+    toast.error(obtenerMensajeError(e, 'No se pudo cargar el detalle del productor.'));
+  }
 }
 
-function badgeSexo(sexo) {
-  return {
-    M: 'bb',
-    F: 'ba',
-    Otro: 'badge-gray',
-  }[sexo] || 'badge-gray';
+// ---------- activar / desactivar
+const confirmarAbierto = ref(false);
+const productorConfirmar = ref(null);
+const cambiandoEstado = ref(false);
+
+function pedirCambioEstado(p) {
+  if (!p.activo) return activar(p);
+
+  productorConfirmar.value = p;
+  confirmarAbierto.value = true;
 }
 
-function productoresForReport() {
-  return filteredProductores.value.map((p) => ({
-    ID: p.id,
-    Productor: nombreProductor(p),
-    CI: ciCompleto(p),
-    Teléfono: p.telefono || '—',
-    Comunidad: p.comunidad?.nombre_comunidad || '—',
-    Municipio: p.comunidad?.municipio || '—',
-    Sexo: p.sexo ? textoSexo(p.sexo) : '—',
-    Superficie: p.superficie_total_ha ? `${p.superficie_total_ha} ha` : '—',
-    Estado: p.activo ? 'Activo' : 'Inactivo',
-  }));
+async function desactivar() {
+  if (cambiandoEstado.value) return;
+
+  cambiandoEstado.value = true;
+
+  try {
+    await productorService.eliminar(productorConfirmar.value.id);
+    await cargar();
+    resaltar(productorConfirmar.value.id);
+    toast.exito(`Productor «${productorConfirmar.value.nombre_completo}» desactivado`);
+    detalleAbierto.value = false;
+  } catch (e) {
+    toast.error(obtenerMensajeError(e, 'No se pudo desactivar al productor.'));
+  } finally {
+    cambiandoEstado.value = false;
+    confirmarAbierto.value = false;
+  }
 }
 
-function getProductoresReportMetadata() {
-  const user = currentUser.value || {};
-  const nombre = [
-    user.name,
-    user.paterno,
-    user.materno,
-  ].filter(Boolean).join(' ') || 'Usuario no identificado';
-
-  return {
-    titulo: 'Reporte de Productores',
-    sistema: 'Sistema PROINPA - Gestión Agrícola Inteligente',
-    generadoPor: nombre,
-    correo: user.email || '—',
-    rol: user.rol?.nombre || '—',
-    fecha: new Date().toLocaleString('es-BO'),
-    total: filteredProductores.value.length,
-    activos: filteredProductores.value.filter((p) => Boolean(p.activo)).length,
-    inactivos: filteredProductores.value.filter((p) => !Boolean(p.activo)).length,
-    superficie: filteredProductores.value.reduce((sum, p) => sum + Number(p.superficie_total_ha || 0), 0),
-    filtroEstado: filtroEstado.value === ''
-      ? 'Todos'
-      : filtroEstado.value === 'true'
-        ? 'Activos'
-        : 'Inactivos',
-    filtroComunidad: filtroComunidad.value
-      ? comunidades.value.find((c) => Number(c.id) === Number(filtroComunidad.value))?.nombre_comunidad || '—'
-      : 'Todas las comunidades',
-    filtroSexo: filtroSexo.value
-      ? textoSexo(filtroSexo.value)
-      : 'Todos',
-    busqueda: search.value || 'Sin búsqueda',
-  };
+async function activar(p) {
+  try {
+    await productorService.activar(p.id);
+    await cargar();
+    resaltar(p.id);
+    toast.exito(`Productor «${p.nombre_completo}» activado`);
+    detalleAbierto.value = false;
+  } catch (e) {
+    toast.error(obtenerMensajeError(e, 'No se pudo activar al productor.'));
+  }
 }
 
-function exportProductoresPdf() {
-  const doc = new jsPDF('landscape');
-  const meta = getProductoresReportMetadata();
+// ---------- exportar
+async function exportar(tipo) {
+  try {
+    const modulo = await import('@/utils/exportarProductores');
 
-  doc.setFillColor(22, 101, 52);
-  doc.rect(0, 0, 297, 28, 'F');
-
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.text(meta.sistema, 14, 10);
-
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.text(meta.titulo, 14, 19);
-
-  doc.setTextColor(15, 23, 42);
-  doc.setFontSize(10);
-
-  doc.text(`Generado por: ${meta.generadoPor}`, 14, 38);
-  doc.text(`Rol: ${meta.rol}`, 14, 44);
-  doc.text(`Correo: ${meta.correo}`, 14, 50);
-
-  doc.text(`Fecha y hora: ${meta.fecha}`, 160, 38);
-  doc.text(`Total productores: ${meta.total}`, 160, 44);
-  doc.text(`Superficie total: ${meta.superficie.toFixed(2)} ha`, 160, 50);
-
-  doc.text(`Estado: ${meta.filtroEstado}`, 14, 58);
-  doc.text(`Comunidad: ${meta.filtroComunidad}`, 90, 58);
-  doc.text(`Sexo: ${meta.filtroSexo}`, 190, 58);
-  doc.text(`Búsqueda: ${meta.busqueda}`, 14, 65);
-
-  autoTable(doc, {
-    startY: 72,
-    head: [[
-      'ID',
-      'Productor',
-      'CI',
-      'Teléfono',
-      'Comunidad',
-      'Municipio',
-      'Sexo',
-      'Superficie',
-      'Estado',
-    ]],
-    body: productoresForReport().map((p) => [
-      p.ID,
-      p.Productor,
-      p.CI,
-      p.Teléfono,
-      p.Comunidad,
-      p.Municipio,
-      p.Sexo,
-      p.Superficie,
-      p.Estado,
-    ]),
-    theme: 'grid',
-    styles: {
-      fontSize: 8,
-      cellPadding: 2.5,
-      textColor: [30, 41, 59],
-      lineColor: [203, 213, 225],
-      lineWidth: 0.2,
-    },
-    headStyles: {
-      fillColor: [22, 101, 52],
-      textColor: [255, 255, 255],
-      fontStyle: 'bold',
-    },
-    alternateRowStyles: {
-      fillColor: [248, 250, 252],
-    },
-    didDrawPage: function () {
-      const pageCount = doc.internal.getNumberOfPages();
-      const pageSize = doc.internal.pageSize;
-      const pageWidth = pageSize.width || pageSize.getWidth();
-      const pageHeight = pageSize.height || pageSize.getHeight();
-
-      doc.setFontSize(8);
-      doc.setTextColor(100, 116, 139);
-      doc.text(
-        'Documento generado automáticamente por el Sistema PROINPA',
-        14,
-        pageHeight - 10
-      );
-      doc.text(
-        `Página ${doc.internal.getCurrentPageInfo().pageNumber} de ${pageCount}`,
-        pageWidth - 40,
-        pageHeight - 10
-      );
-    },
-  });
-
-  doc.save(`reporte_productores_${new Date().toISOString().slice(0, 10)}.pdf`);
-}
-
-function exportProductoresExcel() {
-  const rows = productoresForReport();
-  const meta = getProductoresReportMetadata();
-
-  const metadataRows = [
-    ['Sistema', meta.sistema],
-    ['Reporte', meta.titulo],
-    ['Generado por', meta.generadoPor],
-    ['Rol', meta.rol],
-    ['Correo', meta.correo],
-    ['Fecha y hora', meta.fecha],
-    ['Total productores', meta.total],
-    ['Productores activos', meta.activos],
-    ['Productores inactivos', meta.inactivos],
-    ['Superficie total', `${meta.superficie.toFixed(2)} ha`],
-    ['Filtro estado', meta.filtroEstado],
-    ['Filtro comunidad', meta.filtroComunidad],
-    ['Filtro sexo', meta.filtroSexo],
-    ['Búsqueda', meta.busqueda],
-    [],
-  ];
-
-  const worksheet = XLSX.utils.aoa_to_sheet(metadataRows);
-
-  XLSX.utils.sheet_add_json(worksheet, rows, {
-    origin: `A${metadataRows.length + 1}`,
-  });
-
-  worksheet['!cols'] = [
-    { wch: 8 },
-    { wch: 34 },
-    { wch: 18 },
-    { wch: 16 },
-    { wch: 28 },
-    { wch: 22 },
-    { wch: 14 },
-    { wch: 16 },
-    { wch: 12 },
-  ];
-
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Productores');
-
-  const buffer = XLSX.write(workbook, {
-    bookType: 'xlsx',
-    type: 'array',
-  });
-
-  const blob = new Blob([buffer], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  });
-
-  saveAs(blob, `reporte_productores_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    if (tipo === 'pdf') await modulo.exportarProductoresPdf(filtrados.value, usuarioGuardado(), descripcionFiltros.value);
+    else await modulo.exportarProductoresExcel(filtrados.value, usuarioGuardado(), descripcionFiltros.value);
+  } catch (e) {
+    toast.error('No se pudo generar el archivo. Intenta de nuevo.');
+  }
 }
 </script>
+
+<style scoped>
+.vp-nombre {
+  display: block;
+  font-weight: 700;
+}
+
+.vp-secundario {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #4a6070;
+}
+
+.vp-sup {
+  display: grid;
+  gap: 6px;
+  min-width: 170px;
+  font-size: 13px;
+}
+
+.vp-barra {
+  display: block;
+  height: 6px;
+  border-radius: 999px;
+  background: #dce6ed;
+  overflow: hidden;
+}
+
+.vp-barra i {
+  display: block;
+  height: 100%;
+  background: #2e7d5a;
+  border-radius: 999px;
+}
+
+.vp-barra.excede i {
+  background: #d97706;
+}
+
+.vp-alerta {
+  margin-left: 6px;
+}
+</style>

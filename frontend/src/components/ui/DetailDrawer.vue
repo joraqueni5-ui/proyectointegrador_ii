@@ -9,7 +9,6 @@
           role="dialog"
           aria-modal="true"
           :aria-labelledby="`${uid}-t`"
-          @keydown.esc.stop="cerrar"
           @keydown.tab="atraparTab"
         >
           <header class="ui-dd__cabeza">
@@ -54,10 +53,15 @@ const uid = `dd-${useId()}`;
 const panel = ref(null);
 let previo = null;
 
+function alTeclado(evento) {
+  if (evento.key === 'Escape' && !document.querySelector('.ui-conf__fondo')) cerrar();
+}
+
 watch(
   () => props.modelValue,
   async (abierto) => {
     document.body.style.overflow = abierto ? 'hidden' : '';
+    window[abierto ? 'addEventListener' : 'removeEventListener']('keydown', alTeclado);
 
     if (abierto) {
       previo = document.activeElement;
@@ -71,6 +75,7 @@ watch(
 
 onBeforeUnmount(() => {
   document.body.style.overflow = '';
+  window.removeEventListener('keydown', alTeclado);
 });
 
 function cerrar() {

@@ -8,7 +8,6 @@
         aria-modal="true"
         :aria-labelledby="`${uid}-t`"
         :aria-describedby="`${uid}-d`"
-        @keydown.esc.stop="cancelar"
         @keydown.tab="atraparTab"
       >
         <h2 :id="`${uid}-t`" class="ui-conf__titulo">{{ titulo }}</h2>
@@ -33,7 +32,7 @@
 </template>
 
 <script setup>
-import { nextTick, ref, useId, watch } from 'vue';
+import { nextTick, onBeforeUnmount, ref, useId, watch } from 'vue';
 import BaseButton from './BaseButton.vue';
 
 // Confirmación de acciones destructivas o irreversibles: una pregunta como título, qué va a pasar
@@ -55,9 +54,15 @@ const uid = `conf-${useId()}`;
 const caja = ref(null);
 let previo = null;
 
+function alTeclado(evento) {
+  if (evento.key === 'Escape') cancelar();
+}
+
 watch(
   () => props.modelValue,
   async (abierto) => {
+    window[abierto ? 'addEventListener' : 'removeEventListener']('keydown', alTeclado);
+
     if (abierto) {
       previo = document.activeElement;
       await nextTick();
@@ -68,6 +73,8 @@ watch(
     }
   }
 );
+
+onBeforeUnmount(() => window.removeEventListener('keydown', alTeclado));
 
 function cancelar() {
   if (props.cargando) return;

@@ -8,7 +8,6 @@
           role="dialog"
           aria-modal="true"
           :aria-labelledby="`${uid}-t`"
-          @keydown.esc.stop="pedirCierre"
           @keydown.tab="atraparTab"
         >
           <header class="ui-dr__cabeza">
@@ -77,10 +76,17 @@ const uid = `dr-${useId()}`;
 const panel = ref(null);
 let previo = null;
 
+// Esc cierra el panel aunque el foco se haya perdido (por ejemplo al cambiar de paso); si hay una
+// confirmación encima, Esc cierra primero la confirmación.
+function alTeclado(evento) {
+  if (evento.key === 'Escape' && !document.querySelector('.ui-conf__fondo')) pedirCierre();
+}
+
 watch(
   () => props.modelValue,
   async (abierto) => {
     document.body.style.overflow = abierto ? 'hidden' : '';
+    window[abierto ? 'addEventListener' : 'removeEventListener']('keydown', alTeclado);
 
     if (abierto) {
       previo = document.activeElement;
@@ -94,6 +100,7 @@ watch(
 
 onBeforeUnmount(() => {
   document.body.style.overflow = '';
+  window.removeEventListener('keydown', alTeclado);
 });
 
 function pedirCierre() {

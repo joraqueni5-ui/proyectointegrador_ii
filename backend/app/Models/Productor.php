@@ -29,6 +29,9 @@ class Productor extends Model
     protected $casts = [
         'activo' => 'boolean',
         'fecha_nacimiento' => 'date',
+        'parcelas_count' => 'integer',
+        'superficie_parcelas_ha' => 'float',
+        'parcelas_con_alerta' => 'integer',
     ];
 
     protected static function booted(): void

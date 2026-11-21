@@ -136,7 +136,7 @@ const esquema = {
   latitud: [numeroEntre(-23, -9, 'La latitud (dentro de Bolivia)')],
   longitud: [numeroEntre(-70, -57, 'La longitud (dentro de Bolivia)')],
   altitud_msnm: [
-    numeroEntre(0, 6600, 'La altitud'),
+    numeroEntre(0, 6600, 'La altitud', 'm s. n. m.'),
     (v) => (String(v ?? '').trim() !== '' && !/^\d+$/.test(String(v).trim()) ? 'La altitud debe ser un número entero, sin decimales.' : ''),
   ],
 };

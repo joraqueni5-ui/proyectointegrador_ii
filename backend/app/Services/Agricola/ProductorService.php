@@ -8,6 +8,7 @@ use App\Support\Paginacion;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class ProductorService
 {
@@ -35,6 +36,18 @@ class ProductorService
                 'activo',
                 'created_at',
                 'updated_at',
+            ])
+            // Totales por productor con subconsultas (una sola consulta, sin N+1). Las parcelas
+            // inactivas no cuentan, igual que en la validación de superficie al crear parcelas.
+            ->addSelect([
+                'parcelas_count' => $this->parcelasDelProductor()->selectRaw('count(*)'),
+                'superficie_parcelas_ha' => $this->parcelasDelProductor()->selectRaw('coalesce(sum(parcelas.superficie_ha), 0)'),
+                'parcelas_con_alerta' => $this->parcelasDelProductor()
+                    ->join('inspecciones', 'inspecciones.id_parcela', '=', 'parcelas.id')
+                    ->join('diagnosticos_cnn', 'diagnosticos_cnn.id_inspeccion', '=', 'inspecciones.id')
+                    ->join('alertas', 'alertas.id_diagnostico', '=', 'diagnosticos_cnn.id')
+                    ->where('alertas.estado', 'Activa')
+                    ->selectRaw('count(distinct parcelas.id)'),
             ])
             ->when($request->buscar, function ($query, $buscar) {
                 $query->where(function ($q) use ($buscar) {
@@ -74,12 +87,28 @@ class ProductorService
         return $query->paginate(Paginacion::porPagina($request->query('per_page')));
     }
 
-    public function verConParcelas(Productor $productor): Productor
+    private function parcelasDelProductor()
     {
-        return $productor->load([
+        return DB::table('parcelas')
+            ->whereColumn('parcelas.id_productor', 'productores.id')
+            ->where('parcelas.estado', '!=', 'Inactiva');
+    }
+
+    /** $conCompras: solo para quien puede ver ventas (el historial de compras es información comercial). */
+    public function verConParcelas(Productor $productor, bool $conCompras = false): Productor
+    {
+        $productor->load([
             'comunidad:id,nombre_comunidad,municipio,provincia,departamento',
-            'parcelas' => fn ($q) => $q->where('estado', '!=', 'Inactiva'),
+            'parcelas' => fn ($q) => $q->where('estado', '!=', 'Inactiva')->conAlertasActivas()->orderBy('id'),
         ]);
+
+        if ($conCompras) {
+            $productor->load(['facturas' => fn ($q) => $q
+                ->select('id', 'id_productor', 'nro_factura', 'tipo', 'fecha_emision', 'monto_total', 'estado')
+                ->latest('fecha_emision')->latest('id')->limit(10)]);
+        }
+
+        return $productor;
     }
 
     public function crear(ProductorDTO $dto): Productor

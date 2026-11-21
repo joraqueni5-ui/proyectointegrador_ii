@@ -31,7 +31,7 @@ class ProductorController extends Controller
         $this->checkPermiso($request, ['ver_productores', 'gestionar_productores']);
 
         return response()->json(
-            $this->service->verConParcelas($productor)
+            $this->service->verConParcelas($productor, (bool) $request->user()?->tienePermiso('gestionar_ventas'))
         );
     }
 
