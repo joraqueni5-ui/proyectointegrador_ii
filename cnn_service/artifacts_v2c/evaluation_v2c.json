@@ -1,0 +1,718 @@
+{
+  "v1": {
+    "vio": [],
+    "tanzania_test": {
+      "n": 1313,
+      "accuracy": 0.6999,
+      "f1_macro": 0.7036,
+      "por_clase": {
+        "early_blight": {
+          "n": 309,
+          "precision": 0.4635,
+          "recall": 0.9644,
+          "f1": 0.6261
+        },
+        "healthy": {
+          "n": 580,
+          "precision": 0.9942,
+          "recall": 0.5862,
+          "f1": 0.7375
+        },
+        "late_blight": {
+          "n": 424,
+          "precision": 0.8567,
+          "recall": 0.6627,
+          "f1": 0.7473
+        }
+      },
+      "pred_como_no_papa": null,
+      "confianza_media_si_acierta": 0.8954,
+      "confianza_media_si_falla": 0.7742,
+      "ece": 0.1609,
+      "servicio": {
+        "cobertura": 0.9383,
+        "accuracy_si_se_entrega": 0.7175,
+        "diagnosticos_erroneos_entregados": 348
+      },
+      "matriz": {
+        "filas_reales": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "valores": [
+          [
+            298,
+            0,
+            11
+          ],
+          [
+            204,
+            340,
+            36
+          ],
+          [
+            141,
+            2,
+            281
+          ]
+        ]
+      }
+    },
+    "etiopia_holeta": {
+      "n": 429,
+      "accuracy": 0.6317,
+      "f1_macro": 0.5997,
+      "por_clase": {
+        "healthy": {
+          "n": 362,
+          "precision": 1.0,
+          "recall": 0.5635,
+          "f1": 0.7208
+        },
+        "late_blight": {
+          "n": 67,
+          "precision": 0.3146,
+          "recall": 1.0,
+          "f1": 0.4786
+        }
+      },
+      "pred_como_no_papa": null,
+      "confianza_media_si_acierta": 0.8695,
+      "confianza_media_si_falla": 0.8067,
+      "ece": 0.22,
+      "servicio": {
+        "cobertura": 0.9277,
+        "accuracy_si_se_entrega": 0.6482,
+        "diagnosticos_erroneos_entregados": 140
+      },
+      "matriz": {
+        "filas_reales": [
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "valores": [
+          [
+            12,
+            204,
+            146
+          ],
+          [
+            0,
+            0,
+            67
+          ]
+        ]
+      }
+    },
+    "peru_reserva": {
+      "n": 160,
+      "accuracy": 0.475,
+      "f1_macro": 0.4216,
+      "por_clase": {
+        "healthy": {
+          "n": 72,
+          "precision": 0.75,
+          "recall": 0.0833,
+          "f1": 0.15
+        },
+        "late_blight": {
+          "n": 88,
+          "precision": 0.614,
+          "recall": 0.7955,
+          "f1": 0.6931
+        }
+      },
+      "pred_como_no_papa": null,
+      "confianza_media_si_acierta": 0.9007,
+      "confianza_media_si_falla": 0.7596,
+      "ece": 0.3516,
+      "servicio": {
+        "cobertura": 0.875,
+        "accuracy_si_se_entrega": 0.5214,
+        "diagnosticos_erroneos_entregados": 67
+      },
+      "matriz": {
+        "filas_reales": [
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "valores": [
+          [
+            22,
+            6,
+            44
+          ],
+          [
+            16,
+            2,
+            70
+          ]
+        ]
+      }
+    },
+    "plantdoc_papa": {
+      "n": 75,
+      "accuracy": 0.56,
+      "f1_macro": 0.5521,
+      "por_clase": {
+        "early_blight": {
+          "n": 40,
+          "precision": 0.64,
+          "recall": 0.4,
+          "f1": 0.4923
+        },
+        "late_blight": {
+          "n": 35,
+          "precision": 0.52,
+          "recall": 0.7429,
+          "f1": 0.6118
+        }
+      },
+      "pred_como_no_papa": null,
+      "confianza_media_si_acierta": 0.9002,
+      "confianza_media_si_falla": 0.894,
+      "ece": 0.3542,
+      "servicio": {
+        "cobertura": 0.9733,
+        "accuracy_si_se_entrega": 0.5616,
+        "diagnosticos_erroneos_entregados": 32
+      },
+      "matriz": {
+        "filas_reales": [
+          "early_blight",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "valores": [
+          [
+            16,
+            0,
+            24
+          ],
+          [
+            9,
+            0,
+            26
+          ]
+        ]
+      }
+    },
+    "inat_papa": {
+      "n": 275,
+      "aceptada_como_papa": 1.0,
+      "entregada_por_servicio": 0.9273
+    },
+    "otros_cultivos": {
+      "n": 473,
+      "clasificadas_como_no_papa": 0.0,
+      "falso_diagnostico_entregado": 0.9408,
+      "confianza_media": 0.8744
+    }
+  },
+  "v2b": {
+    "vio": [],
+    "tanzania_test": {
+      "n": 1313,
+      "accuracy": 0.9855,
+      "f1_macro": 0.9835,
+      "por_clase": {
+        "early_blight": {
+          "n": 309,
+          "precision": 0.99,
+          "recall": 0.9644,
+          "f1": 0.977
+        },
+        "healthy": {
+          "n": 580,
+          "precision": 0.9948,
+          "recall": 0.9966,
+          "f1": 0.9957
+        },
+        "late_blight": {
+          "n": 424,
+          "precision": 0.9698,
+          "recall": 0.9858,
+          "f1": 0.9778
+        }
+      },
+      "pred_como_no_papa": 0.0,
+      "confianza_media_si_acierta": 0.9881,
+      "confianza_media_si_falla": 0.7697,
+      "ece": 0.0054,
+      "servicio": {
+        "cobertura": 0.9962,
+        "accuracy_si_se_entrega": 0.9878,
+        "diagnosticos_erroneos_entregados": 16
+      },
+      "matriz": {
+        "filas_reales": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            298,
+            0,
+            11,
+            0
+          ],
+          [
+            0,
+            578,
+            2,
+            0
+          ],
+          [
+            3,
+            3,
+            418,
+            0
+          ]
+        ]
+      }
+    },
+    "etiopia_holeta": {
+      "n": 429,
+      "accuracy": 0.8648,
+      "f1_macro": 0.8445,
+      "por_clase": {
+        "healthy": {
+          "n": 362,
+          "precision": 1.0,
+          "recall": 0.8674,
+          "f1": 0.929
+        },
+        "late_blight": {
+          "n": 67,
+          "precision": 0.6867,
+          "recall": 0.8507,
+          "f1": 0.76
+        }
+      },
+      "pred_como_no_papa": 0.0653,
+      "confianza_media_si_acierta": 0.894,
+      "confianza_media_si_falla": 0.6447,
+      "ece": 0.0168,
+      "servicio": {
+        "cobertura": 0.9044,
+        "accuracy_si_se_entrega": 0.8995,
+        "diagnosticos_erroneos_entregados": 39
+      },
+      "matriz": {
+        "filas_reales": [
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            0,
+            314,
+            26,
+            22
+          ],
+          [
+            4,
+            0,
+            57,
+            6
+          ]
+        ]
+      }
+    },
+    "peru_reserva": {
+      "n": 160,
+      "accuracy": 0.9812,
+      "f1_macro": 0.9839,
+      "por_clase": {
+        "healthy": {
+          "n": 72,
+          "precision": 0.9726,
+          "recall": 0.9861,
+          "f1": 0.9793
+        },
+        "late_blight": {
+          "n": 88,
+          "precision": 1.0,
+          "recall": 0.9773,
+          "f1": 0.9885
+        }
+      },
+      "pred_como_no_papa": 0.0063,
+      "confianza_media_si_acierta": 0.9755,
+      "confianza_media_si_falla": 0.5664,
+      "ece": 0.0218,
+      "servicio": {
+        "cobertura": 0.9812,
+        "accuracy_si_se_entrega": 0.9873,
+        "diagnosticos_erroneos_entregados": 2
+      },
+      "matriz": {
+        "filas_reales": [
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            0,
+            71,
+            0,
+            1
+          ],
+          [
+            0,
+            2,
+            86,
+            0
+          ]
+        ]
+      }
+    },
+    "plantdoc_papa": {
+      "n": 75,
+      "accuracy": 0.4533,
+      "f1_macro": 0.5249,
+      "por_clase": {
+        "early_blight": {
+          "n": 40,
+          "precision": 0.7059,
+          "recall": 0.3,
+          "f1": 0.4211
+        },
+        "late_blight": {
+          "n": 35,
+          "precision": 0.6286,
+          "recall": 0.6286,
+          "f1": 0.6286
+        }
+      },
+      "pred_como_no_papa": 0.3067,
+      "confianza_media_si_acierta": 0.7474,
+      "confianza_media_si_falla": 0.7337,
+      "ece": 0.3372,
+      "servicio": {
+        "cobertura": 0.7733,
+        "accuracy_si_se_entrega": 0.4828,
+        "diagnosticos_erroneos_entregados": 30
+      },
+      "matriz": {
+        "filas_reales": [
+          "early_blight",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            12,
+            0,
+            13,
+            15
+          ],
+          [
+            5,
+            0,
+            22,
+            8
+          ]
+        ]
+      }
+    },
+    "inat_papa": {
+      "n": 275,
+      "aceptada_como_papa": 0.2,
+      "entregada_por_servicio": 0.1855
+    },
+    "otros_cultivos": {
+      "n": 473,
+      "clasificadas_como_no_papa": 0.9345,
+      "falso_diagnostico_entregado": 0.0423,
+      "confianza_media": 0.9379
+    }
+  },
+  "v2c": {
+    "vio": [],
+    "tanzania_test": {
+      "n": 1313,
+      "accuracy": 0.9832,
+      "f1_macro": 0.9799,
+      "por_clase": {
+        "early_blight": {
+          "n": 309,
+          "precision": 0.9932,
+          "recall": 0.9417,
+          "f1": 0.9668
+        },
+        "healthy": {
+          "n": 580,
+          "precision": 0.9966,
+          "recall": 1.0,
+          "f1": 0.9983
+        },
+        "late_blight": {
+          "n": 424,
+          "precision": 0.9589,
+          "recall": 0.9906,
+          "f1": 0.9745
+        }
+      },
+      "pred_como_no_papa": 0.0,
+      "confianza_media_si_acierta": 0.9866,
+      "confianza_media_si_falla": 0.766,
+      "ece": 0.0055,
+      "servicio": {
+        "cobertura": 0.9962,
+        "accuracy_si_se_entrega": 0.9855,
+        "diagnosticos_erroneos_entregados": 19
+      },
+      "matriz": {
+        "filas_reales": [
+          "early_blight",
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            291,
+            0,
+            18,
+            0
+          ],
+          [
+            0,
+            580,
+            0,
+            0
+          ],
+          [
+            2,
+            2,
+            420,
+            0
+          ]
+        ]
+      }
+    },
+    "etiopia_holeta": {
+      "n": 429,
+      "accuracy": 0.958,
+      "f1_macro": 0.9467,
+      "por_clase": {
+        "healthy": {
+          "n": 362,
+          "precision": 1.0,
+          "recall": 0.9641,
+          "f1": 0.9817
+        },
+        "late_blight": {
+          "n": 67,
+          "precision": 0.8986,
+          "recall": 0.9254,
+          "f1": 0.9118
+        }
+      },
+      "pred_como_no_papa": 0.0233,
+      "confianza_media_si_acierta": 0.8768,
+      "confianza_media_si_falla": 0.5832,
+      "ece": 0.0935,
+      "servicio": {
+        "cobertura": 0.9277,
+        "accuracy_si_se_entrega": 0.9774,
+        "diagnosticos_erroneos_entregados": 9
+      },
+      "matriz": {
+        "filas_reales": [
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            0,
+            349,
+            7,
+            6
+          ],
+          [
+            1,
+            0,
+            62,
+            4
+          ]
+        ]
+      }
+    },
+    "peru_reserva": {
+      "n": 160,
+      "accuracy": 0.9812,
+      "f1_macro": 0.9811,
+      "por_clase": {
+        "healthy": {
+          "n": 72,
+          "precision": 0.9726,
+          "recall": 0.9861,
+          "f1": 0.9793
+        },
+        "late_blight": {
+          "n": 88,
+          "precision": 0.9885,
+          "recall": 0.9773,
+          "f1": 0.9829
+        }
+      },
+      "pred_como_no_papa": 0.0,
+      "confianza_media_si_acierta": 0.9839,
+      "confianza_media_si_falla": 0.7395,
+      "ece": 0.0075,
+      "servicio": {
+        "cobertura": 0.9938,
+        "accuracy_si_se_entrega": 0.9874,
+        "diagnosticos_erroneos_entregados": 2
+      },
+      "matriz": {
+        "filas_reales": [
+          "healthy",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            0,
+            71,
+            1,
+            0
+          ],
+          [
+            0,
+            2,
+            86,
+            0
+          ]
+        ]
+      }
+    },
+    "plantdoc_papa": {
+      "n": 75,
+      "accuracy": 0.3867,
+      "f1_macro": 0.4406,
+      "por_clase": {
+        "early_blight": {
+          "n": 40,
+          "precision": 0.6429,
+          "recall": 0.225,
+          "f1": 0.3333
+        },
+        "late_blight": {
+          "n": 35,
+          "precision": 0.5263,
+          "recall": 0.5714,
+          "f1": 0.5479
+        }
+      },
+      "pred_como_no_papa": 0.2533,
+      "confianza_media_si_acierta": 0.8021,
+      "confianza_media_si_falla": 0.7077,
+      "ece": 0.3575,
+      "servicio": {
+        "cobertura": 0.76,
+        "accuracy_si_se_entrega": 0.4211,
+        "diagnosticos_erroneos_entregados": 33
+      },
+      "matriz": {
+        "filas_reales": [
+          "early_blight",
+          "late_blight"
+        ],
+        "columnas_pred": [
+          "early_blight",
+          "healthy",
+          "late_blight",
+          "other"
+        ],
+        "valores": [
+          [
+            9,
+            3,
+            18,
+            10
+          ],
+          [
+            5,
+            1,
+            20,
+            9
+          ]
+        ]
+      }
+    },
+    "inat_papa": {
+      "n": 275,
+      "aceptada_como_papa": 0.8073,
+      "entregada_por_servicio": 0.7745
+    },
+    "otros_cultivos": {
+      "n": 473,
+      "clasificadas_como_no_papa": 0.8584,
+      "falso_diagnostico_entregado": 0.1057,
+      "confianza_media": 0.8645
+    }
+  }
+}

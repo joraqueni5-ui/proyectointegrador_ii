@@ -23,4 +23,14 @@ model_v2b/*.keras
 # Prototipo v2c (datasets y modelos pesados: se regeneran con los scripts de training_v2/)
 dataset_v2c/
 model_v2c_*/
-artifacts_v2c/
+# Resultados de v2c: se suben los informes (json, md, png, csv); nunca modelos ni datasets
+artifacts_v2c/**
+!artifacts_v2c/**/
+!artifacts_v2c/**/*.json
+!artifacts_v2c/**/*.md
+!artifacts_v2c/**/*.png
+!artifacts_v2c/**/*.csv
+
+# Modelos entrenados (en cualquier carpeta)
+*.keras
+*.h5
