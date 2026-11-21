@@ -213,6 +213,18 @@
         </RouterLink>
 
         <RouterLink
+          v-if="tienePermiso(['ver_reportes', 'ver_diagnosticos'])"
+          to="/dashboard/desempeno-modelo"
+          class="sb-link"
+          data-title="Desempeño del modelo"
+          active-class="active"
+          @click="handleNavClick"
+        >
+          <i class="ti ti-chart-dots-3"></i>
+          <span>Desempeño del modelo</span>
+        </RouterLink>
+
+        <RouterLink
           v-if="tienePermiso('ver_alertas')"
           to="/dashboard/alertas"
           class="sb-link"

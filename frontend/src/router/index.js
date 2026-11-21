@@ -174,6 +174,12 @@ const routes = [
         meta: { permiso: 'ver_diagnosticos' },
       },
       {
+        path: 'desempeno-modelo',
+        component: () => import('../views/dashboard/diagnostico/DesempenoModeloView.vue'),
+        name: 'desempeno-modelo',
+        meta: { permiso: ['ver_reportes', 'ver_diagnosticos'] },
+      },
+      {
         path: 'alertas',
         component: AlertasView,
         name: 'alertas',
