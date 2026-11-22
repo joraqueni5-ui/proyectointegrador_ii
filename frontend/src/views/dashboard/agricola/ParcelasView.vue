@@ -1,543 +1,608 @@
 <template>
-  <div class="parcelas-page fade-in">
-    <div class="cbar">
-      <div class="bread">
-        <i class="ti ti-home" style="font-size:14px"></i>
-        <span>›</span>
-        <span>Módulo Agrícola</span>
-        <span>›</span>
-        <span class="cur">Parcelas</span>
-      </div>
-
-      <div class="cbar-right">
-        <button class="btn btn-p" type="button" @click="openCreate">
-          <i class="ti ti-plus"></i>
-          Nueva parcela
-        </button>
-      </div>
-    </div>
-
-    <div class="pg-header parcelas-header">
-      <div>
-        <div class="pg-title">Parcelas</div>
-        <div class="pg-sub">
-          Registro, ubicación GPS y seguimiento de parcelas agrícolas.
-        </div>
-      </div>
-
-      <button class="btn btn-s" type="button" :disabled="loading" @click="fetchAll">
-        <i class="ti ti-refresh"></i>
-        {{ loading ? 'Actualizando...' : 'Actualizar' }}
-      </button>
-    </div>
-
-    <div v-if="pageError" class="parcelas-error">
-      {{ pageError }}
-    </div>
-
-    <div v-if="!loading" class="parcelas-stats mb20">
-      <div class="sc">
-        <div class="slabel">Total parcelas</div>
-        <div class="sval">{{ parcelas.length }}</div>
-        <div class="ssub">
-          <i class="ti ti-map-2 up"></i>
-          registradas
-        </div>
-      </div>
-
-      <div class="sc blue">
-        <div class="slabel">Activas</div>
-        <div class="sval">{{ parcelasActivas }}</div>
-        <div class="ssub">
-          <i class="ti ti-check up"></i>
-          en producción
-        </div>
-      </div>
-
-      <div class="sc amber">
-        <div class="slabel">En descanso</div>
-        <div class="sval">{{ parcelasDescanso }}</div>
-        <div class="ssub">
-          <i class="ti ti-zzz"></i>
-          temporalmente
-        </div>
-      </div>
-
-      <div class="sc purple">
-        <div class="slabel">Superficie total</div>
-        <div class="sval">
-          {{ superficieTotal.toFixed(1) }}
-          <span class="parcelas-unit">ha</span>
-        </div>
-        <div class="ssub">
-          <i class="ti ti-ruler-measure"></i>
-          hectáreas
-        </div>
-      </div>
-    </div>
-
-    <div class="card parcelas-card">
-      <div class="parcelas-toolbar">
+  <div class="pv" :class="{ 'mapa-abierto': mapaAbierto }">
+    <!-- Columna izquierda: lista -->
+    <section class="pv__lista" aria-label="Lista de parcelas">
+      <header class="pv__cabeza">
         <div>
-          <h3>Listado de parcelas</h3>
-          <p>Filtra por productor, estado, sistema de riego, GPS o búsqueda general.</p>
+          <h1 class="pv__titulo">Parcelas</h1>
+          <p class="pv__resumen">{{ resumen }}</p>
         </div>
+        <div class="pv__acciones">
+          <BaseButton class="pv__ver-mapa" variante="secundario" icono="ti-map-2" @click="mapaAbierto = true">Ver mapa</BaseButton>
+          <BaseButton icono="ti-plus" @click="abrirCrear">Nueva</BaseButton>
+        </div>
+      </header>
 
-        <div class="parcelas-filters">
-          <select v-model="filtroProductor" class="parcelas-select parcelas-select-lg">
-            <option value="">Todos los productores</option>
-            <option v-for="p in productores" :key="p.id" :value="p.id">
-              {{ nombreProductor(p) }}
-            </option>
-          </select>
-
-          <select v-model="filtroEstado" class="parcelas-select">
-            <option value="">Todos los estados</option>
-            <option value="Activa">Activas</option>
-            <option value="En_descanso">En descanso</option>
-            <option value="Inactiva">Inactivas</option>
-          </select>
-
-          <select v-model="filtroRiego" class="parcelas-select">
-            <option value="">Riego: todos</option>
-            <option value="Secano">Secano</option>
-            <option value="Riego">Riego</option>
-            <option value="Mixto">Mixto</option>
-          </select>
-
-          <select v-model="filtroGps" class="parcelas-select">
-            <option value="">GPS: todos</option>
-            <option value="true">Con GPS</option>
-            <option value="false">Sin GPS</option>
-          </select>
-
-          <div class="search-box parcelas-search">
-            <i class="ti ti-search"></i>
-            <input v-model="search" placeholder="Buscar parcela..." />
-          </div>
+      <div class="pv__filtros">
+        <div class="pv__buscador">
+          <i class="ti ti-search" aria-hidden="true"></i>
+          <label class="pv__sr" for="pv-buscar">Buscar parcelas</label>
+          <input id="pv-buscar" v-model="busqueda" type="search" autocomplete="off" maxlength="80" placeholder="Nombre, productor, comunidad o código" />
+        </div>
+        <div class="pv__pildoras" role="group" aria-label="Filtros rápidos">
+          <button v-for="p in pildoras" :key="p.valor" type="button" :class="{ 'is-activa': filtro === p.valor }" :aria-pressed="filtro === p.valor" @click="filtro = p.valor">
+            {{ p.etiqueta }} · {{ p.conteo }}
+          </button>
         </div>
       </div>
 
-      <div v-if="loading" class="loading-state">
-        <div class="spinner"></div>
-        <span>Cargando parcelas...</span>
+      <p v-if="errorPagina" class="aviso-error" role="alert">{{ errorPagina }}</p>
+
+      <div ref="contenedorLista" class="pv__scroll">
+        <template v-if="cargando">
+          <div v-for="n in 5" :key="n" class="pv__esqueleto"></div>
+        </template>
+
+        <EmptyState
+          v-else-if="!grupos.length"
+          icono="ti-map-off"
+          :titulo="parcelas.length ? 'Ninguna parcela coincide con la búsqueda' : 'Todavía no hay parcelas'"
+          :texto="parcelas.length ? 'Prueba con otro nombre o quita los filtros.' : 'Registra la primera parcela para ver su estado sanitario en el mapa.'"
+        >
+          <BaseButton v-if="!parcelas.length" icono="ti-plus" @click="abrirCrear">Nueva parcela</BaseButton>
+        </EmptyState>
+
+        <template v-else>
+          <section v-for="g in grupos" :key="g.clave" class="pv__grupo">
+            <h2>{{ g.titulo }}</h2>
+            <div v-for="p in g.parcelas" :key="p.id" :data-id="p.id" :class="{ 'resaltada': resaltada === p.id }">
+              <ParcelaCard :parcela="p" :seleccionada="seleccionadaId === p.id" @seleccionar="alSeleccionar" />
+            </div>
+          </section>
+        </template>
       </div>
+    </section>
 
-      <div v-else class="parcelas-table-wrap">
-        <table class="tbl parcelas-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Código</th>
-              <th>Productor</th>
-              <th>Superficie</th>
-              <th>Suelo</th>
-              <th>Riego</th>
-              <th>Altitud</th>
-              <th>GPS</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
+    <!-- Derecha: mapa -->
+    <section class="pv__mapa" aria-label="Mapa de sanidad">
+      <button class="pv__cerrar-mapa" type="button" @click="mapaAbierto = false"><i class="ti ti-list" aria-hidden="true"></i> Ver lista</button>
+      <ParcelasMapa
+        ref="mapa"
+        :parcelas="visibles"
+        :seleccionada-id="seleccionadaId"
+        @seleccionar="alSeleccionarEnMapa"
+        @ver-ficha="abrirFicha"
+        @programar-visita="programarVisita"
+      />
+    </section>
 
-          <tbody>
-            <tr v-for="p in filteredParcelas" :key="p.id">
-              <td class="parcela-id">
-                {{ p.id }}
-              </td>
-
-              <td>
-                <div class="parcela-code-cell">
-                  <strong>{{ p.codigo_parcela }}</strong>
-                  <small>{{ p.nombre_referencial || 'Sin nombre referencial' }}</small>
-                </div>
-              </td>
-
-              <td>
-                <div class="parcela-productor-cell">
-                  <div class="parcela-productor-avatar">
-                    {{ inicialProductor(p.productor) }}
-                  </div>
-                  <span>{{ nombreProductor(p.productor) }}</span>
-                </div>
-              </td>
-
-              <td>
-                <span v-if="p.superficie_ha" class="b bg">
-                  {{ p.superficie_ha }} ha
-                </span>
-                <span v-else class="muted">—</span>
-              </td>
-
-              <td>{{ p.tipo_suelo || '—' }}</td>
-
-              <td>
-                <span class="b bb">
-                  {{ p.sistema_riego || '—' }}
-                </span>
-              </td>
-
-              <td>
-                <span v-if="p.altitud_msnm" class="b ba">
-                  {{ Number(p.altitud_msnm).toLocaleString('es-BO') }} m
-                </span>
-                <span v-else class="muted">—</span>
-              </td>
-
-              <td>
-                <span class="b" :class="tieneGps(p) ? 'bg' : 'badge-gray'">
-                  <i :class="tieneGps(p) ? 'ti ti-map-pin' : 'ti ti-map-off'"></i>
-                  {{ tieneGps(p) ? 'Sí' : 'No' }}
-                </span>
-              </td>
-
-              <td>
-                <span class="b" :class="badgeEstado(p.estado)">
-                  {{ limpiarEstado(p.estado) }}
-                </span>
-              </td>
-
-              <td>
-                <div class="parcelas-actions">
-                  <button
-                    class="parcela-action view"
-                    type="button"
-                    title="Ver detalle"
-                    :disabled="saving"
-                    @click="openView(p)"
-                  >
-                    <i class="ti ti-eye"></i>
-                  </button>
-
-                  <button
-                    class="parcela-action edit"
-                    type="button"
-                    title="Editar"
-                    :disabled="saving"
-                    @click="openEdit(p)"
-                  >
-                    <i class="ti ti-pencil"></i>
-                  </button>
-
-                  <button
-                    class="parcela-action estado"
-                    type="button"
-                    title="Cambiar estado"
-                    :disabled="saving"
-                    @click="openEstado(p)"
-                  >
-                    <i class="ti ti-refresh"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-
-            <tr v-if="filteredParcelas.length === 0">
-              <td colspan="10">
-                <div class="parcelas-empty">
-                  <i class="ti ti-map-2"></i>
-                  <span>No se encontraron parcelas</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <ParcelaFormModal
-      v-if="showFormModal"
-      :mode="modalMode"
-      :parcela="selectedParcela"
+    <ParcelaFormDrawer
+      v-model="formAbierto"
+      :parcela="parcelaEditar"
       :productores="productores"
-      :saving="saving"
-      :error="formError"
-      @close="closeFormModal"
-      @save="handleSave"
+      :guardando="guardando"
+      :errores-servidor="erroresServidor"
+      :error-general="errorGeneral"
+      @guardar="guardar"
     />
 
-    <ParcelaViewModal
-      v-if="showViewModal"
-      :parcela="selectedParcela"
-      @close="closeViewModal"
+    <ParcelaFicha
+      v-model="fichaAbierta"
+      :parcela="fichaParcela"
+      :eventos="eventos"
+      :cargando-eventos="cargandoEventos"
+      :etapas="etapas"
+      @editar="editarDesdeFicha"
+      @cambiar-estado="abrirEstado"
+      @programar-visita="programarVisita"
     />
 
-    <ParcelaEstadoModal
-      v-if="showEstadoModal"
-      :parcela="selectedParcela"
-      :saving="saving"
-      :error="estadoError"
-      @close="closeEstadoModal"
-      @confirm="handleCambiarEstado"
-    />
+    <ParcelaEstadoDialog v-model="estadoAbierto" :parcela="parcelaEstado" :guardando="cambiandoEstado" :error="errorEstado" @confirmar="cambiarEstado" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import BaseButton from '@/components/ui/BaseButton.vue';
+import EmptyState from '@/components/ui/EmptyState.vue';
+import ParcelaCard from '@/components/parcelas/ParcelaCard.vue';
+import ParcelasMapa from '@/components/parcelas/ParcelasMapa.vue';
+import ParcelaFormDrawer from '@/components/parcelas/ParcelaFormDrawer.vue';
+import ParcelaFicha from '@/components/parcelas/ParcelaFicha.vue';
+import ParcelaEstadoDialog from '@/components/parcelas/ParcelaEstadoDialog.vue';
 import parcelaService from '@/services/modules/parcelaService';
 import productorService from '@/services/modules/productorService';
+import catalogoAgricolaService from '@/services/modules/catalogoAgricolaService';
 import { obtenerMensajeError } from '@/services/errorService';
-
-import ParcelaFormModal from '@/components/parcelas/ParcelaFormModal.vue';
-import ParcelaViewModal from '@/components/parcelas/ParcelaViewModal.vue';
-import ParcelaEstadoModal from '@/components/parcelas/ParcelaEstadoModal.vue';
-
-import '@/styles/parcelas.css';
+import { useToast } from '@/composables/useToast';
 import { normalizeList } from '@/utils/datos';
+import { hectareas, numero } from '@/utils/formato';
+
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
 
 const parcelas = ref([]);
 const productores = ref([]);
+const etapas = ref([]);
+const cargando = ref(true);
+const errorPagina = ref('');
+const busqueda = ref(String(route.query.buscar || ''));
+const filtro = ref('todas');
+const seleccionadaId = ref(null);
+const resaltada = ref(null);
+const mapaAbierto = ref(false);
+const contenedorLista = ref(null);
+const mapa = ref(null);
 
-const loading = ref(true);
-const saving = ref(false);
+// ---------- carga
+async function cargar() {
+  cargando.value = true;
+  errorPagina.value = '';
 
-const search = ref('');
-const filtroProductor = ref('');
-const filtroEstado = ref('');
-const filtroRiego = ref('');
-const filtroGps = ref('');
+  try {
+    const { data } = await parcelaService.listar({ resumen: 1 });
 
-const pageError = ref('');
-const formError = ref('');
-const estadoError = ref('');
+    parcelas.value = normalizeList(data);
+  } catch (e) {
+    errorPagina.value = obtenerMensajeError(e, 'No se pudieron cargar las parcelas. Revisa tu conexión e intenta de nuevo.');
+    parcelas.value = [];
+  } finally {
+    cargando.value = false;
+  }
+}
 
-const showFormModal = ref(false);
-const showViewModal = ref(false);
-const showEstadoModal = ref(false);
+async function cargarApoyo() {
+  const [p, e] = await Promise.allSettled([productorService.listar({ todos: 1 }), catalogoAgricolaService.etapasFenologicas()]);
 
-const modalMode = ref('create');
-const selectedParcela = ref(null);
+  if (p.status === 'fulfilled') productores.value = normalizeList(p.value.data);
+  if (e.status === 'fulfilled') etapas.value = normalizeList(e.value.data).sort((a, b) => a.orden - b.orden);
+}
 
-const parcelasActivas = computed(() => {
-  return parcelas.value.filter((p) => p.estado === 'Activa').length;
+onMounted(async () => {
+  await Promise.all([cargar(), cargarApoyo()]);
+
+  const abrir = Number(route.query.parcela);
+
+  if (abrir && parcelas.value.some((p) => p.id === abrir)) alSeleccionarEnMapa(parcelas.value.find((p) => p.id === abrir));
 });
 
-const parcelasDescanso = computed(() => {
-  return parcelas.value.filter((p) => p.estado === 'En_descanso').length;
+watch(() => route.query.buscar, (q) => (busqueda.value = String(q || '')));
+
+// ---------- filtros y agrupación
+const sinTildes = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+const pildoras = computed(() => {
+  const cuenta = (k) => parcelas.value.filter((p) => p.estado_sanitario === k).length;
+
+  return [
+    { valor: 'todas', etiqueta: 'Todas', conteo: parcelas.value.length },
+    { valor: 'alerta', etiqueta: 'Con alerta', conteo: cuenta('alerta') },
+    { valor: 'sin_visita', etiqueta: 'Sin visita +30 días', conteo: cuenta('sin_visita') },
+    { valor: 'descanso', etiqueta: 'En descanso', conteo: cuenta('descanso') },
+  ];
 });
 
-const superficieTotal = computed(() => {
-  return parcelas.value.reduce((sum, p) => sum + Number(p.superficie_ha || 0), 0);
-});
-
-const filteredParcelas = computed(() => {
-  const q = search.value.trim().toLowerCase();
+const visibles = computed(() => {
+  const q = sinTildes(busqueda.value).trim();
 
   return parcelas.value.filter((p) => {
-    const texto = [
-      p.codigo_parcela,
-      p.nombre_referencial,
-      p.tipo_suelo,
-      p.pendiente,
-      p.sistema_riego,
-      p.estado,
-      nombreProductor(p.productor),
-      p.productor?.carnet_identidad,
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase();
+    if (filtro.value !== 'todas' && p.estado_sanitario !== filtro.value) return false;
 
-    const matchSearch = !q || texto.includes(q);
+    if (!q) return true;
 
-    const matchProductor =
-      !filtroProductor.value || Number(p.id_productor) === Number(filtroProductor.value);
-
-    const matchEstado =
-      !filtroEstado.value || p.estado === filtroEstado.value;
-
-    const matchRiego =
-      !filtroRiego.value || p.sistema_riego === filtroRiego.value;
-
-    const matchGps =
-      filtroGps.value === ''
-        ? true
-        : tieneGps(p) === (filtroGps.value === 'true');
-
-    return matchSearch && matchProductor && matchEstado && matchRiego && matchGps;
+    return sinTildes([p.nombre_visible, p.nombre_referencial, p.codigo_parcela, p.productor?.nombre_completo, p.productor?.comunidad?.nombre_comunidad].filter(Boolean).join(' ')).includes(q);
   });
 });
 
-onMounted(fetchAll);
+const grupos = computed(() => {
+  const mapaGrupos = new Map();
 
-async function fetchAll() {
-  loading.value = true;
-  pageError.value = '';
+  for (const p of visibles.value) {
+    const c = p.productor?.comunidad;
+    const clave = c?.id ?? 0;
 
-  try {
-    await Promise.all([
-      fetchParcelas(),
-      fetchProductores(),
-    ]);
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function fetchParcelas() {
-  try {
-    const { data } = await parcelaService.listar();
-    parcelas.value = normalizeList(data);
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'No se pudieron cargar las parcelas.');
-    parcelas.value = [];
-  }
-}
-
-async function fetchProductores() {
-  try {
-    const { data } = await productorService.listar({
-      todos: 1,
-    });
-
-    productores.value = normalizeList(data)
-      .filter((p) => p.activo !== false);
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'No se pudieron cargar los productores.');
-    productores.value = [];
-  }
-}
-
-function openCreate() {
-  selectedParcela.value = null;
-  modalMode.value = 'create';
-  showFormModal.value = true;
-}
-
-function openEdit(parcela) {
-  selectedParcela.value = parcela;
-  modalMode.value = 'edit';
-  showFormModal.value = true;
-}
-
-async function openView(parcela) {
-  pageError.value = '';
-
-  try {
-    const { data } = await parcelaService.obtener(parcela.id);
-    selectedParcela.value = data;
-    showViewModal.value = true;
-  } catch (err) {
-    console.error(err);
-    pageError.value = obtenerMensajeError(err, 'No se pudo cargar el detalle de la parcela.');
-  }
-}
-
-function closeViewModal() {
-  showViewModal.value = false;
-  selectedParcela.value = null;
-}
-
-function closeFormModal() {
-  formError.value = '';
-  showFormModal.value = false;
-  selectedParcela.value = null;
-}
-
-async function handleSave(payload) {
-  saving.value = true;
-  formError.value = '';
-
-  try {
-    if (modalMode.value === 'create') {
-      await parcelaService.crear(payload);
-    } else {
-      await parcelaService.actualizar(selectedParcela.value.id, payload);
+    if (!mapaGrupos.has(clave)) {
+      mapaGrupos.set(clave, {
+        clave,
+        titulo: c ? [c.nombre_comunidad, c.municipio].filter(Boolean).join(' · ').toUpperCase() : 'SIN COMUNIDAD',
+        parcelas: [],
+      });
     }
 
-    await fetchParcelas();
-    closeFormModal();
-  } catch (err) {
-    console.error(err);
-    formError.value = obtenerMensajeError(err, 'Error al guardar parcela.');
-  } finally {
-    saving.value = false;
-  }
-}
-
-function openEstado(parcela) {
-  selectedParcela.value = parcela;
-  estadoError.value = '';
-  showEstadoModal.value = true;
-}
-
-function closeEstadoModal() {
-  showEstadoModal.value = false;
-  selectedParcela.value = null;
-  estadoError.value = '';
-}
-
-async function handleCambiarEstado(estado) {
-  if (!selectedParcela.value?.id) {
-    return;
+    mapaGrupos.get(clave).parcelas.push(p);
   }
 
-  saving.value = true;
-  estadoError.value = '';
+  return [...mapaGrupos.values()]
+    .sort((a, b) => a.titulo.localeCompare(b.titulo, 'es'))
+    .map((g) => ({ ...g, parcelas: g.parcelas.sort((a, b) => a.nombre_visible.localeCompare(b.nombre_visible, 'es')) }));
+});
+
+const resumen = computed(() => {
+  if (cargando.value) return '';
+
+  const ha = parcelas.value.reduce((s, p) => s + Number(p.superficie_ha || 0), 0);
+
+  return `${numero(parcelas.value.length, { decimales: 0 })} parcelas · ${hectareas(ha)}`;
+});
+
+// ---------- selección (lista <-> mapa)
+const esMovil = () => window.matchMedia('(max-width: 767px)').matches;
+
+function alSeleccionar(p) {
+  seleccionadaId.value = p.id;
+
+  // En celular no hay mapa a la vista: tocar una tarjeta abre su ficha.
+  if (esMovil()) abrirFicha(p);
+}
+
+async function alSeleccionarEnMapa(p) {
+  seleccionadaId.value = p.id;
+  await nextTick();
+  contenedorLista.value?.querySelector(`[data-id="${p.id}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function programarVisita(p) {
+  router.push({ path: '/dashboard/inspecciones', query: { parcela: p.id } });
+}
+
+// ---------- ficha
+const fichaAbierta = ref(false);
+const fichaParcela = ref(null);
+const eventos = ref([]);
+const cargandoEventos = ref(false);
+
+async function abrirFicha(p) {
+  fichaParcela.value = p;
+  fichaAbierta.value = true;
+  eventos.value = [];
+  cargandoEventos.value = true;
+
+  const [det, tl] = await Promise.allSettled([parcelaService.obtener(p.id), parcelaService.lineaTiempo(p.id, { limite: 40 })]);
+
+  if (det.status === 'fulfilled') fichaParcela.value = { ...p, ...det.value.data };
+  else toast.error(obtenerMensajeError(det.reason, 'No se pudo cargar la ficha de la parcela.'));
+
+  if (tl.status === 'fulfilled') eventos.value = tl.value.data || [];
+
+  cargandoEventos.value = false;
+}
+
+function editarDesdeFicha(p) {
+  fichaAbierta.value = false;
+  abrirEditar(p);
+}
+
+// ---------- crear / editar
+const formAbierto = ref(false);
+const parcelaEditar = ref(null);
+const guardando = ref(false);
+const erroresServidor = ref({});
+const errorGeneral = ref('');
+
+function abrirCrear() {
+  parcelaEditar.value = null;
+  erroresServidor.value = {};
+  errorGeneral.value = '';
+  formAbierto.value = true;
+}
+
+function abrirEditar(p) {
+  parcelaEditar.value = p;
+  erroresServidor.value = {};
+  errorGeneral.value = '';
+  formAbierto.value = true;
+}
+
+async function guardar(payload) {
+  if (guardando.value) return;
+
+  guardando.value = true;
+  erroresServidor.value = {};
+  errorGeneral.value = '';
 
   try {
-    await parcelaService.cambiarEstado(selectedParcela.value.id, estado);
-    await fetchParcelas();
-    closeEstadoModal();
-  } catch (err) {
-    console.error(err);
-    estadoError.value = obtenerMensajeError(err, 'Error al cambiar estado.');
+    const editando = parcelaEditar.value;
+    const { data } = editando ? await parcelaService.actualizar(editando.id, payload) : await parcelaService.crear(payload);
+
+    await Promise.all([cargar(), cargarApoyo()]);
+    formAbierto.value = false;
+
+    const id = data?.id ?? editando?.id;
+
+    filtro.value = 'todas';
+    busqueda.value = '';
+    seleccionadaId.value = id;
+    resaltada.value = id;
+    await nextTick();
+    contenedorLista.value?.querySelector(`[data-id="${id}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    setTimeout(() => (resaltada.value = null), 2200);
+    toast.exito(`Parcela «${payload.nombre_referencial || payload.codigo_parcela}» ${editando ? 'actualizada' : 'creada'}`);
+  } catch (e) {
+    const errores = e?.response?.data?.errors;
+
+    if (errores) {
+      erroresServidor.value = Object.fromEntries(Object.entries(errores).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v]));
+      errorGeneral.value = 'Revisa los campos marcados en rojo.';
+    } else {
+      errorGeneral.value = obtenerMensajeError(e, 'No se pudo guardar la parcela. Intenta de nuevo.');
+    }
   } finally {
-    saving.value = false;
+    guardando.value = false;
   }
 }
 
-function tieneGps(parcela) {
-  return parcela?.latitud !== null &&
-    parcela?.latitud !== undefined &&
-    parcela?.latitud !== '' &&
-    parcela?.longitud !== null &&
-    parcela?.longitud !== undefined &&
-    parcela?.longitud !== '';
+// ---------- estado
+const estadoAbierto = ref(false);
+const parcelaEstado = ref(null);
+const cambiandoEstado = ref(false);
+const errorEstado = ref('');
+
+function abrirEstado(p) {
+  parcelaEstado.value = p;
+  errorEstado.value = '';
+  estadoAbierto.value = true;
 }
 
-function badgeEstado(estado) {
-  return {
-    Activa: 'bg',
-    En_descanso: 'ba',
-    Inactiva: 'bgr',
-  }[estado] || 'badge-gray';
-}
+async function cambiarEstado(estado) {
+  if (cambiandoEstado.value) return;
 
-function limpiarEstado(estado) {
-  if (!estado) {
-    return '—';
+  cambiandoEstado.value = true;
+  errorEstado.value = '';
+
+  try {
+    await parcelaService.cambiarEstado(parcelaEstado.value.id, estado);
+    await cargar();
+    estadoAbierto.value = false;
+    fichaAbierta.value = false;
+    resaltada.value = parcelaEstado.value.id;
+    setTimeout(() => (resaltada.value = null), 2200);
+    toast.exito(`Parcela «${parcelaEstado.value.nombre_visible}» ahora está ${estado === 'En_descanso' ? 'en descanso' : estado.toLowerCase()}`);
+  } catch (e) {
+    errorEstado.value = obtenerMensajeError(e, 'No se pudo cambiar el estado de la parcela.');
+  } finally {
+    cambiandoEstado.value = false;
   }
-
-  return String(estado).replaceAll('_', ' ');
 }
 
-function nombreProductor(productor) {
-  if (!productor) {
-    return '—';
+watch(mapaAbierto, async (abierto) => {
+  if (abierto) {
+    await nextTick();
+    mapa.value?.invalidar();
   }
-
-  if (productor.nombre_completo) {
-    return productor.nombre_completo;
-  }
-
-  return [
-    productor.nombres,
-    productor.apellido_paterno,
-    productor.apellido_materno,
-  ]
-    .filter(Boolean)
-    .join(' ') || '—';
-}
-
-function inicialProductor(productor) {
-  const nombre = nombreProductor(productor);
-
-  return nombre && nombre !== '—'
-    ? nombre.charAt(0).toUpperCase()
-    : '?';
-}
+});
 </script>
+
+<style scoped>
+.pv {
+  display: flex;
+  height: calc(100vh - var(--barra-superior-h));
+  background: #fff;
+}
+
+.pv__lista {
+  flex: 0 0 clamp(440px, 38vw, 560px);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #fff;
+  border-right: 1px solid #dce6ed;
+}
+
+.pv__cabeza {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 10px;
+}
+
+.pv__titulo {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.pv__resumen {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #4a6070;
+}
+
+.pv__acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.pv__ver-mapa {
+  display: none;
+}
+
+.pv__filtros {
+  display: grid;
+  gap: 10px;
+  padding: 0 20px 12px;
+}
+
+.pv__buscador {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 14px;
+  background: #f4f7f9;
+  border: 2px solid transparent;
+  border-radius: 12px;
+}
+
+.pv__buscador:focus-within {
+  background: #fff;
+  border-color: #3da87a;
+  box-shadow: 0 0 0 4px rgba(61, 168, 122, 0.14);
+}
+
+.pv__buscador input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.pv__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.pv__pildoras {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px;
+}
+
+.pv__pildoras::-webkit-scrollbar {
+  display: none;
+}
+
+.pv__pildoras button {
+  flex: none;
+  min-height: 40px;
+  padding: 0 14px;
+  background: #fff;
+  border: 2px solid #dce6ed;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  cursor: pointer;
+}
+
+.pv__pildoras button.is-activa {
+  background: #0d3d2b;
+  border-color: #0d3d2b;
+  color: #fff;
+}
+
+.pv__pildoras button:focus-visible {
+  outline: 3px solid #3da87a;
+  outline-offset: 2px;
+}
+
+.pv__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 20px 24px;
+  background: #fff;
+}
+
+.pv__grupo {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.pv__grupo h2 {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #4a6070;
+}
+
+.resaltada {
+  animation: pv-resalta 2s ease both;
+  border-radius: 18px;
+}
+
+@keyframes pv-resalta {
+  0%,
+  70% {
+    background: #a8e6c6;
+  }
+
+  100% {
+    background: transparent;
+  }
+}
+
+.pv__esqueleto {
+  height: 84px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #eef2f6 25%, #f8fafc 50%, #eef2f6 75%);
+  background-size: 200% 100%;
+  animation: pv-brillo 1.2s linear infinite;
+}
+
+@keyframes pv-brillo {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.pv__mapa {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.pv__cerrar-mapa {
+  display: none;
+}
+
+/* Celular: solo la lista; el mapa se abre a pantalla completa con «Ver mapa» */
+@media (max-width: 767px) {
+  .pv {
+    height: calc(100vh - 64px - var(--barra-inferior-h));
+  }
+
+  .pv__lista {
+    flex: 1;
+    border-right: 0;
+  }
+
+  .pv__ver-mapa {
+    display: inline-flex;
+  }
+
+  .pv__mapa {
+    display: none;
+  }
+
+  .pv.mapa-abierto .pv__mapa {
+    display: block;
+    position: fixed;
+    inset: 64px 0 var(--barra-inferior-h) 0;
+    z-index: 70;
+    background: #dfe9e3;
+  }
+
+  .pv.mapa-abierto .pv__cerrar-mapa {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    z-index: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 12px;
+    background: #0d3d2b;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.3);
+  }
+
+  .pv__cabeza,
+  .pv__filtros,
+  .pv__scroll {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+</style>

@@ -52,6 +52,9 @@
 | Ventas | cambio de estado | cualquiera | Pendiente→Parcial→Pagada; Pagada no retrocede; con bloqueo | ComercialTest |
 | Inspecciones | técnico | podía repetir hora | un técnico no tiene dos inspecciones a la misma fecha y hora | InspeccionesAlertasTest |
 | Reportes | rango y montos | fin ≥ inicio | además rango ≤ 3 años y monto máximo ≥ mínimo | ComercialTest |
+| Parcelas | nombre | opcional | **obligatorio en parcelas nuevas** (3–150 caracteres); las existentes sin nombre se siguen viendo y editando | ParcelasResumenTest |
+| Parcelas | código | escrito a mano | sugerido automáticamente al elegir el productor (`GET /api/parcelas/siguiente-codigo`, p. ej. CHI-HYC-03), editable y único | ParcelasResumenTest |
+| Reportes fitosanitarios / Desempeño del modelo | permisos | cualquiera de varios | exigen `ver_reportes` **y** `ver_diagnosticos` | PermisosReportesTest |
 
 Registros actuales que NO cumplen las reglas nuevas (no se modifican):
 - Parcela id 2 (P-SUR-02): latitud 0,0000008 y longitud -0,0000004 (fuera de Bolivia).

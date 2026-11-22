@@ -5,6 +5,7 @@
         <aside
           ref="panel"
           class="ui-dr"
+          :style="{ width: `min(${ancho}px, 100%)` }"
           role="dialog"
           aria-modal="true"
           :aria-labelledby="`${uid}-t`"
@@ -22,9 +23,12 @@
 
           <div v-if="pasos.length" class="ui-dr__pasos"><StepIndicator :pasos="pasos" :actual="paso" /></div>
 
-          <form class="ui-dr__cuerpo" novalidate @submit.prevent="guardar">
-            <slot :paso="paso" />
-          </form>
+          <div class="ui-dr__medio">
+            <form class="ui-dr__cuerpo" novalidate @submit.prevent="guardar">
+              <slot :paso="paso" />
+            </form>
+            <aside v-if="$slots.lateral" class="ui-dr__lateral" aria-label="Vista previa"><slot name="lateral" /></aside>
+          </div>
 
           <footer class="ui-dr__pie">
             <BaseButton variante="secundario" :disabled="guardando" @click="pedirCierre">Cancelar</BaseButton>
@@ -68,6 +72,7 @@ const props = defineProps({
   textoGuardar: { type: String, default: 'Guardar' },
   textoGuardando: { type: String, default: 'Guardando…' },
   validarPaso: { type: Function, default: null },
+  ancho: { type: Number, default: 560 },
 });
 
 const emit = defineEmits(['update:modelValue', 'update:paso', 'guardar', 'cancelar']);
@@ -160,7 +165,6 @@ function atraparTab(evento) {
 }
 
 .ui-dr {
-  width: min(560px, 100%);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -208,6 +212,24 @@ function atraparTab(evento) {
 
 .ui-dr__pasos {
   padding: 0 24px 8px;
+}
+
+.ui-dr__medio {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.ui-dr__lateral {
+  flex: 0 0 300px;
+  overflow-y: auto;
+  padding: 12px 24px 24px 0;
+}
+
+@media (max-width: 1100px) {
+  .ui-dr__lateral {
+    display: none;
+  }
 }
 
 .ui-dr__cuerpo {

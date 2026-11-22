@@ -65,8 +65,9 @@ class StoreParcelaRequest extends FormRequest
                 'unique:parcelas,codigo_parcela',
             ],
 
+            // Obligatorio en parcelas nuevas (las anteriores sin nombre se siguen pudiendo ver y editar).
             'nombre_referencial' => [
-                'nullable',
+                'required',
                 'string',
                 'min:3',
                 'max:150',
@@ -134,6 +135,7 @@ class StoreParcelaRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'nombre_referencial.required' => 'Escribe un nombre para reconocer la parcela (por ejemplo "Lote Cruz Pata").',
             'id_productor.required' => 'Debe seleccionar un productor.',
             'id_productor.exists' => 'El productor seleccionado no existe.',
 

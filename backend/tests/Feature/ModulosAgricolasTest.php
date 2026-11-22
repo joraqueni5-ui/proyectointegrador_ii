@@ -73,7 +73,7 @@ class ModulosAgricolasTest extends TestCase
     private function parcela(array $cambios = []): array
     {
         return $cambios + [
-            'id_productor' => $this->idProductor, 'codigo_parcela' => 'NUEVA-01', 'latitud' => -16.3, 'longitud' => -68.5,
+            'id_productor' => $this->idProductor, 'codigo_parcela' => 'NUEVA-01', 'nombre_referencial' => 'Parcela nueva', 'latitud' => -16.3, 'longitud' => -68.5,
             'sistema_riego' => 'Secano', 'superficie_ha' => 1,
         ];
     }

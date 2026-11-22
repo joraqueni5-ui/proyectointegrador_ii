@@ -127,6 +127,8 @@ Route::middleware(['auth:sanctum', 'usuario.activo'])->group(function () {
     Route::apiResource('productores', ProductorController::class)
         ->parameters(['productores' => 'productor']);
 
+    Route::get('parcelas/siguiente-codigo', [ParcelaController::class, 'siguienteCodigo']);
+    Route::get('parcelas/{parcela}/linea-tiempo', [ParcelaController::class, 'lineaTiempo']);
     Route::patch('parcelas/{parcela}/estado', [ParcelaController::class, 'cambiarEstado']);
     Route::get('parcelas/{parcela}/historial-fitosanitario', [ParcelaController::class, 'historialFitosanitario']);
     Route::apiResource('parcelas', ParcelaController::class)

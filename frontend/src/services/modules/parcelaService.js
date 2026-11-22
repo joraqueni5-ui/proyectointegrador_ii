@@ -25,6 +25,14 @@ const parcelaService = {
     return api.patch(`/parcelas/${id}/estado`, { estado });
   },
 
+  siguienteCodigo(idProductor) {
+    return api.get('/parcelas/siguiente-codigo', { params: { id_productor: idProductor } });
+  },
+
+  lineaTiempo(id, params = {}) {
+    return api.get(`/parcelas/${id}/linea-tiempo`, { params });
+  },
+
   historialFitosanitario(id, params = {}) {
     return api.get(`/parcelas/${id}/historial-fitosanitario`, { params });
   },

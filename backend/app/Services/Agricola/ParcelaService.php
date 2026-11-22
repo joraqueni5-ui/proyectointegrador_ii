@@ -5,18 +5,175 @@ namespace App\Services\Agricola;
 use App\DTOs\Agricola\ParcelaDTO;
 use App\Models\Parcela;
 use App\Models\User;
+use App\Support\Campana;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ParcelaService
 {
     // Ver parcela con todo el detalle
     public function verDetalle(Parcela $parcela): Parcela
     {
-        return $parcela->load([
-            'productor:id,nombre_completo,carnet_identidad',
-            'cultivoVariedades.etapaFenologica:id,nombre,codigo',
+        $parcela->load([
+            'productor:id,id_comunidad,nombre_completo,nombres,apellido_paterno,apellido_materno,carnet_identidad,telefono',
+            'productor.comunidad:id,nombre_comunidad,municipio,latitud,longitud',
+            'cultivoVariedades.etapaFenologica:id,nombre,codigo,orden',
             'inspecciones' => fn ($q) => $q->latest()->limit(5),
             'cosechas' => fn ($q) => $q->latest()->limit(5),
         ]);
+
+        // Resumen sanitario (foto, alerta, última visita) de esta parcela, con la misma consulta del listado.
+        $resumen = Parcela::query()->conResumenSanitario()->whereKey($parcela->id)->first();
+
+        foreach (['ultima_foto', 'ultimo_diagnostico_estado', 'ultimo_diagnostico_confianza', 'ultimo_diagnostico_fecha', 'ultimo_diagnostico_nombre',
+            'ultimo_diagnostico_codigo', 'ultima_visita', 'alertas_activas', 'alerta_puntaje', 'alerta_enfermedad'] as $campo) {
+            $parcela->setAttribute($campo, $resumen?->getAttribute($campo));
+        }
+
+        $parcela->setAttribute('produccion_por_campana', $this->produccionPorCampana($parcela));
+
+        return $parcela;
+    }
+
+    /** Toneladas y t/ha por campaña agrícola (la campaña sale de App\Support\Campana). */
+    public function produccionPorCampana(Parcela $parcela): array
+    {
+        $ha = (float) $parcela->superficie_ha;
+
+        return $parcela->cosechas()
+            ->get(['fecha_cosecha', 'cantidad_toneladas'])
+            ->groupBy(fn ($c) => Campana::etiquetaDe($c->fecha_cosecha))
+            ->map(fn ($grupo, $campana) => [
+                'campana' => $campana,
+                'toneladas' => round((float) $grupo->sum('cantidad_toneladas'), 3),
+                'rendimiento_t_ha' => $ha > 0 ? round((float) $grupo->sum('cantidad_toneladas') / $ha, 2) : null,
+                'cosechas' => $grupo->count(),
+            ])
+            ->sortKeysDesc()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Línea de tiempo sanitaria de una parcela: siembras, inspecciones, diagnósticos, alertas y
+     * cosechas en orden cronológico inverso. Cinco consultas fijas (sin N+1).
+     *
+     * @param  array<int,string>|null  $tipos  siembra|inspeccion|diagnostico|alerta|cosecha
+     */
+    public function lineaTiempo(Parcela $parcela, int $limite = 60, ?array $tipos = null, ?string $desde = null, ?string $hasta = null): array
+    {
+        $quiere = fn (string $tipo) => $tipos === null || in_array($tipo, $tipos, true);
+        $rango = function ($consulta, string $columna) use ($desde, $hasta) {
+            return $consulta->when($desde, fn ($q) => $q->whereDate($columna, '>=', $desde))
+                ->when($hasta, fn ($q) => $q->whereDate($columna, '<=', $hasta));
+        };
+
+        $eventos = new Collection;
+
+        if ($quiere('siembra')) {
+            $rango($parcela->cultivoVariedades(), 'fecha_siembra')->get()->each(fn ($c) => $eventos->push([
+                'id' => "siembra-{$c->id}", 'tipo' => 'siembra', 'fecha' => $c->fecha_siembra?->toDateString(),
+                'titulo' => 'Siembra de '.$c->variedad_papa,
+                'detalle' => $c->cantidad_semilla_kg ? 'Semilla: '.rtrim(rtrim(number_format((float) $c->cantidad_semilla_kg, 2, ',', '.'), '0'), ',').' kg' : null,
+                'estado' => $c->estado,
+            ]));
+        }
+
+        if ($quiere('inspeccion')) {
+            $rango($parcela->inspecciones()->with('usuario:id,name,paterno'), 'fecha_visita')->get()->each(fn ($i) => $eventos->push([
+                'id' => "inspeccion-{$i->id}", 'tipo' => 'inspeccion', 'fecha' => $i->fecha_visita?->toDateString(),
+                'titulo' => 'Inspección '.($i->tipo_inspeccion === 'Cultivo' ? 'de rutina' : strtolower((string) $i->tipo_inspeccion)),
+                'detalle' => trim(($i->usuario ? 'Técnico: '.trim($i->usuario->name.' '.$i->usuario->paterno) : '')
+                    .($i->pct_plantas_afectadas !== null ? ' · '.rtrim(rtrim(number_format((float) $i->pct_plantas_afectadas, 1, ',', '.'), '0'), ',').' % de plantas afectadas' : ''), ' ·') ?: null,
+                'estado' => $i->estado,
+            ]));
+        }
+
+        if ($quiere('diagnostico') || $quiere('alerta')) {
+            $diagnosticos = DB::table('diagnosticos_cnn as d')
+                ->join('inspecciones as i', 'i.id', '=', 'd.id_inspeccion')
+                ->leftJoin('enfermedades as e', 'e.id', '=', 'd.id_enfermedad')
+                ->where('i.id_parcela', $parcela->id)
+                ->when($desde, fn ($q) => $q->whereDate('d.created_at', '>=', $desde))
+                ->when($hasta, fn ($q) => $q->whereDate('d.created_at', '<=', $hasta))
+                ->orderByDesc('d.created_at')
+                ->limit($limite)
+                ->get(['d.id', 'd.created_at', 'd.ruta_fotografia', 'd.porcentaje_confianza', 'd.estado_validacion', 'd.nivel_severidad', 'e.nombre_comun', 'e.codigo_enfermedad']);
+
+            if ($quiere('diagnostico')) {
+                $diagnosticos->each(fn ($d) => $eventos->push([
+                    'id' => "diagnostico-{$d->id}", 'tipo' => 'diagnostico', 'fecha' => substr((string) $d->created_at, 0, 10),
+                    'titulo' => 'Diagnóstico: '.($d->nombre_comun ?? 'sin resultado'),
+                    'detalle' => $d->porcentaje_confianza !== null ? 'Confianza del modelo: '.rtrim(rtrim(number_format((float) $d->porcentaje_confianza, 1, ',', '.'), '0'), ',').' %' : null,
+                    'estado' => $d->estado_validacion, 'foto' => $d->ruta_fotografia, 'severidad' => $d->nivel_severidad,
+                ]));
+            }
+        }
+
+        if ($quiere('alerta')) {
+            $rango(DB::table('alertas as a')
+                ->join('diagnosticos_cnn as d', 'd.id', '=', 'a.id_diagnostico')
+                ->join('inspecciones as i', 'i.id', '=', 'd.id_inspeccion')
+                ->where('i.id_parcela', $parcela->id)
+                ->orderByDesc('a.fecha_emision')
+                ->limit($limite), 'a.fecha_emision')
+                ->get(['a.id', 'a.fecha_emision', 'a.titulo', 'a.nivel_riesgo', 'a.estado', 'a.estado_seguimiento', 'a.puntaje_prioridad'])
+                ->each(fn ($a) => $eventos->push([
+                    'id' => "alerta-{$a->id}", 'tipo' => 'alerta', 'fecha' => substr((string) $a->fecha_emision, 0, 10),
+                    'titulo' => 'Alerta: '.$a->titulo,
+                    'detalle' => 'Riesgo '.strtolower((string) $a->nivel_riesgo).($a->puntaje_prioridad !== null ? ' · prioridad '.$a->puntaje_prioridad : ''),
+                    'estado' => $a->estado === 'Activa' ? 'Activa' : $a->estado, 'puntaje' => $a->puntaje_prioridad, 'seguimiento' => $a->estado_seguimiento,
+                ]));
+        }
+
+        if ($quiere('cosecha')) {
+            $rango($parcela->cosechas(), 'fecha_cosecha')->get()->each(fn ($c) => $eventos->push([
+                'id' => "cosecha-{$c->id}", 'tipo' => 'cosecha', 'fecha' => $c->fecha_cosecha?->toDateString(),
+                'titulo' => 'Cosecha de '.rtrim(rtrim(number_format((float) $c->cantidad_toneladas, 3, ',', '.'), '0'), ',').' t',
+                'detalle' => $c->calidad ? 'Calidad: '.$c->calidad : null, 'estado' => null,
+            ]));
+        }
+
+        return $eventos
+            ->filter(fn ($e) => ! empty($e['fecha']))
+            ->sortByDesc(fn ($e) => $e['fecha'].'|'.str_pad((string) preg_replace('/\D/', '', $e['id']), 10, '0', STR_PAD_LEFT))
+            ->take($limite)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Código automático para parcelas NUEVAS: 3 primeras letras de la comunidad (sin tildes, en
+     * mayúsculas), iniciales del productor y correlativo de 2 dígitos. Ej.: CHI-HYC-03.
+     * Si el código ya existe se sugiere el siguiente libre.
+     */
+    public function siguienteCodigo(int $idProductor): array
+    {
+        $productor = \App\Models\Productor::with('comunidad:id,nombre_comunidad')->findOrFail($idProductor);
+
+        $sinTildes = fn (string $t) => strtoupper(preg_replace('/[^A-Za-z]/', '', \Illuminate\Support\Str::ascii($t)));
+
+        $comunidad = substr($sinTildes((string) $productor->comunidad?->nombre_comunidad), 0, 3) ?: 'PAR';
+        $iniciales = collect([explode(' ', trim((string) $productor->nombres))[0] ?? '', $productor->apellido_paterno, $productor->apellido_materno])
+            ->map(fn ($p) => substr($sinTildes((string) $p), 0, 1))
+            ->filter()
+            ->implode('') ?: 'X';
+
+        $prefijo = "{$comunidad}-{$iniciales}-";
+
+        $maximo = Parcela::query()
+            ->where('codigo_parcela', 'like', $prefijo.'%')
+            ->pluck('codigo_parcela')
+            ->map(fn ($c) => (int) substr($c, strlen($prefijo)))
+            ->max() ?? 0;
+
+        $n = $maximo + 1;
+
+        while (Parcela::where('codigo_parcela', $prefijo.str_pad((string) $n, 2, '0', STR_PAD_LEFT))->exists()) {
+            $n++;
+        }
+
+        return ['codigo' => $prefijo.str_pad((string) $n, 2, '0', STR_PAD_LEFT), 'prefijo' => $prefijo];
     }
 
     // Crear parcela
